@@ -46,6 +46,10 @@ else
   endif
 endif
 
+# Determine XILINX ISE version
+XILINX_FILESET := $(XILINX_NORMAL)/fileset.txt
+XILINX_VER := $(shell $(AWK) 'BEGIN { FS = "=" } /version/ { printf("%s",$$2) }'  $(XILINX_FILESET))
+XILINX_MAJOR_VER := $(basename $(XILINX_VER))
 
 # Xilinx tools
 XST        := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/xst
@@ -79,9 +83,12 @@ XST_FLAGS        ?= $(INTSTYLE)           # most synthesis flags are specified i
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo  # ngdbuild flags
 NGDBUILD_FLAGS += $(if $(UCF_FILE),-uc,) $(UCF_FILE)
 # pre-11.1 flags
-#MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
+ifeq "$(XILINX_MAJOR_VER)" "11"
 # ISE 11.1 flags
 MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -c 100 -tx off
+else
+MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
+endif
 PAR_FLAGS        ?= $(INTSTYLE) -w -ol std -t 1
 TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
@@ -137,8 +144,6 @@ $(DESIGN_NAME)_impact.cmd:
 	@$(ECHO) "setMode -acempm" >>$@
 	@$(ECHO) "setMode -pff" >>$@
 	@$(ECHO) "setMode -bs" >>$@
-	@$(ECHO) "deleteDevice -position 1" >>$@
-	@$(ECHO) "deleteDevice -position 1" >>$@
 	@$(ECHO) "setMode -bscan" >>$@
 	@$(ECHO) "setCable -p auto" >>$@
 	@$(ECHO) "addDevice -p 1 -file $(BSD_FILE)" >>$@
