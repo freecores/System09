@@ -25,15 +25,37 @@
 
 include $(MKFRAGS)/def_rules.mk
 
+# Determine Xilinx ISE location
+ifeq "$(XILINX)" ""
+  $(error The XILINX environment variable must be set to use this makefile)
+endif
+XILINX_NORMAL := $(subst \,/,$(XILINX))
+
+MY_OS := $(shell uname -s)
+ifeq "$(findstring CYGWIN_NT,$(MY_OS))" "CYGWIN_NT"
+  ifeq "$(findstring WOW64,$(MY_OS))" "WOW64"
+    XILINX_PLAT = nt64
+  else
+    XILINX_PLAT = nt
+  endif
+else
+  ifeq "$(MY_OS)" "Linux"
+    XILINX_PLAT = lin
+  else
+    $(error Could not determine OS type for locating XILINX applications)
+  endif
+endif
+
+
 # Xilinx tools
-XST        := xst
-NGDBUILD   := ngdbuild
-MAP        := map
-PAR        := par
-BITGEN     := bitgen
-PROMGEN    := promgen
-TRCE       := trce
-IMPACT     := impact
+XST        := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/xst
+NGDBUILD   := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/ngdbuild
+MAP        := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/map
+PAR        := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/par
+BITGEN     := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/bitgen
+PROMGEN    := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/promgen
+TRCE       := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/trce
+IMPACT     := $(XILINX_NORMAL)/bin/$(XILINX_PLAT)/impact
 
 # Extract info from Xilinx ISE project for use with command line tools
 XST_FILE := $(DESIGN_NAME).xst
@@ -56,7 +78,10 @@ INTSTYLE :=
 XST_FLAGS        ?= $(INTSTYLE)           # most synthesis flags are specified in the .xst file
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo  # ngdbuild flags
 NGDBUILD_FLAGS += $(if $(UCF_FILE),-uc,) $(UCF_FILE)
-MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
+# pre-11.1 flags
+#MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
+# ISE 11.1 flags
+MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -c 100 -tx off
 PAR_FLAGS        ?= $(INTSTYLE) -w -ol std -t 1
 TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
