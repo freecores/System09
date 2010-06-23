@@ -37,7 +37,7 @@ RMDIR    := rm -rf
 MKDIR    := mkdir
 
 #  6809 Assembler
-ASM      := ../../Tools/as09/as09.exe
+ASM      := ../../Tools/as09/AS09.exe
 
 #  Generate Xilinx block ram initialized with ROM contents
 s19tovhd := ../../Tools/s19tovhd/S19toVHD.exe
