@@ -81,6 +81,6 @@ sys09ads.vhd: TOP_RAM=mon_rom_vhd
 
 .PHONY: clean
 clean:
-	-$(RM) *.S19
+	-$(RM) *.s19
 	-$(RM) *.lst
 	-$(RM) *.vhd
