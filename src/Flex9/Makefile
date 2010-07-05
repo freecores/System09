@@ -6,7 +6,7 @@
 # Description:
 #  This makefile generates a VHDL file from assembler source.
 #  A translate rule in mktargets.mk handles compiling the .asm
-#  into a S19 record file (.S19) and then running s19tovhd to
+#  into a S19 record file (.s19) and then running s19tovhd to
 #  generate a VHDL file with SPARTAN3 block rams with INIT generics
 #  containing the binary data.
 #
@@ -84,6 +84,6 @@ flex9ads.vhd: TOP_RAM=flex_ram_vhd
 
 .PHONY: clean
 clean:
-	-$(RM) *.S19
+	-$(RM) *.s19
 	-$(RM) *.lst
 	-$(RM) *.vhd
