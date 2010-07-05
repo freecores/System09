@@ -24,16 +24,16 @@ include $(MKFRAGS)/def_cmds.mk
 #===================================================================
 # TRANSLATE RULES
 
-#   RULE: .asm => .S19
+#   RULE: .asm => .s19
 # Assemble 6809 source into S19 record file
-%.S19: %.asm
+%.s19: %.asm
 	@$(ECHO)
 	@$(ECHO) "======= Running 6809 assembler to generate ROM code  ================"
 	$(ASM) $(notdir $<)  >$(basename $@).lst
 
-#   RULE: .S19 => .vhd
+#   RULE: .s19 => .vhd
 # Build a VHDL file instantiated BRAMS initialized with the source from a S19 file
-%.vhd: %.S19
+%.vhd: %.s19
 	@$(ECHO)
 	@$(ECHO) "======= Generating Xilinx block RAM to hold ROM code ================"
 	$(s19tovhd) $< $@ $(ENTITY) $(ADDRS)
