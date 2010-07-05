@@ -36,9 +36,17 @@ RM       := rm -f
 RMDIR    := rm -rf
 MKDIR    := mkdir
 
+# Define default application extension
+MY_OS := $(shell uname -s)
+ifeq "$(findstring CYGWIN_NT,$(MY_OS))" "CYGWIN_NT"
+EXE_EXT := .exe
+else
+EXE_EXT :=
+endif
+
 #  6809 Assembler
-ASM      := ../../Tools/as09/AS09.exe
+ASM      := ../../Tools/as09/as09$(EXE_EXT)
 
 #  Generate Xilinx block ram initialized with ROM contents
-s19tovhd := ../../Tools/s19tovhd/S19toVHD.exe
+s19tovhd := ../../Tools/s19tovhd/S19toVHD$(EXE_EXT)
 
