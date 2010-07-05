@@ -193,7 +193,7 @@ long get8hex( FILE *fp_in )
 * load motorola formatted file
 */
 
-void load_mot( char *fname_in )
+bool load_mot( char *fname_in )
 {
 	FILE *fp_in;
 	int byte, addr, i;
@@ -202,7 +202,7 @@ void load_mot( char *fname_in )
 	if( !fp_in )
 	{
 		printf( "\nCan't open %s", fname_in );
-		return; 
+		return false; 
 	}
 
 	byte = 0;
@@ -242,6 +242,7 @@ void load_mot( char *fname_in )
 		}
 	}
 	fclose( fp_in );
+	return true;
 }
 
 
@@ -365,7 +366,9 @@ int main(int argc, char* argv[])
 	printf("Reading Motorola S19 from file '%s'\n", argv[1]);
 	printf("VHDL file name '%s'\n", argv[2]);
 	printf("Base RAM/ROM entity name is '%s'\n", argv[3]);
-	load_mot( argv[1] );
+	if (!load_mot( argv[1] )) {
+		return(-1);
+        }
 	if( (fp_out = fopen( argv[2], "w" )) == NULL ) {
 		printf( "\nCan't open '%s' for write ", argv[2] );
 		return(-1);
