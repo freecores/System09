@@ -99,7 +99,7 @@ get_term()
         char    *tmp;
         int     val = 0;        /* local value being built */
         int     minus;          /* unary minus flag */
-        struct nlist *lookup(),*pointer;
+        struct nlist *pointer;
         struct link *pnt,*bpnt;
 
         if( *Optr == '-' ){

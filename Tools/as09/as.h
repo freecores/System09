@@ -165,3 +165,14 @@ struct  InclFile {      /* The INCLUDE files nesting "stack" */
                   };
 
 struct  InclFile InclFiles[MAXINCFILES];        /* the nesting stack itself */
+
+/* defined in doXX.c */
+void do_op(int opcode,int class);
+
+/* defined in symtab.c */
+struct nlist * lookup(char *name);
+
+/* defined in util.c */
+void pouterror();
+void f_record();
+void NewPage();

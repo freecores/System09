@@ -66,7 +66,7 @@ int op; /* which op */
         int c;  /*test variable  ver TER_2.0 6/18/89 */
         char    *skip_white(), *savept; /* savept is pointer to string save */
         FILE    *FdTemp, *fopen();      /* ver TER_2.0 6/17/89 */
-        void    pouterror(), NewPage(), IfMachine(); /* rel TER_2.0 6/18/89 */
+        void    IfMachine(); /* rel TER_2.0 6/18/89 */
         void    PC_Exchange();  /* ver TER_2.09 25 Jul 89 */
 
         if( op != EQU && *Label )

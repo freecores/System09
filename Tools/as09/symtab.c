@@ -7,7 +7,6 @@ int     val;
 {
         struct link *lp;
  struct nlist *np,*p,*backp;
- struct nlist *lookup();
  int     i;
  char *LastChar();      /* ver TER_2.0 */
 
@@ -77,8 +76,7 @@ int     val;
  *      lookup --- find string in symbol table
  */
 struct nlist *
-lookup(name)
-char    *name;
+lookup(char *name)
 {
  struct nlist *np;
  int     i;

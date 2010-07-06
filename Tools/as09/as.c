@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 char mapdn();
 char *alloc();
 /*
@@ -21,7 +24,6 @@ char **argv;
 	char *i;
 	FILE *fopen();
 	int j = 0;
-	void do_op(),f_record(); /* added for ANSI C compat ver TER_2.0 6/18/89 */
 
 	printf("Assembler release DWC_2.0 version 2.11\n");
 	printf("May 6, 2004 (c) Motorola (free ware)\n");

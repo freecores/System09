@@ -169,8 +169,6 @@ int GetToken()  /* get another line and find token in it */
 {               /* similar to make_pass() except one line at a time */
                 /* most variables & constants are global */
 
-struct nlist *lookup();
-
 #ifndef IBM
   if (FGETS(Line,MAXBUF-1,Fd) == (char *)NULL)
 #else

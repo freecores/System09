@@ -4,7 +4,6 @@
 fatal(str)
 char    *str;
 {
- pouterror();   /* added ver TER_2.0 4 Jul 89 */
  printf("%s\n",str);
 
 #ifdef IBM      /* changed ver TER_2.0 */
@@ -26,7 +25,6 @@ char    *str;
                         because a single command line source file
                         (which is what N_files counts) can have multiple
                         include source files. */
- pouterror();
  printf("%s\n",str);
 }
 /*
@@ -287,8 +285,6 @@ char *
 alloc(nbytes)
 int nbytes;
 {
- char *malloc();
-
  return(malloc(nbytes));
 }
 

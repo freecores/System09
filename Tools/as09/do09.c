@@ -44,9 +44,7 @@ localinit()
  * Called with the base opcode and it's class. Optr points to
  * the beginning of the operand field.
  */
-void do_op(opcode,class)
-int opcode; /* base opcode */
-int class; /* mnemonic class */
+void do_op(int opcode,int class)
 {
  int     dist;   /* relative branch distance */
  int     src,dst;/* source and destination registers */
