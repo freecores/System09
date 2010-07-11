@@ -46,6 +46,8 @@ FAMILY      := spartan3
 # List of ROM VHDL files
 .PHONY: roms
 roms:
+	@$(MAKE) -C ../../Tools/as09
+	@$(MAKE) -C ../../Tools/s19tovhd
 	@$(MAKE) -C ../../src/sys09bug sys09xes.vhd
 	@$(MAKE) -C ../../src/Flex9 flex9ide.vhd
 
@@ -127,6 +129,7 @@ help:
 	@$(ECHO) "  For project maintenance:"
 	@$(ECHO) "    help      - Print this help text"
 	@$(ECHO) "    clean     - Clean up the ISE files"
+	@$(ECHO) "    cleanall  - Clean up the ISE files and the Tools directories"
 	@$(ECHO) ""
 
 .PHONY: clean
@@ -139,4 +142,9 @@ clean:
 	-$(RM) *.pad *.placed_ncd_tracker *.routed_ncd_tracker *_pad.csv *.drc
 	-$(RM) *.pad_txt $(DESIGN_NAME)_impact.cmd *.unroutes
 	-$(RMDIR) _ngo _xmsgs
+
+.PHONY: cleanall
+cleanall: clean
+	-$(MAKE) -C ../../Tools/as09 clean
+	-$(MAKE) -C ../../Tools/s19tovhd clean
 
