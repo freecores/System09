@@ -14,9 +14,9 @@ library unisim;
 entity mon_rom is
     Port (
        clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
+       rst   : in  std_logic;
+       cs    : in  std_logic;
+       rw    : in  std_logic;
        addr  : in  std_logic_vector (11 downto 0);
        rdata : out std_logic_vector (7 downto 0);
        wdata : in  std_logic_vector (7 downto 0)
@@ -79,23 +79,22 @@ begin
        rdata => rdata1
     );
 
-my_mon : process ( rw, addr, cs, rdata0, rdata1 )
-begin
-	 we    <= not rw;
-	 case addr(11) is
-	 when '0' =>
-	   cs0   <= cs;
-		cs1   <= '0';
-		rdata <= rdata0;
-    when '1' =>
-	   cs0   <= '0';
-		cs1   <= cs;
-		rdata <= rdata1;
-    when others =>
-      null;
-    end case;		
-		
-end process;
+    my_mon : process ( rw, addr, cs, rdata0, rdata1 )
+    begin
+       we    <= not rw;
+       case addr(11) is
+           when '0' =>
+               cs0   <= cs;
+               cs1   <= '0';
+               rdata <= rdata0;
+           when '1' =>
+               cs0   <= '0';
+               cs1   <= cs;
+               rdata <= rdata1;
+           when others =>
+               null;
+       end case;		
+    end process;
 
 end architecture rtl;
 
