@@ -9,7 +9,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 library unisim;
-	use unisim.vcomponents.all;
+    use unisim.vcomponents.all;
 
 entity mon_rom is
     Port (
