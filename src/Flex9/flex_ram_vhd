@@ -18,8 +18,8 @@ entity flex_ram is
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (12 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end flex_ram;
 
@@ -46,8 +46,8 @@ component FLEX9_C000
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 component FLEX9_C800
@@ -57,8 +57,8 @@ component FLEX9_C800
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 component FLEX9_D000
@@ -68,8 +68,8 @@ component FLEX9_D000
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 component FLEX9_D800
@@ -79,8 +79,8 @@ component FLEX9_D800
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -92,8 +92,8 @@ begin
        cs    => cs0,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata0
+       data_in => data_in,
+       data_out => rdata0
     );
 
    addr_c800 : FLEX9_C800 port map (
@@ -102,8 +102,8 @@ begin
        cs    => cs1,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata1
+       data_in => data_in,
+       data_out => rdata1
     );
    addr_d000 : FLEX9_D000 port map (
        clk   => clk,
@@ -111,8 +111,8 @@ begin
        cs    => cs2,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata2
+       data_in => data_in,
+       data_out => rdata2
     );
    addr_d800 : FLEX9_D800 port map (
        clk   => clk,
@@ -120,8 +120,8 @@ begin
        cs    => cs3,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata3
+       data_in => data_in,
+       data_out => rdata3
     );
 
 my_flex : process ( rw, addr, cs, rdata0, rdata1, rdata2, rdata3 )
@@ -133,25 +133,25 @@ begin
 		cs1   <= '0';
 		cs2   <= '0';
 		cs3   <= '0';
-		rdata <= rdata0;
+		data_out <= rdata0;
     when "01" =>
 		cs0   <= '0';
 		cs1   <= cs;
 		cs2   <= '0';
 		cs3   <= '0';
-		rdata <= rdata1;
+		data_out <= rdata1;
 	 when "10" =>
 		cs0   <= '0';
 		cs1   <= '0';
 		cs2   <= cs;
 		cs3   <= '0';
-		rdata <= rdata2;
+		data_out <= rdata2;
     when "11" =>
 		cs0   <= '0';
 		cs1   <= '0';
 		cs2   <= '0';
 		cs3   <= cs;
-		rdata <= rdata3;
+		data_out <= rdata3;
     when others =>
 		null;
     end case;		
