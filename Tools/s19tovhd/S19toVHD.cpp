@@ -281,13 +281,13 @@ void save_vhdl_b4( FILE *fp_out, char *entity_name, int start_addr, int end_addr
 	fprintf(fp_out, "\n");
 	fprintf(fp_out, "entity %s is\n", entity_name);
 	fprintf(fp_out, "   port(\n");
-	fprintf(fp_out, "      clk    : in  std_logic;\n");
-	fprintf(fp_out, "      rst    : in  std_logic;\n");
-	fprintf(fp_out, "      cs     : in  std_logic;\n");
-	fprintf(fp_out, "      rw     : in  std_logic;\n");
-	fprintf(fp_out, "      addr   : in  std_logic_vector(%d downto 0);\n", addr_len);
-	fprintf(fp_out, "      rdata  : out std_logic_vector(7 downto 0);\n");
-	fprintf(fp_out, "      wdata  : in  std_logic_vector(7 downto 0)\n");
+	fprintf(fp_out, "      clk       : in  std_logic;\n");
+	fprintf(fp_out, "      rst       : in  std_logic;\n");
+	fprintf(fp_out, "      cs        : in  std_logic;\n");
+	fprintf(fp_out, "      rw        : in  std_logic;\n");
+	fprintf(fp_out, "      addr      : in  std_logic_vector(%d downto 0);\n", addr_len);
+	fprintf(fp_out, "      data_out  : out std_logic_vector(7 downto 0);\n");
+	fprintf(fp_out, "      data_in   : in  std_logic_vector(7 downto 0)\n");
 	fprintf(fp_out, "   );\n");
 	fprintf(fp_out, "end %s;\n", entity_name);
 	fprintf(fp_out, "\n");
@@ -326,7 +326,7 @@ void save_vhdl_b4( FILE *fp_out, char *entity_name, int start_addr, int end_addr
 		fprintf(fp_out, "         we      => we,\n");
 		fprintf(fp_out, "         rst     => rst,\n");
 		fprintf(fp_out, "         addr    => addr(8 downto 0),\n");
-		fprintf(fp_out, "         di      => wdata,\n");
+		fprintf(fp_out, "         di      => data_in,\n");
 		fprintf(fp_out, "         do      => xdata(%d)\n", rom_num );
 		fprintf(fp_out, "      );\n");
 		fprintf(fp_out, "\n");
@@ -341,7 +341,7 @@ void save_vhdl_b4( FILE *fp_out, char *entity_name, int start_addr, int end_addr
 		for( rom_num=0; rom_num<rom_max; rom_num++ ) {
 			fprintf(fp_out, "      when \"%s\" =>\n", bin_string(rom_num, addr_len-rom_len) );
 			fprintf(fp_out, "         en(%d)  <= cs;\n", rom_num );
-			fprintf(fp_out, "         rdata  <= xdata(%d);\n", rom_num);
+			fprintf(fp_out, "         data_out  <= xdata(%d);\n", rom_num);
 		}
 
 		fprintf(fp_out, "      when others =>\n");
@@ -349,7 +349,7 @@ void save_vhdl_b4( FILE *fp_out, char *entity_name, int start_addr, int end_addr
 		fprintf(fp_out, "      end case;\n");
 	} else {
 		fprintf(fp_out, "      en(0)  <= cs;\n" );
-		fprintf(fp_out, "      rdata  <= xdata(0);\n" );
+		fprintf(fp_out, "      data_out  <= xdata(0);\n" );
 	}
 	fprintf(fp_out, "      we <= not rw;\n");
 	fprintf(fp_out, "   end process;\n");
@@ -381,13 +381,13 @@ void save_vhdl_b16( FILE *fp_out, char *entity_name, int start_addr, int end_add
 	fprintf(fp_out, "\n");
 	fprintf(fp_out, "entity %s is\n", entity_name);
 	fprintf(fp_out, "   port(\n");
-	fprintf(fp_out, "      clk    : in  std_logic;\n");
-	fprintf(fp_out, "      rst    : in  std_logic;\n");
-	fprintf(fp_out, "      cs     : in  std_logic;\n");
-	fprintf(fp_out, "      rw     : in  std_logic;\n");
-	fprintf(fp_out, "      addr   : in  std_logic_vector(%d downto 0);\n", addr_len);
-	fprintf(fp_out, "      rdata  : out std_logic_vector(7 downto 0);\n");
-	fprintf(fp_out, "      wdata  : in  std_logic_vector(7 downto 0)\n");
+	fprintf(fp_out, "      clk       : in  std_logic;\n");
+	fprintf(fp_out, "      rst       : in  std_logic;\n");
+	fprintf(fp_out, "      cs        : in  std_logic;\n");
+	fprintf(fp_out, "      rw        : in  std_logic;\n");
+	fprintf(fp_out, "      addr      : in  std_logic_vector(%d downto 0);\n", addr_len);
+	fprintf(fp_out, "      data_out  : out std_logic_vector(7 downto 0);\n");
+	fprintf(fp_out, "      data_in   : in  std_logic_vector(7 downto 0)\n");
 	fprintf(fp_out, "   );\n");
 	fprintf(fp_out, "end %s;\n", entity_name);
 	fprintf(fp_out, "\n");
@@ -427,7 +427,7 @@ void save_vhdl_b16( FILE *fp_out, char *entity_name, int start_addr, int end_add
 		fprintf(fp_out, "         EN      => en(%d),\n", rom_num );
 		fprintf(fp_out, "         WE      => we,\n");
 		fprintf(fp_out, "         ADDR    => addr(10 downto 0),\n");
-		fprintf(fp_out, "         DI      => wdata,\n");
+		fprintf(fp_out, "         DI      => data_in,\n");
 		fprintf(fp_out, "         DIP(0)  => dp(%d),\n", rom_num );
 		fprintf(fp_out, "         DO      => xdata(%d),\n", rom_num );
 		fprintf(fp_out, "         DOP(0)  => dp(%d)\n", rom_num );
@@ -443,7 +443,7 @@ void save_vhdl_b16( FILE *fp_out, char *entity_name, int start_addr, int end_add
 		for( rom_num=0; rom_num<rom_max; rom_num++ ) {
 			fprintf(fp_out, "      when \"%s\" =>\n", bin_string(rom_num, addr_len-rom_len) );
 			fprintf(fp_out, "         en(%d)  <= cs;\n", rom_num );
-			fprintf(fp_out, "         rdata  <= xdata(%d);\n", rom_num);
+			fprintf(fp_out, "         data_out  <= xdata(%d);\n", rom_num);
 		}
 
 		fprintf(fp_out, "      when others =>\n");
@@ -451,7 +451,7 @@ void save_vhdl_b16( FILE *fp_out, char *entity_name, int start_addr, int end_add
 		fprintf(fp_out, "      end case;\n");
 	} else {
 		fprintf(fp_out, "      en(0)  <= cs;\n");
-		fprintf(fp_out, "      rdata  <= xdata(0);\n");
+		fprintf(fp_out, "      data_out  <= xdata(0);\n");
 	}
 	fprintf(fp_out, "      we <= not rw;\n");
 	fprintf(fp_out, "   end process;\n");
