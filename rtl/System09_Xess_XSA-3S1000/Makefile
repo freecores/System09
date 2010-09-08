@@ -30,6 +30,9 @@
 MKFRAGS := ../../mkfiles
 export MKFRAGS
 
+BRAM_TYPE := b16
+export BRAM_TYPE
+
 #===================================================================
 # User-modifiable variables
 #
