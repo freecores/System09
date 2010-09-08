@@ -18,8 +18,8 @@ entity mon_rom is
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (11 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end mon_rom;
 
@@ -40,8 +40,8 @@ component SYS09BUG_F000
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -52,8 +52,8 @@ component SYS09BUG_F800
        cs    : in  std_logic;
        rw    : in  std_logic;
        addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -65,8 +65,8 @@ begin
        cs    => cs0,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata0
+       data_in => data_in,
+       data_out => rdata0
     );
 
    addr_f800 : SYS09BUG_F800 port map (
@@ -75,8 +75,8 @@ begin
        cs    => cs1,
        rw    => rw,
        addr  => addr(10 downto 0),
-       wdata => wdata,
-       rdata => rdata1
+       data_in => data_in,
+       data_out => rdata1
     );
 
     my_mon : process ( rw, addr, cs, rdata0, rdata1 )
@@ -86,11 +86,11 @@ begin
            when '0' =>
                cs0   <= cs;
                cs1   <= '0';
-               rdata <= rdata0;
+               data_out <= rdata0;
            when '1' =>
                cs0   <= '0';
                cs1   <= cs;
-               rdata <= rdata1;
+               data_out <= rdata1;
            when others =>
                null;
        end case;		
