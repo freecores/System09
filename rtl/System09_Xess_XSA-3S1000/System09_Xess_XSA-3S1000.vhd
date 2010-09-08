@@ -393,8 +393,8 @@ component mon_rom
 		 cs    : in  std_logic;
 		 rw    : in  std_logic;
        addr  : in  std_logic_vector (11 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       data_out : out std_logic_vector (7 downto 0);
+       data_in : in  std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -412,8 +412,8 @@ component flex_ram
     cs       : in  std_logic;
     rw       : in  std_logic;
     addr     : in  std_logic_vector (12 downto 0);
-    rdata    : out std_logic_vector (7 downto 0);
-    wdata    : in  std_logic_vector (7 downto 0)
+    data_out    : out std_logic_vector (7 downto 0);
+    data_in    : in  std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -669,8 +669,8 @@ my_rom : mon_rom port map (
 		 cs    => rom_cs,
 		 rw    => '1',
        addr  => cpu_addr(11 downto 0),
-       wdata => cpu_data_out,
-       rdata => rom_data_out
+       data_in => cpu_data_out,
+       data_out => rom_data_out
     );
 
 my_flex : flex_ram port map (
@@ -679,8 +679,8 @@ my_flex : flex_ram port map (
 	 cs        => flex_cs,
 	 rw        => cpu_rw,
     addr      => cpu_addr(12 downto 0),
-    rdata     => flex_data_out,
-    wdata     => cpu_data_out
+    data_out     => flex_data_out,
+    data_in     => cpu_data_out
     );
 
 my_acia  : ACIA_6850 port map (
