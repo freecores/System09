@@ -35,7 +35,7 @@ include $(MKFRAGS)/def_cmds.mk
 # Build a VHDL file instantiated BRAMS initialized with the source from a S19 file
 %.vhd: %.s19
 	@$(ECHO)
-	@$(ECHO) "======= Generating Xilinx block RAM to hold ROM code ================"
-	$(s19tovhd) $< $@ $(ENTITY) $(ADDRS)
+	@$(ECHO) "======= Generating block RAM of type $(BRAM_TYPE) to hold ROM code ================"
+	$(s19tovhd) $(BRAM_TYPE) $< $@ $(ENTITY) $(ADDRS)
 	$(CAT) $(TOP_RAM) >>$@
 
