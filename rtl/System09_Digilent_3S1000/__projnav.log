@@ -1,0 +1,2201 @@
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Entity <cpu09> compiled.
+Entity <cpu09> (Architecture <rtl>) compiled.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Entity <dat_ram> compiled.
+Entity <dat_ram> (Architecture <rtl>) compiled.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 16. Undefined symbol 'clk_b'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 16. clk_b: Undefined symbol (last report in this block)
+ERROR:HDLParsers:507 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 15. ) is not a correct resolution function name
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 16. parse error, unexpected COLON, expecting SEMICOLON or CLOSEPAR
+--> 
+
+Total memory usage is 81604 kilobytes
+
+Number of errors   :    4 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Entity <dpr_2k> compiled.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 114. parse error, unexpected IDENTIFIER, expecting COMMA or CLOSEPAR
+--> 
+
+Total memory usage is 81604 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Entity <dpr_2k> compiled.
+ERROR:HDLParsers:3452 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" Line 36. An index or element of the formal port DOPA of RAMB16_S18_S18 is missing in instantiation.
+--> 
+
+Total memory usage is 81604 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Entity <dpr_2k> compiled.
+Entity <dpr_2k> (Architecture <rtl>) compiled.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Entity <mul32> compiled.
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 94. Undefined symbol 'addr_lo'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 94. addr_lo: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 176. Undefined symbol 'my_mul32'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 176. my_mul32: Undefined symbol (last report in this block)
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 176. parse error, unexpected PROCESS, expecting OPENPAR or TICK or LSQBRACK
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 191. Undefined symbol 'mul_left_lo'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 191. mul_left_lo: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 192. Undefined symbol 'mul_right_hi'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 192. mul_right_hi: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 193. Undefined symbol 'mul_right_lo'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 193. mul_right_lo: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 194. Undefined symbol 'mul_out_0'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 194. mul_out_0: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 195. Undefined symbol 'mul_out_1'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 195. mul_out_1: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 196. Undefined symbol 'mul_out_2'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 196. mul_out_2: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 197. Undefined symbol 'mul_out_3'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 197. mul_out_3: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 198. Undefined symbol 'mul_out'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 198. mul_out: Undefined symbol (last report in this block)
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 210. parse error, unexpected PROCESS, expecting SEMICOLON
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :   22 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Entity <mul32> compiled.
+ERROR:HDLParsers:3313 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 194. Undefined symbol 'mult_right_hi'.  Should it be: mul_right_hi?
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 194. mult_right_hi: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3313 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 195. Undefined symbol 'mult_right_lo'.  Should it be: mul_right_lo?
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" Line 195. mult_right_lo: Undefined symbol (last report in this block)
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    4 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Entity <mul32> compiled.
+Entity <mul32> (Architecture <rtl>) compiled.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 43. parse error, unexpected CLOSEPAR, expecting IDENTIFIER
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 43. parse error, unexpected CLOSEPAR, expecting IDENTIFIER
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 159. Undefined symbol 'clk_b'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 159. clk_b: Undefined symbol (last report in this block)
+ERROR:HDLParsers:507 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 158. ) is not a correct resolution function name
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 159. parse error, unexpected COLON, expecting SEMICOLON or CLOSEPAR
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    4 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 253. parse error, unexpected CLOSEPAR
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 294. Undefined symbol 'data_in'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 294. data_in: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3312 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 295. Undefined symbol 'cid_dato'.
+ERROR:HDLParsers:1209 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 295. cid_dato: Undefined symbol (last report in this block)
+ERROR:HDLParsers:800 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 333. Type of cpu_dati is incompatible with type of cpu_id.
+ERROR:HDLParsers:804 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 362. Size of concat operation is different than size of the target.
+ERROR:HDLParsers:1401 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 380. Object mem_dato of mode OUT can not be read.
+ERROR:HDLParsers:1402 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 392. Object mem_dati of mode IN can not be updated.
+ERROR:HDLParsers:1401 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 393. Object mem_dato of mode OUT can not be read.
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :   10 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+ERROR:HDLParsers:800 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 332. Type of cpu_dati is incompatible with type of cpu_id.
+ERROR:HDLParsers:804 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 361. Size of concat operation is different than size of the target.
+ERROR:HDLParsers:1401 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 379. Object mem_dato of mode OUT can not be read.
+ERROR:HDLParsers:1402 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 391. Object mem_dati of mode IN can not be updated.
+ERROR:HDLParsers:1401 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 392. Object mem_dato of mode OUT can not be read.
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    5 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+ERROR:HDLParsers:800 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 332. Type of cpu_dati is incompatible with type of cpu_id.
+ERROR:HDLParsers:1401 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 379. Object mem_dato of mode OUT can not be read.
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    2 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+ERROR:HDLParsers:800 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 333. Type of cpu_dati is incompatible with type of cpu_id.
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+ERROR:HDLParsers:3384 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 44. String literal "0000000" is not of size 8.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 45. parse error, unexpected CLOSEPAR, expecting IDENTIFIER
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    2 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+ERROR:HDLParsers:164 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" Line 45. parse error, unexpected CLOSEPAR, expecting IDENTIFIER
+--> 
+
+Total memory usage is 82628 kilobytes
+
+Number of errors   :    1 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+ERROR: XST failed
+Process "Synthesize" did not complete.
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Architecture rtl of Entity mul32 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Entity <my_unicpu09> compiled.
+Entity <my_unicpu09> (Architecture <RTL>) compiled.
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing Entity <my_unicpu09> (Architecture <RTL>).
+Entity <my_unicpu09> analyzed. Unit <my_unicpu09> generated.
+
+Analyzing Entity <cpu09> (Architecture <rtl>).
+Entity <cpu09> analyzed. Unit <cpu09> generated.
+
+Analyzing Entity <dat_ram> (Architecture <rtl>).
+Entity <dat_ram> analyzed. Unit <dat_ram> generated.
+
+Analyzing Entity <dpr_2k> (Architecture <rtl>).
+Entity <dpr_2k> analyzed. Unit <dpr_2k> generated.
+
+Analyzing Entity <mul32> (Architecture <rtl>).
+WARNING:Xst:1610 - "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" line 198: Width mismatch. <mul_out> has a width of 64 bits but assigned expression is 208-bit wide.
+Entity <mul32> analyzed. Unit <mul32> generated.
+
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <mul32>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd".
+    Found 8-bit 16-to-1 multiplexer for signal <dato>.
+    Found 18x18-bit multiplier for signal <$n0000> created at line 194.
+    Found 8-bit register for signal <mul_reg0>.
+    Found 8-bit register for signal <mul_reg1>.
+    Found 8-bit register for signal <mul_reg2>.
+    Found 8-bit register for signal <mul_reg3>.
+    Found 8-bit register for signal <mul_reg4>.
+    Found 8-bit register for signal <mul_reg5>.
+    Found 8-bit register for signal <mul_reg6>.
+    Found 8-bit register for signal <mul_reg7>.
+    Summary:
+	inferred  64 D-type flip-flop(s).
+	inferred   1 Multiplier(s).
+	inferred   8 Multiplexer(s).
+Unit <mul32> synthesized.
+
+
+Synthesizing Unit <dpr_2k>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd".
+Unit <dpr_2k> synthesized.
+
+
+Synthesizing Unit <dat_ram>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd".
+    Found 8-bit 16-to-1 multiplexer for signal <$n0000> created at line 176.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0002>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0003>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0004>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0005>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0006>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0007>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0008>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0009>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0010>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0011>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0012>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0013>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0014>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0015>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0016>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0017>.
+    Found 8-bit register for signal <dat_reg0>.
+    Found 8-bit register for signal <dat_reg1>.
+    Found 8-bit register for signal <dat_reg10>.
+    Found 8-bit register for signal <dat_reg11>.
+    Found 8-bit register for signal <dat_reg12>.
+    Found 8-bit register for signal <dat_reg13>.
+    Found 8-bit register for signal <dat_reg14>.
+    Found 8-bit register for signal <dat_reg15>.
+    Found 8-bit register for signal <dat_reg2>.
+    Found 8-bit register for signal <dat_reg3>.
+    Found 8-bit register for signal <dat_reg4>.
+    Found 8-bit register for signal <dat_reg5>.
+    Found 8-bit register for signal <dat_reg6>.
+    Found 8-bit register for signal <dat_reg7>.
+    Found 8-bit register for signal <dat_reg8>.
+    Found 8-bit register for signal <dat_reg9>.
+    Summary:
+	inferred 136 Multiplexer(s).
+Unit <dat_ram> synthesized.
+
+
+Synthesizing Unit <cpu09>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd".
+    Using one-hot encoding for signal <alu_ctrl>.
+    Using one-hot encoding for signal <dout_ctrl>.
+    Using one-hot encoding for signal <left_ctrl>.
+    Using one-hot encoding for signal <addr_ctrl>.
+    Using one-hot encoding for signal <right_ctrl>.
+    Using one-hot encoding for signal <up_ctrl>.
+    Using one-hot encoding for signal <ix_ctrl>.
+    Using one-hot encoding for signal <iy_ctrl>.
+    Using one-hot encoding for signal <cc_ctrl>.
+    Using one-hot encoding for signal <md_ctrl>.
+    Using one-hot encoding for signal <op_ctrl>.
+    Using one-hot encoding for signal <pc_ctrl>.
+    Using one-hot encoding for signal <dp_ctrl>.
+    Using one-hot encoding for signal <ea_ctrl>.
+    Using one-hot encoding for signal <st_ctrl>.
+    Using one-hot encoding for signal <sp_ctrl>.
+    Using one-hot encoding for signal <iv_ctrl>.
+    Using one-hot encoding for signal <nmi_ctrl>.
+    Using one-hot encoding for signal <pre_ctrl>.
+    Using one-hot encoding for signal <acca_ctrl>.
+    Using one-hot encoding for signal <accb_ctrl>.
+    Found 16x8-bit ROM for signal <$n0058> created at line 1153.
+    Found 16x211-bit ROM for signal <$n0405>.
+    Found 16x66-bit ROM for signal <$n0406>.
+    Found 16x12-bit ROM for signal <$n0340> created at line 3917.
+    Found 16x6-bit ROM for signal <$n0346> created at line 2637.
+    Found 16-bit adder for signal <$n0003> created at line 457.
+    Found 12-bit shifter logical left for signal <$n0091> created at line 3199.
+    Found 16-bit addsub for signal <$n0278>.
+    Found 16-bit addsub for signal <$n0279>.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0280> created at line 2833.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0281> created at line 3501.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0283> created at line 2029.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0284> created at line 1843.
+    Found 16-bit 4-to-1 multiplexer for signal <$n0287> created at line 3137.
+    Found 38-bit 4-to-1 multiplexer for signal <$n0297> created at line 2833.
+    Found 38-bit 16-to-1 multiplexer for signal <$n0302> created at line 1843.
+    Found 4-bit 16-to-1 multiplexer for signal <$n0309> created at line 1843.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0310>.
+    Found 10-bit 4-to-1 multiplexer for signal <$n0318> created at line 2833.
+    Found 10-bit 16-to-1 multiplexer for signal <$n0321> created at line 1843.
+    Found 10-bit 4-to-1 multiplexer for signal <$n0324> created at line 2931.
+    Found 12-bit 4-to-1 multiplexer for signal <$n0325> created at line 2833.
+    Found 12-bit shifter logical left for signal <$n0326> created at line 3559.
+    Found 12-bit shifter logical left for signal <$n0329> created at line 3404.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0330> created at line 1548.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0333> created at line 1684.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0334> created at line 1843.
+    Found 6-bit 16-to-1 multiplexer for signal <$n0344> created at line 1843.
+    Found 6-bit 4-to-1 multiplexer for signal <$n0347> created at line 2833.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0351> created at line 1548.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0352>.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0354> created at line 1843.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0363> created at line 3944.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0364> created at line 4013.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0373> created at line 1843.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0379> created at line 3197.
+    Found 5-bit comparator lessequal for signal <$n0513> created at line 1151.
+    Found 5-bit comparator lessequal for signal <$n0514> created at line 1150.
+    Found 5-bit comparator lessequal for signal <$n0515> created at line 1168.
+    Found 1-bit xor2 for signal <$n0980> created at line 3822.
+    Found 1-bit xor2 for signal <$n1240> created at line 1398.
+    Found 1-bit xor2 for signal <$n1241> created at line 1400.
+    Found 1-bit xor3 for signal <$n1242> created at line 1407.
+    Found 16-bit xor2 for signal <$n1482> created at line 1201.
+    Found 8-bit register for signal <acca>.
+    Found 8-bit register for signal <accb>.
+    Found 8-bit register for signal <cc>.
+    Found 8-bit register for signal <dp>.
+    Found 16-bit register for signal <ea>.
+    Found 3-bit register for signal <iv>.
+    Found 16-bit register for signal <md>.
+    Found 1-bit register for signal <nmi_ack>.
+    Found 1-bit register for signal <nmi_enable>.
+    Found 1-bit register for signal <nmi_req>.
+    Found 8-bit register for signal <op_code>.
+    Found 16-bit register for signal <pc>.
+    Found 8-bit register for signal <pre_code>.
+    Found 16-bit register for signal <sp>.
+    Found 8-bit register for signal <state>.
+    Found 24-bit register for signal <state_stack>.
+    Found 16-bit register for signal <up>.
+    Found 16-bit register for signal <xreg>.
+    Found 16-bit register for signal <yreg>.
+    Summary:
+	inferred   5 ROM(s).
+	inferred 198 D-type flip-flop(s).
+	inferred   3 Adder/Subtractor(s).
+	inferred   3 Comparator(s).
+	inferred 249 Multiplexer(s).
+	inferred   3 Combinational logic shifter(s).
+	inferred   1 Xor(s).
+Unit <cpu09> synthesized.
+
+
+Synthesizing Unit <my_unicpu09>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd".
+WARNING:Xst:653 - Signal <cache_cpu_vma> is used but never assigned. Tied to value 0.
+WARNING:Xst:646 - Signal <cache_mem_dato<15:8>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_mem_addr<31:24>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_mem_addr<15:12>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_dato<15:8>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_addr<31:24>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_addr<15:12>> is assigned but never used.
+WARNING:Xst:1780 - Signal <ext_dato> is never used or assigned.
+    Found 8-bit comparator equal for signal <$n0015> created at line 389.
+    Found 12-bit comparator equal for signal <$n0016> created at line 389.
+    Found 8-bit comparator not equal for signal <$n0017> created at line 369.
+    Found 12-bit comparator not equal for signal <$n0018> created at line 369.
+    Found 1-bit 4-to-1 multiplexer for signal <cache_cpu_en>.
+    Summary:
+	inferred   4 Comparator(s).
+	inferred   1 Multiplexer(s).
+Unit <my_unicpu09> synthesized.
+
+INFO:Xst:1767 - HDL ADVISOR - Resource sharing has identified that some arithmetic operations in this design can share the same physical resources for reduced device utilization. For improved clock frequency you may try to disable resource sharing.
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+Advanced RAM inference ...
+Advanced multiplier inference ...
+Advanced Registered AddSub inference ...
+Dynamic shift register inference ...
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# ROMs                             : 5
+ 16x12-bit ROM                     : 1
+ 16x211-bit ROM                    : 1
+ 16x6-bit ROM                      : 1
+ 16x66-bit ROM                     : 1
+ 16x8-bit ROM                      : 1
+# Multipliers                      : 1
+ 18x18-bit multiplier              : 1
+# Adders/Subtractors               : 3
+ 16-bit adder                      : 1
+ 16-bit addsub                     : 2
+# Registers                        : 150
+ 1-bit register                    : 115
+ 3-bit register                    : 1
+ 8-bit register                    : 34
+# Comparators                      : 7
+ 12-bit comparator equal           : 1
+ 12-bit comparator not equal       : 1
+ 5-bit comparator lessequal        : 3
+ 8-bit comparator equal            : 1
+ 8-bit comparator not equal        : 1
+# Multiplexers                     : 44
+ 1-bit 4-to-1 multiplexer          : 1
+ 10-bit 16-to-1 multiplexer        : 1
+ 10-bit 4-to-1 multiplexer         : 2
+ 12-bit 16-to-1 multiplexer        : 3
+ 12-bit 4-to-1 multiplexer         : 1
+ 16-bit 4-to-1 multiplexer         : 1
+ 38-bit 16-to-1 multiplexer        : 1
+ 38-bit 4-to-1 multiplexer         : 1
+ 4-bit 16-to-1 multiplexer         : 1
+ 4-bit 4-to-1 multiplexer          : 3
+ 5-bit 16-to-1 multiplexer         : 3
+ 5-bit 4-to-1 multiplexer          : 4
+ 6-bit 16-to-1 multiplexer         : 1
+ 6-bit 4-to-1 multiplexer          : 1
+ 8-bit 16-to-1 multiplexer         : 20
+# Logic shifters                   : 3
+ 12-bit shifter logical left       : 3
+# Xors                             : 5
+ 1-bit xor2                        : 3
+ 1-bit xor3                        : 1
+ 16-bit xor2                       : 1
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+WARNING:Xst:1989 - Unit <cpu09>: instances <Mshift__n0091>, <Mshift__n0329> of unit <LPM_CLSHIFT_1> are equivalent, second instance is removed
+
+Optimizing unit <my_unicpu09> ...
+
+Optimizing unit <dat_ram> ...
+
+Optimizing unit <mul32> ...
+
+Optimizing unit <cpu09> ...
+Loading device for application Rf_Device from file '3s1000.nph' in environment C:/Xilinx_ISE_7.1.
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block my_unicpu09, actual ratio is 21.
+FlipFlop my_cpu/ea_5 has been replicated 1 time(s)
+FlipFlop my_cpu/ea_6 has been replicated 1 time(s)
+FlipFlop my_cpu/md_0 has been replicated 3 time(s)
+FlipFlop my_cpu/md_1 has been replicated 2 time(s)
+FlipFlop my_cpu/md_2 has been replicated 3 time(s)
+FlipFlop my_cpu/md_3 has been replicated 3 time(s)
+FlipFlop my_cpu/md_4 has been replicated 2 time(s)
+FlipFlop my_cpu/md_5 has been replicated 2 time(s)
+FlipFlop my_cpu/md_6 has been replicated 2 time(s)
+FlipFlop my_cpu/md_7 has been replicated 3 time(s)
+FlipFlop my_cpu/op_code_0 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_1 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_2 has been replicated 3 time(s)
+FlipFlop my_cpu/op_code_3 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_4 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_5 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_6 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_7 has been replicated 2 time(s)
+FlipFlop my_cpu/state_0 has been replicated 10 time(s)
+FlipFlop my_cpu/state_1 has been replicated 10 time(s)
+FlipFlop my_cpu/state_2 has been replicated 9 time(s)
+FlipFlop my_cpu/state_3 has been replicated 9 time(s)
+FlipFlop my_cpu/state_4 has been replicated 11 time(s)
+FlipFlop my_cpu/state_5 has been replicated 9 time(s)
+FlipFlop my_cpu/state_6 has been replicated 12 time(s)
+FlipFlop my_cpu/state_7 has been replicated 6 time(s)
+PACKER Warning: Lut my_cpu/cpu09__n0279<1>lut driving carry my_cpu/cpu09__n0279<1>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<5>lut driving carry my_cpu/cpu09__n0279<5>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<6>lut driving carry my_cpu/cpu09__n0279<6>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<7>lut driving carry my_cpu/cpu09__n0279<7>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<13>lut driving carry my_cpu/cpu09__n0279<13>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<3>lut driving carry my_cpu/cpu09__n0278<3>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<4>lut driving carry my_cpu/cpu09__n0278<4>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<5>lut driving carry my_cpu/cpu09__n0278<5>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<6>lut driving carry my_cpu/cpu09__n0278<6>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<7>lut driving carry my_cpu/cpu09__n0278<7>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<8>lut driving carry my_cpu/cpu09__n0278<8>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<9>lut driving carry my_cpu/cpu09__n0278<9>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<10>lut driving carry my_cpu/cpu09__n0278<10>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<11>lut driving carry my_cpu/cpu09__n0278<11>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<12>lut driving carry my_cpu/cpu09__n0278<12>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<13>lut driving carry my_cpu/cpu09__n0278<13>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<14>lut driving carry my_cpu/cpu09__n0278<14>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s1000ft256-5 
+
+ Number of Slices:                    1665  out of   7680    21%  
+ Number of Slice Flip Flops:           505  out of  15360     3%  
+ Number of 4 input LUTs:              3084  out of  15360    20%  
+ Number of bonded IOBs:                 67  out of    173    38%  
+ Number of BRAMs:                        3  out of     24    12%  
+ Number of MULT18X18s:                   1  out of     24     4%  
+ Number of GCLKs:                        1  out of      8    12%  
+
+
+=========================================================================
+TIMING REPORT
+
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clk                                | BUFGP                  | 508   |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -5
+
+   Minimum period: 28.328ns (Maximum Frequency: 35.301MHz)
+   Minimum input arrival time before clock: 11.983ns
+   Maximum output required time after clock: 25.036ns
+   Maximum combinational path delay: No path found
+
+=========================================================================
+
+
+
+
+Started process "Translate".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+
+Command Line: ngdbuild -intstyle ise -dd
+c:\vhdl\system09\rtl\system09_digilent_3s1000/_ngo -nt timestamp -i -p
+xc3s1000-ft256-5 my_unicpu09.ngc my_unicpu09.ngd 
+
+Reading NGO file 'C:/Vhdl/System09/rtl/System09_Digilent_3S1000/my_unicpu09.ngc'
+...
+
+Checking timing specifications ...
+Checking expanded design ...
+
+NGDBUILD Design Results Summary:
+  Number of errors:     0
+  Number of warnings:   0
+
+Writing NGD file "my_unicpu09.ngd" ...
+
+Writing NGDBUILD log file "my_unicpu09.bld"...
+
+NGDBUILD done.
+
+
+
+
+Started process "Map".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Using target part "3s1000ft256-5".
+Mapping design into LUTs...
+Running directed packing...
+Running delay-based LUT packing...
+Running related packing...
+
+Design Summary:
+Number of errors:      0
+Number of warnings:    0
+Logic Utilization:
+  Number of Slice Flip Flops:         505 out of  15,360    3%
+  Number of 4 input LUTs:           3,070 out of  15,360   19%
+Logic Distribution:
+  Number of occupied Slices:                        1,706 out of   7,680   22%
+    Number of Slices containing only related logic:   1,706 out of   1,706  100%
+    Number of Slices containing unrelated logic:          0 out of   1,706    0%
+      *See NOTES below for an explanation of the effects of unrelated logic
+Total Number 4 input LUTs:          3,085 out of  15,360   20%
+  Number used as logic:              3,070
+  Number used as a route-thru:          15
+  Number of bonded IOBs:               67 out of     173   38%
+  Number of Block RAMs:                3 out of      24   12%
+  Number of MULT18X18s:                1 out of      24    4%
+  Number of GCLKs:                     1 out of       8   12%
+
+Total equivalent gate count for design:  223,800
+Additional JTAG gate count for IOBs:  3,216
+Peak Memory Usage:  136 MB
+
+NOTES:
+
+   Related logic is defined as being logic that shares connectivity - e.g. two
+   LUTs are "related" if they share common inputs.  When assembling slices,
+   Map gives priority to combine logic that is related.  Doing so results in
+   the best timing performance.
+
+   Unrelated logic shares no connectivity.  Map will only begin packing
+   unrelated logic into a slice once 99% of the slices are occupied through
+   related logic packing.
+
+   Note that once logic distribution reaches the 99% level through related
+   logic packing, this does not mean the device is completely utilized.
+   Unrelated logic packing will then begin, continuing until all usable LUTs
+   and FFs are occupied.  Depending on your timing budget, increased levels of
+   unrelated logic packing may adversely affect the overall timing performance
+   of your design.
+
+Mapping completed.
+See MAP report file "my_unicpu09_map.mrp" for details.
+
+
+
+
+Started process "Place & Route".
+
+
+
+
+Constraints file: my_unicpu09.pcf.
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Loading device for application Rf_Device from file '3s1000.nph' in environment
+C:/Xilinx_ISE_7.1.
+   "my_unicpu09" is an NCD, version 3.1, device xc3s1000, package ft256, speed
+-5
+
+Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000
+Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
+
+
+Device speed data version:  "PRODUCTION 1.37 2005-07-22".
+
+
+Device Utilization Summary:
+
+   Number of BUFGMUXs                  1 out of 8      12%
+   Number of External IOBs            67 out of 173    38%
+      Number of LOCed IOBs             0 out of 67      0%
+
+   Number of MULT18X18s                1 out of 24      4%
+   Number of RAMB16s                   3 out of 24     12%
+   Number of Slices                 1706 out of 7680   22%
+      Number of SLICEMs                8 out of 3840    1%
+
+
+
+Overall effort level (-ol):   Standard (set by user)
+Placer effort level (-pl):    Standard (set by user)
+Placer cost table entry (-t): 1
+Router effort level (-rl):    Standard (set by user)
+
+
+Starting Placer
+
+Phase 1.1
+Phase 1.1 (Checksum:98e117) REAL time: 1 secs 
+
+Phase 2.31
+Phase 2.31 (Checksum:1312cfe) REAL time: 1 secs 
+
+Phase 3.2
+.
+
+
+Phase 3.2 (Checksum:1c9c37d) REAL time: 2 secs 
+
+Phase 4.3
+Phase 4.3 (Checksum:26259fc) REAL time: 2 secs 
+
+Phase 5.5
+Phase 5.5 (Checksum:2faf07b) REAL time: 2 secs 
+
+Phase 6.8
+....................................
+Phase 6.8 (Checksum:e635dd) REAL time: 3 secs 
+
+Phase 7.5
+Phase 7.5 (Checksum:42c1d79) REAL time: 3 secs 
+
+Phase 8.18
+Phase 8.18 (Checksum:4c4b3f8) REAL time: 5 secs 
+
+Phase 9.5
+Phase 9.5 (Checksum:55d4a77) REAL time: 5 secs 
+
+Writing design to file my_unicpu09.ncd
+
+
+Total REAL time to Placer completion: 5 secs 
+Total CPU time to Placer completion: 5 secs 
+
+Starting Router
+
+Phase 1: 12874 unrouted;       REAL time: 6 secs 
+
+Phase 2: 12434 unrouted;       REAL time: 6 secs 
+
+Phase 3: 4732 unrouted;       REAL time: 7 secs 
+
+Phase 4: 0 unrouted;       REAL time: 9 secs 
+
+
+Total REAL time to Router completion: 9 secs 
+Total CPU time to Router completion: 9 secs 
+
+Generating "PAR" statistics.
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|           clk_BUFGP |      BUFGMUX5| No   |  406 |  0.406     |  1.023      |
++---------------------+--------------+------+------+------------+-------------+
+
+Generating Pad Report.
+
+All signals are completely routed.
+
+Total REAL time to PAR completion: 11 secs 
+Total CPU time to PAR completion: 10 secs 
+
+Peak Memory Usage:  111 MB
+
+Placement: Completed - No errors found.
+Routing: Completed - No errors found.
+
+Number of error messages: 0
+Number of warning messages: 0
+Number of info messages: 1
+
+Writing design to file my_unicpu09.ncd
+
+
+
+PAR done!
+
+Started process "Generate Post-Place & Route Static Timing".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Loading device for application Rf_Device from file '3s1000.nph' in environment
+C:/Xilinx_ISE_7.1.
+   "my_unicpu09" is an NCD, version 3.1, device xc3s1000, package ft256, speed
+-5
+
+Analysis completed Sun Sep 07 22:57:50 2008
+--------------------------------------------------------------------------------
+
+Generating Report ...
+
+Number of warnings: 0
+Total time: 5 secs 
+
+
+
+
+
+
+
+Started process "Programming File Generation Report".
+
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+
+
+
+
+
+
+
+Started process "Synthesize".
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd" in Library work.
+Architecture rtl of Entity cpu09 is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd" in Library work.
+Architecture rtl of Entity dat_ram is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd" in Library work.
+Architecture rtl of Entity dpr_2k is up to date.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd" in Library work.
+Entity <mul32> compiled.
+Entity <mul32> (Architecture <rtl>) compiled.
+Compiling vhdl file "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd" in Library work.
+Architecture rtl of Entity my_unicpu09 is up to date.
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing Entity <my_unicpu09> (Architecture <rtl>).
+Entity <my_unicpu09> analyzed. Unit <my_unicpu09> generated.
+
+Analyzing Entity <cpu09> (Architecture <rtl>).
+Entity <cpu09> analyzed. Unit <cpu09> generated.
+
+Analyzing Entity <dat_ram> (Architecture <rtl>).
+Entity <dat_ram> analyzed. Unit <dat_ram> generated.
+
+Analyzing Entity <dpr_2k> (Architecture <rtl>).
+Entity <dpr_2k> analyzed. Unit <dpr_2k> generated.
+
+Analyzing Entity <mul32> (Architecture <rtl>).
+Entity <mul32> analyzed. Unit <mul32> generated.
+
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <mul32>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/mul32.vhd".
+    Found 8-bit 16-to-1 multiplexer for signal <dato>.
+    Found 18x18-bit multiplier for signal <$n0000> created at line 194.
+    Found 18x18-bit multiplier for signal <$n0001> created at line 195.
+    Found 18x18-bit multiplier for signal <$n0002> created at line 196.
+    Found 18x18-bit multiplier for signal <$n0003> created at line 197.
+    Found 64-bit adder for signal <$n0004> created at line 198.
+    Found 64-bit adder for signal <$n0013>.
+    Found 64-bit adder for signal <$n0014>.
+    Found 8-bit register for signal <mul_reg0>.
+    Found 8-bit register for signal <mul_reg1>.
+    Found 8-bit register for signal <mul_reg2>.
+    Found 8-bit register for signal <mul_reg3>.
+    Found 8-bit register for signal <mul_reg4>.
+    Found 8-bit register for signal <mul_reg5>.
+    Found 8-bit register for signal <mul_reg6>.
+    Found 8-bit register for signal <mul_reg7>.
+    Summary:
+	inferred  64 D-type flip-flop(s).
+	inferred   3 Adder/Subtractor(s).
+	inferred   4 Multiplier(s).
+	inferred   8 Multiplexer(s).
+Unit <mul32> synthesized.
+
+
+Synthesizing Unit <dpr_2k>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../Spartan3/dpr2k_b16.vhd".
+Unit <dpr_2k> synthesized.
+
+
+Synthesizing Unit <dat_ram>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/datram.vhd".
+    Found 8-bit 16-to-1 multiplexer for signal <$n0000> created at line 176.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0002>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0003>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0004>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0005>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0006>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0007>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0008>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0009>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0010>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0011>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0012>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0013>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0014>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0015>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0016>.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0017>.
+    Found 8-bit register for signal <dat_reg0>.
+    Found 8-bit register for signal <dat_reg1>.
+    Found 8-bit register for signal <dat_reg10>.
+    Found 8-bit register for signal <dat_reg11>.
+    Found 8-bit register for signal <dat_reg12>.
+    Found 8-bit register for signal <dat_reg13>.
+    Found 8-bit register for signal <dat_reg14>.
+    Found 8-bit register for signal <dat_reg15>.
+    Found 8-bit register for signal <dat_reg2>.
+    Found 8-bit register for signal <dat_reg3>.
+    Found 8-bit register for signal <dat_reg4>.
+    Found 8-bit register for signal <dat_reg5>.
+    Found 8-bit register for signal <dat_reg6>.
+    Found 8-bit register for signal <dat_reg7>.
+    Found 8-bit register for signal <dat_reg8>.
+    Found 8-bit register for signal <dat_reg9>.
+    Summary:
+	inferred 136 Multiplexer(s).
+Unit <dat_ram> synthesized.
+
+
+Synthesizing Unit <cpu09>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/cpu09.vhd".
+    Using one-hot encoding for signal <alu_ctrl>.
+    Using one-hot encoding for signal <dout_ctrl>.
+    Using one-hot encoding for signal <left_ctrl>.
+    Using one-hot encoding for signal <addr_ctrl>.
+    Using one-hot encoding for signal <right_ctrl>.
+    Using one-hot encoding for signal <up_ctrl>.
+    Using one-hot encoding for signal <ix_ctrl>.
+    Using one-hot encoding for signal <iy_ctrl>.
+    Using one-hot encoding for signal <cc_ctrl>.
+    Using one-hot encoding for signal <md_ctrl>.
+    Using one-hot encoding for signal <op_ctrl>.
+    Using one-hot encoding for signal <pc_ctrl>.
+    Using one-hot encoding for signal <dp_ctrl>.
+    Using one-hot encoding for signal <ea_ctrl>.
+    Using one-hot encoding for signal <st_ctrl>.
+    Using one-hot encoding for signal <sp_ctrl>.
+    Using one-hot encoding for signal <iv_ctrl>.
+    Using one-hot encoding for signal <nmi_ctrl>.
+    Using one-hot encoding for signal <pre_ctrl>.
+    Using one-hot encoding for signal <acca_ctrl>.
+    Using one-hot encoding for signal <accb_ctrl>.
+    Found 16x8-bit ROM for signal <$n0058> created at line 1153.
+    Found 16x211-bit ROM for signal <$n0405>.
+    Found 16x66-bit ROM for signal <$n0406>.
+    Found 16x12-bit ROM for signal <$n0340> created at line 3917.
+    Found 16x6-bit ROM for signal <$n0346> created at line 2637.
+    Found 16-bit adder for signal <$n0003> created at line 457.
+    Found 12-bit shifter logical left for signal <$n0091> created at line 3199.
+    Found 16-bit addsub for signal <$n0278>.
+    Found 16-bit addsub for signal <$n0279>.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0280> created at line 2833.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0281> created at line 3501.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0283> created at line 2029.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0284> created at line 1843.
+    Found 16-bit 4-to-1 multiplexer for signal <$n0287> created at line 3137.
+    Found 38-bit 4-to-1 multiplexer for signal <$n0297> created at line 2833.
+    Found 38-bit 16-to-1 multiplexer for signal <$n0302> created at line 1843.
+    Found 4-bit 16-to-1 multiplexer for signal <$n0309> created at line 1843.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0310>.
+    Found 10-bit 4-to-1 multiplexer for signal <$n0318> created at line 2833.
+    Found 10-bit 16-to-1 multiplexer for signal <$n0321> created at line 1843.
+    Found 10-bit 4-to-1 multiplexer for signal <$n0324> created at line 2931.
+    Found 12-bit 4-to-1 multiplexer for signal <$n0325> created at line 2833.
+    Found 12-bit shifter logical left for signal <$n0326> created at line 3559.
+    Found 12-bit shifter logical left for signal <$n0329> created at line 3404.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0330> created at line 1548.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0333> created at line 1684.
+    Found 12-bit 16-to-1 multiplexer for signal <$n0334> created at line 1843.
+    Found 6-bit 16-to-1 multiplexer for signal <$n0344> created at line 1843.
+    Found 6-bit 4-to-1 multiplexer for signal <$n0347> created at line 2833.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0351> created at line 1548.
+    Found 5-bit 4-to-1 multiplexer for signal <$n0352>.
+    Found 5-bit 16-to-1 multiplexer for signal <$n0354> created at line 1843.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0363> created at line 3944.
+    Found 4-bit 4-to-1 multiplexer for signal <$n0364> created at line 4013.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0373> created at line 1843.
+    Found 8-bit 16-to-1 multiplexer for signal <$n0379> created at line 3197.
+    Found 5-bit comparator lessequal for signal <$n0513> created at line 1151.
+    Found 5-bit comparator lessequal for signal <$n0514> created at line 1150.
+    Found 5-bit comparator lessequal for signal <$n0515> created at line 1168.
+    Found 1-bit xor2 for signal <$n0980> created at line 3822.
+    Found 1-bit xor2 for signal <$n1240> created at line 1398.
+    Found 1-bit xor2 for signal <$n1241> created at line 1400.
+    Found 1-bit xor3 for signal <$n1242> created at line 1407.
+    Found 16-bit xor2 for signal <$n1482> created at line 1201.
+    Found 8-bit register for signal <acca>.
+    Found 8-bit register for signal <accb>.
+    Found 8-bit register for signal <cc>.
+    Found 8-bit register for signal <dp>.
+    Found 16-bit register for signal <ea>.
+    Found 3-bit register for signal <iv>.
+    Found 16-bit register for signal <md>.
+    Found 1-bit register for signal <nmi_ack>.
+    Found 1-bit register for signal <nmi_enable>.
+    Found 1-bit register for signal <nmi_req>.
+    Found 8-bit register for signal <op_code>.
+    Found 16-bit register for signal <pc>.
+    Found 8-bit register for signal <pre_code>.
+    Found 16-bit register for signal <sp>.
+    Found 8-bit register for signal <state>.
+    Found 24-bit register for signal <state_stack>.
+    Found 16-bit register for signal <up>.
+    Found 16-bit register for signal <xreg>.
+    Found 16-bit register for signal <yreg>.
+    Summary:
+	inferred   5 ROM(s).
+	inferred 198 D-type flip-flop(s).
+	inferred   3 Adder/Subtractor(s).
+	inferred   3 Comparator(s).
+	inferred 249 Multiplexer(s).
+	inferred   3 Combinational logic shifter(s).
+	inferred   1 Xor(s).
+Unit <cpu09> synthesized.
+
+
+Synthesizing Unit <my_unicpu09>.
+    Related source file is "C:/Vhdl/System09/rtl/System09_Digilent_3S1000/../VHDL/unicpu09.vhd".
+WARNING:Xst:653 - Signal <cache_cpu_vma> is used but never assigned. Tied to value 0.
+WARNING:Xst:646 - Signal <cache_mem_dato<15:8>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_mem_addr<31:24>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_mem_addr<15:12>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_dato<15:8>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_addr<31:24>> is assigned but never used.
+WARNING:Xst:646 - Signal <cache_cpu_addr<15:12>> is assigned but never used.
+WARNING:Xst:1780 - Signal <ext_dato> is never used or assigned.
+    Found 8-bit comparator equal for signal <$n0015> created at line 389.
+    Found 12-bit comparator equal for signal <$n0016> created at line 389.
+    Found 8-bit comparator not equal for signal <$n0017> created at line 369.
+    Found 12-bit comparator not equal for signal <$n0018> created at line 369.
+    Found 1-bit 4-to-1 multiplexer for signal <cache_cpu_en>.
+    Summary:
+	inferred   4 Comparator(s).
+	inferred   1 Multiplexer(s).
+Unit <my_unicpu09> synthesized.
+
+INFO:Xst:1767 - HDL ADVISOR - Resource sharing has identified that some arithmetic operations in this design can share the same physical resources for reduced device utilization. For improved clock frequency you may try to disable resource sharing.
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+Advanced RAM inference ...
+Advanced multiplier inference ...
+Advanced Registered AddSub inference ...
+Dynamic shift register inference ...
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# ROMs                             : 5
+ 16x12-bit ROM                     : 1
+ 16x211-bit ROM                    : 1
+ 16x6-bit ROM                      : 1
+ 16x66-bit ROM                     : 1
+ 16x8-bit ROM                      : 1
+# Multipliers                      : 4
+ 18x18-bit multiplier              : 4
+# Adders/Subtractors               : 6
+ 16-bit adder                      : 1
+ 16-bit addsub                     : 2
+ 64-bit adder                      : 3
+# Registers                        : 150
+ 1-bit register                    : 115
+ 3-bit register                    : 1
+ 8-bit register                    : 34
+# Comparators                      : 7
+ 12-bit comparator equal           : 1
+ 12-bit comparator not equal       : 1
+ 5-bit comparator lessequal        : 3
+ 8-bit comparator equal            : 1
+ 8-bit comparator not equal        : 1
+# Multiplexers                     : 44
+ 1-bit 4-to-1 multiplexer          : 1
+ 10-bit 16-to-1 multiplexer        : 1
+ 10-bit 4-to-1 multiplexer         : 2
+ 12-bit 16-to-1 multiplexer        : 3
+ 12-bit 4-to-1 multiplexer         : 1
+ 16-bit 4-to-1 multiplexer         : 1
+ 38-bit 16-to-1 multiplexer        : 1
+ 38-bit 4-to-1 multiplexer         : 1
+ 4-bit 16-to-1 multiplexer         : 1
+ 4-bit 4-to-1 multiplexer          : 3
+ 5-bit 16-to-1 multiplexer         : 3
+ 5-bit 4-to-1 multiplexer          : 4
+ 6-bit 16-to-1 multiplexer         : 1
+ 6-bit 4-to-1 multiplexer          : 1
+ 8-bit 16-to-1 multiplexer         : 20
+# Logic shifters                   : 3
+ 12-bit shifter logical left       : 3
+# Xors                             : 5
+ 1-bit xor2                        : 3
+ 1-bit xor3                        : 1
+ 16-bit xor2                       : 1
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+WARNING:Xst:1989 - Unit <cpu09>: instances <Mshift__n0091>, <Mshift__n0329> of unit <LPM_CLSHIFT_1> are equivalent, second instance is removed
+
+Optimizing unit <my_unicpu09> ...
+
+Optimizing unit <dat_ram> ...
+
+Optimizing unit <mul32> ...
+
+Optimizing unit <cpu09> ...
+Loading device for application Rf_Device from file '3s1000.nph' in environment C:/Xilinx_ISE_7.1.
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block my_unicpu09, actual ratio is 21.
+FlipFlop my_cpu/ea_5 has been replicated 1 time(s)
+FlipFlop my_cpu/ea_6 has been replicated 1 time(s)
+FlipFlop my_cpu/md_0 has been replicated 3 time(s)
+FlipFlop my_cpu/md_1 has been replicated 3 time(s)
+FlipFlop my_cpu/md_2 has been replicated 2 time(s)
+FlipFlop my_cpu/md_3 has been replicated 3 time(s)
+FlipFlop my_cpu/md_4 has been replicated 1 time(s)
+FlipFlop my_cpu/md_5 has been replicated 1 time(s)
+FlipFlop my_cpu/md_6 has been replicated 1 time(s)
+FlipFlop my_cpu/md_7 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_0 has been replicated 3 time(s)
+FlipFlop my_cpu/op_code_1 has been replicated 3 time(s)
+FlipFlop my_cpu/op_code_2 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_3 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_4 has been replicated 3 time(s)
+FlipFlop my_cpu/op_code_5 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_6 has been replicated 2 time(s)
+FlipFlop my_cpu/op_code_7 has been replicated 2 time(s)
+FlipFlop my_cpu/state_0 has been replicated 11 time(s)
+FlipFlop my_cpu/state_1 has been replicated 9 time(s)
+FlipFlop my_cpu/state_2 has been replicated 10 time(s)
+FlipFlop my_cpu/state_3 has been replicated 8 time(s)
+FlipFlop my_cpu/state_4 has been replicated 12 time(s)
+FlipFlop my_cpu/state_5 has been replicated 9 time(s)
+FlipFlop my_cpu/state_6 has been replicated 11 time(s)
+FlipFlop my_cpu/state_7 has been replicated 6 time(s)
+PACKER Warning: Lut my_cpu/cpu09__n0279<5>lut driving carry my_cpu/cpu09__n0279<5>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<6>lut driving carry my_cpu/cpu09__n0279<6>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<7>lut driving carry my_cpu/cpu09__n0279<7>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0279<13>lut driving carry my_cpu/cpu09__n0279<13>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<3>lut driving carry my_cpu/cpu09__n0278<3>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<4>lut driving carry my_cpu/cpu09__n0278<4>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<5>lut driving carry my_cpu/cpu09__n0278<5>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<6>lut driving carry my_cpu/cpu09__n0278<6>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<7>lut driving carry my_cpu/cpu09__n0278<7>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<8>lut driving carry my_cpu/cpu09__n0278<8>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<9>lut driving carry my_cpu/cpu09__n0278<9>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<10>lut driving carry my_cpu/cpu09__n0278<10>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<11>lut driving carry my_cpu/cpu09__n0278<11>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<12>lut driving carry my_cpu/cpu09__n0278<12>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<13>lut driving carry my_cpu/cpu09__n0278<13>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+PACKER Warning: Lut my_cpu/cpu09__n0278<14>lut driving carry my_cpu/cpu09__n0278<14>cy can not be packed with the carry due to conflict with the common signal requirement between the LUT inputs and the Carry DI/MAND pins. This would result in an extra LUT for a feedthrough.
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s1000ft256-5 
+
+ Number of Slices:                    1725  out of   7680    22%  
+ Number of Slice Flip Flops:           503  out of  15360     3%  
+ Number of 4 input LUTs:              3204  out of  15360    20%  
+ Number of bonded IOBs:                 67  out of    173    38%  
+ Number of BRAMs:                        3  out of     24    12%  
+ Number of MULT18X18s:                   4  out of     24    16%  
+ Number of GCLKs:                        1  out of      8    12%  
+
+
+=========================================================================
+TIMING REPORT
+
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clk                                | BUFGP                  | 506   |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -5
+
+   Minimum period: 29.223ns (Maximum Frequency: 34.219MHz)
+   Minimum input arrival time before clock: 11.983ns
+   Maximum output required time after clock: 25.540ns
+   Maximum combinational path delay: No path found
+
+=========================================================================
+
+
+
+
+Started process "Translate".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+
+Command Line: ngdbuild -intstyle ise -dd
+c:\vhdl\system09\rtl\system09_digilent_3s1000/_ngo -nt timestamp -i -p
+xc3s1000-ft256-5 my_unicpu09.ngc my_unicpu09.ngd 
+
+Reading NGO file 'C:/Vhdl/System09/rtl/System09_Digilent_3S1000/my_unicpu09.ngc'
+...
+
+Checking timing specifications ...
+Checking expanded design ...
+
+NGDBUILD Design Results Summary:
+  Number of errors:     0
+  Number of warnings:   0
+
+Writing NGD file "my_unicpu09.ngd" ...
+
+Writing NGDBUILD log file "my_unicpu09.bld"...
+
+NGDBUILD done.
+
+
+
+
+Started process "Map".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Using target part "3s1000ft256-5".
+Mapping design into LUTs...
+Running directed packing...
+Running delay-based LUT packing...
+Running related packing...
+
+Design Summary:
+Number of errors:      0
+Number of warnings:    0
+Logic Utilization:
+  Number of Slice Flip Flops:         503 out of  15,360    3%
+  Number of 4 input LUTs:           3,145 out of  15,360   20%
+Logic Distribution:
+  Number of occupied Slices:                        1,767 out of   7,680   23%
+    Number of Slices containing only related logic:   1,767 out of   1,767  100%
+    Number of Slices containing unrelated logic:          0 out of   1,767    0%
+      *See NOTES below for an explanation of the effects of unrelated logic
+Total Number 4 input LUTs:          3,207 out of  15,360   20%
+  Number used as logic:              3,145
+  Number used as a route-thru:          62
+  Number of bonded IOBs:               67 out of     173   38%
+  Number of Block RAMs:                3 out of      24   12%
+  Number of MULT18X18s:                4 out of      24   16%
+  Number of GCLKs:                     1 out of       8   12%
+
+Total equivalent gate count for design:  236,981
+Additional JTAG gate count for IOBs:  3,216
+Peak Memory Usage:  138 MB
+
+NOTES:
+
+   Related logic is defined as being logic that shares connectivity - e.g. two
+   LUTs are "related" if they share common inputs.  When assembling slices,
+   Map gives priority to combine logic that is related.  Doing so results in
+   the best timing performance.
+
+   Unrelated logic shares no connectivity.  Map will only begin packing
+   unrelated logic into a slice once 99% of the slices are occupied through
+   related logic packing.
+
+   Note that once logic distribution reaches the 99% level through related
+   logic packing, this does not mean the device is completely utilized.
+   Unrelated logic packing will then begin, continuing until all usable LUTs
+   and FFs are occupied.  Depending on your timing budget, increased levels of
+   unrelated logic packing may adversely affect the overall timing performance
+   of your design.
+
+Mapping completed.
+See MAP report file "my_unicpu09_map.mrp" for details.
+
+
+
+
+Started process "Place & Route".
+
+
+
+
+Constraints file: my_unicpu09.pcf.
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Loading device for application Rf_Device from file '3s1000.nph' in environment
+C:/Xilinx_ISE_7.1.
+   "my_unicpu09" is an NCD, version 3.1, device xc3s1000, package ft256, speed
+-5
+
+Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000
+Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
+
+
+Device speed data version:  "PRODUCTION 1.37 2005-07-22".
+
+
+Device Utilization Summary:
+
+   Number of BUFGMUXs                  1 out of 8      12%
+   Number of External IOBs            67 out of 173    38%
+      Number of LOCed IOBs             0 out of 67      0%
+
+   Number of MULT18X18s                4 out of 24     16%
+   Number of RAMB16s                   3 out of 24     12%
+   Number of Slices                 1767 out of 7680   23%
+      Number of SLICEMs               22 out of 3840    1%
+
+
+
+Overall effort level (-ol):   Standard (set by user)
+Placer effort level (-pl):    Standard (set by user)
+Placer cost table entry (-t): 1
+Router effort level (-rl):    Standard (set by user)
+
+
+Starting Placer
+
+Phase 1.1
+Phase 1.1 (Checksum:98ef29) REAL time: 1 secs 
+
+Phase 2.31
+Phase 2.31 (Checksum:1312cfe) REAL time: 1 secs 
+
+Phase 3.2
+.
+
+
+Phase 3.2 (Checksum:1c9c37d) REAL time: 1 secs 
+
+Phase 4.3
+Phase 4.3 (Checksum:26259fc) REAL time: 1 secs 
+
+Phase 5.5
+Phase 5.5 (Checksum:2faf07b) REAL time: 1 secs 
+
+Phase 6.8
+.................................................
+Phase 6.8 (Checksum:fb7411) REAL time: 4 secs 
+
+Phase 7.5
+Phase 7.5 (Checksum:42c1d79) REAL time: 4 secs 
+
+Phase 8.18
+Phase 8.18 (Checksum:4c4b3f8) REAL time: 5 secs 
+
+Phase 9.5
+Phase 9.5 (Checksum:55d4a77) REAL time: 5 secs 
+
+Writing design to file my_unicpu09.ncd
+
+
+Total REAL time to Placer completion: 6 secs 
+Total CPU time to Placer completion: 6 secs 
+
+Starting Router
+
+Phase 1: 13294 unrouted;       REAL time: 6 secs 
+
+Phase 2: 12845 unrouted;       REAL time: 7 secs 
+
+Phase 3: 5146 unrouted;       REAL time: 8 secs 
+
+Phase 4: 0 unrouted;       REAL time: 11 secs 
+
+
+Total REAL time to Router completion: 11 secs 
+Total CPU time to Router completion: 11 secs 
+
+Generating "PAR" statistics.
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|           clk_BUFGP |      BUFGMUX5| No   |  403 |  0.412     |  1.041      |
++---------------------+--------------+------+------+------------+-------------+
+
+Generating Pad Report.
+
+All signals are completely routed.
+
+Total REAL time to PAR completion: 12 secs 
+Total CPU time to PAR completion: 12 secs 
+
+Peak Memory Usage:  120 MB
+
+Placement: Completed - No errors found.
+Routing: Completed - No errors found.
+
+Number of error messages: 0
+Number of warning messages: 0
+Number of info messages: 1
+
+Writing design to file my_unicpu09.ncd
+
+
+
+PAR done!
+
+Started process "Generate Post-Place & Route Static Timing".
+
+PMSPEC -- Overriding Xilinx file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+with local file <C:/Xilinx_ISE_7.1/spartan3/data/spartan3.acd>
+Loading device for application Rf_Device from file '3s1000.nph' in environment
+C:/Xilinx_ISE_7.1.
+   "my_unicpu09" is an NCD, version 3.1, device xc3s1000, package ft256, speed
+-5
+
+Analysis completed Sun Sep 07 23:06:23 2008
+--------------------------------------------------------------------------------
+
+Generating Report ...
+
+Number of warnings: 0
+Total time: 5 secs 
+
+
+
+
+
+
+
+Started process "Generate Programming File".
+
+
+
+Project Navigator Auto-Make Log File
+-------------------------------------
+
+
+
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.ngc"
+deleting "my_unicpu09.ngr"
+deleting "__projnav/ednTOngd_tcl.rsp"
+deleting ""c:\vhdl\system09\rtl\system09_digilent_3s1000/_ngo""
+deleting "my_unicpu09.ngd"
+deleting "my_unicpu09_ngdbuild.nav"
+deleting "my_unicpu09.bld"
+deleting ".untf"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09_map.ncd"
+deleting "my_unicpu09.ngm"
+deleting "my_unicpu09.pcf"
+deleting "my_unicpu09.nc1"
+deleting "my_unicpu09.mrp"
+deleting "my_unicpu09_map.mrp"
+deleting "my_unicpu09.mdf"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_map.ngm"
+deleting "__projnav/ncdTOtwr_tcl.rsp"
+deleting "my_unicpu09.twr"
+deleting "my_unicpu09.twx"
+deleting "my_unicpu09.tsi"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_summary.html"
+deleting "__projnav/nc1TOncd_tcl.rsp"
+deleting "my_unicpu09.ncd"
+deleting "my_unicpu09.par"
+deleting "my_unicpu09.pad"
+deleting "my_unicpu09_pad.txt"
+deleting "my_unicpu09_pad.csv"
+deleting "my_unicpu09.pad_txt"
+deleting "my_unicpu09.dly"
+deleting "reportgen.log"
+deleting "my_unicpu09.xpi"
+deleting "my_unicpu09.grf"
+deleting "my_unicpu09.itr"
+deleting "my_unicpu09_last_par.ncd"
+deleting "my_unicpu09.placed_ncd_tracker"
+deleting "my_unicpu09.routed_ncd_tracker"
+deleting "my_unicpu09.cmd_log"
+deleting "__projnav/my_unicpu09_ncdTOut_tcl.rsp"
+deleting "__projnav/bitgen.rsp"
+deleting "bitgen.ut"
+deleting "my_unicpu09.ut"
+deleting "my_unicpu09.bgn"
+deleting "my_unicpu09.rbt"
+deleting "my_unicpu09.ll"
+deleting "my_unicpu09.msk"
+deleting "my_unicpu09.drc"
+deleting "my_unicpu09.nky"
+deleting "my_unicpu09.bit"
+deleting "my_unicpu09.bin"
+deleting "my_unicpu09.isc"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.lso"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09.syr"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.sprj"
+deleting "my_unicpu09.ana"
+deleting "my_unicpu09.stx"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09.ngc"
+deleting "my_unicpu09.ngr"
+deleting "__projnav/ednTOngd_tcl.rsp"
+deleting ""c:\vhdl\system09\rtl\system09_digilent_3s1000/_ngo""
+deleting "my_unicpu09.ngd"
+deleting "my_unicpu09_ngdbuild.nav"
+deleting "my_unicpu09.bld"
+deleting ".untf"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_summary.html"
+deleting "my_unicpu09_map.ncd"
+deleting "my_unicpu09.ngm"
+deleting "my_unicpu09.pcf"
+deleting "my_unicpu09.nc1"
+deleting "my_unicpu09.mrp"
+deleting "my_unicpu09_map.mrp"
+deleting "my_unicpu09.mdf"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_map.ngm"
+deleting "__projnav/ncdTOtwr_tcl.rsp"
+deleting "my_unicpu09.twr"
+deleting "my_unicpu09.twx"
+deleting "my_unicpu09.tsi"
+deleting "my_unicpu09.cmd_log"
+deleting "my_unicpu09_summary.html"
+deleting "__projnav/nc1TOncd_tcl.rsp"
+deleting "my_unicpu09.ncd"
+deleting "my_unicpu09.par"
+deleting "my_unicpu09.pad"
+deleting "my_unicpu09_pad.txt"
+deleting "my_unicpu09_pad.csv"
+deleting "my_unicpu09.pad_txt"
+deleting "my_unicpu09.dly"
+deleting "reportgen.log"
+deleting "my_unicpu09.xpi"
+deleting "my_unicpu09.grf"
+deleting "my_unicpu09.itr"
+deleting "my_unicpu09_last_par.ncd"
+deleting "my_unicpu09.placed_ncd_tracker"
+deleting "my_unicpu09.routed_ncd_tracker"
+deleting "my_unicpu09.cmd_log"
+deleting "__projnav/my_unicpu09_ncdTOut_tcl.rsp"
+deleting "__projnav/bitgen.rsp"
+deleting "bitgen.ut"
+deleting "my_unicpu09.ut"
+deleting "my_unicpu09.bgn"
+deleting "my_unicpu09.rbt"
+deleting "my_unicpu09.ll"
+deleting "my_unicpu09.msk"
+deleting "my_unicpu09.drc"
+deleting "my_unicpu09.nky"
+deleting "my_unicpu09.bit"
+deleting "my_unicpu09.bin"
+deleting "my_unicpu09.isc"
+deleting "my_unicpu09.cmd_log"
+deleting "my_system09_summary.html"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "my_unicpu09.prj"
+deleting "my_unicpu09.prj"
+deleting "__projnav/my_unicpu09.xst"
+deleting "./xst"
+deleting "__projnav/System09_Digilent_3S1000.gfl"
+deleting "__projnav/System09_Digilent_3S1000_flowplus.gfl"
+deleting System09_Digilent_3S1000.dhp
+Finished cleaning up project
+

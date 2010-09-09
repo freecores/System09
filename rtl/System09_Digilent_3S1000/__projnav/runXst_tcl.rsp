@@ -1,0 +1,1 @@
+set allSynthModules {cpu09.MOD dat_ram.MOD dpr_2k.MOD mul32.MOD my_unicpu09.MOD}
