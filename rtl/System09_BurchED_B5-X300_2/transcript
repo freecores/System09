@@ -1,0 +1,46 @@
+# Reading G:/Modeltech_xe_starter/tcl/vsim/pref.tcl 
+# do acia_6850_testbench.fdo 
+# ** Warning: (vlib-34) Library already exists at "work".
+# Model Technology ModelSim XE III vcom 6.0a Compiler 2004.11 Nov 10 2004
+# -- Loading package standard
+# -- Loading package std_logic_1164
+# -- Loading package std_logic_arith
+# -- Loading package std_logic_unsigned
+# -- Compiling entity acia_rx
+# -- Compiling architecture rtl of acia_rx
+# Model Technology ModelSim XE III vcom 6.0a Compiler 2004.11 Nov 10 2004
+# -- Loading package standard
+# -- Loading package std_logic_1164
+# -- Loading package numeric_std
+# -- Loading package std_logic_arith
+# -- Loading package std_logic_unsigned
+# -- Compiling entity acia_tx
+# -- Compiling architecture rtl of acia_tx
+# Model Technology ModelSim XE III vcom 6.0a Compiler 2004.11 Nov 10 2004
+# -- Loading package standard
+# -- Loading package std_logic_1164
+# -- Loading package numeric_std
+# -- Compiling entity acia_6850
+# -- Compiling architecture rtl of acia_6850
+# Model Technology ModelSim XE III vcom 6.0a Compiler 2004.11 Nov 10 2004
+# -- Loading package standard
+# -- Loading package std_logic_1164
+# -- Loading package std_logic_arith
+# -- Loading package std_logic_unsigned
+# -- Loading package numeric_std
+# -- Compiling entity acia_6850_testbench
+# -- Compiling architecture behavior of acia_6850_testbench
+# vsim -lib work -t 1ps acia_6850_testbench 
+# Loading G:\Modeltech_xe_starter\win32xoem/../std.standard
+# Loading G:\Modeltech_xe_starter\win32xoem/../ieee.std_logic_1164(body)
+# Loading G:\Modeltech_xe_starter\win32xoem/../ieee.std_logic_arith(body)
+# Loading G:\Modeltech_xe_starter\win32xoem/../ieee.std_logic_unsigned(body)
+# Loading G:\Modeltech_xe_starter\win32xoem/../ieee.numeric_std(body)
+# Loading work.acia_6850_testbench(behavior)
+# Loading work.acia_6850(rtl)
+# Loading work.acia_rx(rtl)
+# Loading work.acia_tx(rtl)
+# .main_pane.mdi.interior.cs.vm.paneset.cli_0.wf.clip.cs
+# .main_pane.workspace
+# .main_pane.signals.interior.cs
+run -all

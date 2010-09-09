@@ -1,0 +1,1 @@
+set allSynthModules {cpu09.MOD mon_rom.MOD dat_ram.MOD acia_rx.MOD acia_tx.MOD acia_6850.MOD bit_funcs.MOD acia_clock.MOD keymap_rom.MOD ps2_keyboard_interface.MOD keyboard.MOD char_rom.MOD ram_2k.MOD vdu8.MOD timer.MOD trap.MOD system09.MOD}

@@ -1,0 +1,119 @@
+m255
+13
+cModel Technology
+dG:\Vhdl\System09\rtl\System09_BurchED_B5-X300
+Eacia_6850
+w1170677056
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+F../VHDL/ACIA_6850.vhd
+l0
+L54
+V>D]V7GRb=PYXAhe35W6jP2
+OX;C;6.0a;29
+31
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Artl
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+DE work acia_6850 >D]V7GRb=PYXAhe35W6jP2
+l180
+L81
+VgF9afi:]adM<NHR2;7nD_3
+OX;C;6.0a;29
+31
+M2 ieee std_logic_1164
+M1 ieee numeric_std
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Eacia_6850_testbench
+w1170681695
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+F../Testbench/ACIA_tb.vhd
+l0
+L16
+VmzR@8RYYWjTGk1:fZG_eK2
+OX;C;6.0a;29
+31
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Abehavior
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+DE work acia_6850_testbench mzR@8RYYWjTGk1:fZG_eK2
+l73
+L22
+VE741`Wo03fDnNm[^mnF?K2
+OX;C;6.0a;29
+31
+M4 ieee std_logic_1164
+M3 ieee std_logic_arith
+M2 ieee std_logic_unsigned
+M1 ieee numeric_std
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Eacia_rx
+w1170677668
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+F../VHDL/ACIA_RX.vhd
+l0
+L47
+VSf3CSKi2TK39<V3eSFhh^2
+OX;C;6.0a;29
+31
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Artl
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+DE work acia_rx Sf3CSKi2TK39<V3eSFhh^2
+l89
+L66
+VM@zT9G?N4D<?RbKoDjLhd0
+OX;C;6.0a;29
+31
+M3 ieee std_logic_1164
+M2 ieee std_logic_unsigned
+M1 ieee std_logic_arith
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Eacia_tx
+w1170677078
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+F../VHDL/ACIA_TX.vhd
+l0
+L48
+VY=P7j`LjB@TUjZFI:]e8>3
+OX;C;6.0a;29
+31
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
+Artl
+DP ieee std_logic_arith GJbAT?7@hRQU9IQ702DT]2
+DP ieee std_logic_unsigned hEMVMlaNCR^<OOoVNV;m90
+DP ieee numeric_std =NSdli^?T5OD8;4F<blj<3
+DP ieee std_logic_1164 GH1=`jDDBJ=`LM;:Ak`kf2
+DE work acia_tx Y=P7j`LjB@TUjZFI:]e8>3
+l81
+L63
+VLCRG_C=W9h^Tg<`lcm=Y?3
+OX;C;6.0a;29
+31
+M4 ieee std_logic_1164
+M3 ieee numeric_std
+M2 ieee std_logic_unsigned
+M1 ieee std_logic_arith
+o-93 -explicit -O0
+tExplicit 1GenerateLoopIterationMax 100000
