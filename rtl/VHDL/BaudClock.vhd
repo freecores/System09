@@ -1,12 +1,57 @@
------------------------------------------------------------------
+--===========================================================================--
+--                                                                           --
+--  BaudClock.vhd - Synthesizable Baud Rate Clock Divider                    --
+--                                                                           --
+--===========================================================================--
 --
--- ACIA Clock Divider for System09
+--  File name      : BaudClock.vhd
 --
------------------------------------------------------------------
+--  Purpose        : Implements a baud rate clock divider for a 6850 compatible
+--                   Asynchronous Communications Interface Adapter 
+--                  
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
+--                   ieee.numeric_std
+--                   unisim.vcomponents
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  BaudClock.vhd is baud rate clock divider for a 6850 compatible ACIA core.
+-- 
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Revision Name          Date             Description
+-- 0.1      John E. Kent  unknown          Initial version
+-- 1.0      John E. Kent  30th May 2010    Added GPL Header
+--
 library ieee;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
 library unisim;
 	use unisim.vcomponents.all;

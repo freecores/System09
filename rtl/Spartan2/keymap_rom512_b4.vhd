@@ -1,32 +1,78 @@
----------------------------------------------------------
+--===========================================================================--
+--                                                                           --
+--              Synthesizable PS/2 Keyboard Key map ROM For Spartan 2        --
+--                                                                           --
+--===========================================================================--
 --
--- PS2 Keycode look up table
--- converts 7 bit key code to ASCII
--- Address bit 7 = CAPS Lock
--- Address bit 8 = Shift
+--  File name      : keymap_rom512_b4.vhd
 --
--- J.E.Kent
--- 18th Oct 2004
+--  Entity name    : keymap_rom 
 --
+--  Purpose        : PS/2 key code look up table
+--                   Converts 7 bit key code to ASCII
+--                   Address bit 8      = Shift
+--                   Address bit 7      = CAPS Lock
+--                   Address bits 6 - 0 = Key code
+--                   Data bits 6 - 0    = ASCII code
+--                   Designed for Spartan 2 FPGAs
+--
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
+--
+--  Uses           : RAMB4_S8
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Copyright (C) 2004 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Date        Author     Changes
+--
+-- 0.1     2004-10-18  John Kent  Initial Version
+--
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 library unisim;
 	use unisim.all;
 
-entity key_b4 is
+entity keymap_rom is
     Port (
-       clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
-       addr  : in  std_logic_vector (8 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+		 rst      : in  std_logic;
+		 cs       : in  std_logic;
+		 rw       : in  std_logic;
+       addr     : in  std_logic_vector (8 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
-end key_b4;
+end keymap_rom;
 
-architecture rtl of key_b4 is
+architecture rtl of keymap_rom is
 
    component RAMB4_S8
     generic (
@@ -79,8 +125,8 @@ begin
 				   we => we,
 				   rst => rst,
 				   addr => addr,
-               di => wdata,
-				   do => rdata
+               di => data_in,
+				   do => data_out
 	);
 
 

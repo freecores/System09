@@ -1,27 +1,84 @@
+--===========================================================================--
+--                                                                           --
+--               Synthesizable PS/2 Keyboard Key map ROM for Spartan3        --
+--                                                                           --
+--===========================================================================--
+--
+--  File name      : keymap_rom2k_b16.vhd
+--
+--  Entity name    : keymap_rom 
+--
+--  Purpose        : Key code look up table for PS/2 Keyboard
+--                   Converts 7 bit key code to ASCII
+--                   Address bit 8      = Shift
+--                   Address bit 7      = CAPS Lock
+--                   Address bits 6 - 0 = Key code
+--                   Data bits 6 - 0    = ASCII code
+--                   Intended for Spartan 3/3E
+--
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--                   unisim.vcomponents
+--
+--  Uses           : RAMB16_S9
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Copyright (C) 2004 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Date        Author     Changes
+--
+-- 0.1     ????-??-??  John Kent  Initial version
+-- 0.2     2010-06-17  John Kent  Revised Header, renamed data pins
+--
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 library unisim;
 	use unisim.vcomponents.all;
 
-entity keymap_rom_b16 is
+entity keymap_rom is
     Port (
-       clk   : in  std_logic;
-       rst   : in  std_logic;
-       cs    : in  std_logic;
-       rw    : in  std_logic;
-       addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       rw       : in  std_logic;
+       addr     : in  std_logic_vector (8 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
-end keymap_rom_b16;
+end keymap_rom;
 
-architecture rtl of keymap_rom_b16 is
+architecture rtl of keymap_rom is
 
 
 signal we : std_logic;
 signal dp : std_logic;
-
+signal ad : std_logic_vector(10 downto 0);
 
 begin
 
@@ -94,20 +151,22 @@ begin
     )
 
     port map (
-	  do     => rdata,
+	  do     => data_out,
 	  dop(0) => dp,
-	  addr   => addr,
+	  addr   => ad,
 	  clk    => clk,
-	  di     => wdata,
+	  di     => data_in,
 	  dip(0) => dp,
 	  en     => cs,
 	  ssr    => rst,
 	  we     => we
 	);
 
-my_keymap_rom_b16 : process ( rw )
+my_keymap_rom_b16 : process ( rw, addr )
 begin
 	 we    <= not rw;
+    ad(8 downto 0) = addr;
+    ad(10 downto 9) = "00";
 end process;
 
 end architecture rtl;

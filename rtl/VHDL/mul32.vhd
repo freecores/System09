@@ -1,34 +1,72 @@
 --===========================================================================--
---
---  S Y N T H E Z I A B L E    Dynamic Address Translation Registers
---
+--                                                                           --
+--  mul32.vhd - Synthesizable 32 bit Multiplier Register for Spartan 3/3E    --
+--                                                                           --
 --===========================================================================--
 --
---  This core adheres to the GNU public license  
+--  File name      : mul32.vhd
 --
--- File name      : mul32.vhd
+--  Entity name    : mul32
 --
--- entity name    : mul32
---
--- Purpose        : Implements a 32 bit x 32 bit hardware multiplier
---                  with 64 bit reset
---                  R/W Registers 0 to 3 are the left input MSB first
---                  R/W Registers 4 to 7 are the right input MSB first
---                  RO Registers 8 to 15 are the 64 bit result 
+--  Purpose        : Implements a 32 bit x 32 bit hardware multiplier register
+--                   with 64 bit result. Consists of 16 x 8 bit registers.
+--                   Designed for Spartan 3/3E with 18 x 18 bit multiplier blocks. 
 --                  
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   unisim.vcomponents
 --
--- Author         : John E. Kent      
+--  Author         : John E. Kent
 --
---===========================================================================----
+--  Email          : dilbert57@opencores.org      
 --
--- Revision History:
+--  Web            : http://opencores.org/project,system09
 --
--- Date          Revision  Author 
--- 7th Sep 2008   0.1       John Kent
+--  Registers      :
+-- 
+--   0 R/W left   input  Most Significant Byte
+--   1 R/W left   input
+--   2 R/W left   input
+--   3 R/W left   input  Least Significant Byte
+--   4 R/W right  input  Most Significant Byte
+--   5 R/W right  input
+--   6 R/W right  input
+--   7 R/W right  input  Least Significant Byte
+--   8 R/O result output Most Significant Byte
+--   9 R/O result output 
+--  10 R/O result output 
+--  11 R/O result output 
+--  12 R/O result output 
+--  13 R/O result output 
+--  14 R/O result output 
+--  15 R/O result output Least Significant Byte
 --
+--  Copyright (C) 2008 - 2010 John Kent
 --
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date         Description
+--
+-- 0.1      John Kent     2008-09-07   Initial version
+--
+-- 0.2      John Kent     2010-06-17   Header & GPL added
 --
 
 library ieee;

@@ -1,26 +1,45 @@
--- $Id: cpu09.vhd,v 1.2 2008-03-14 15:52:46 dilbert57 Exp $
---===========================================================================----
---
---  S Y N T H E Z I A B L E    CPU09 - 6809 compatible CPU Core
---
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+--===========================================================================--
+--                                                                           --
+--        Synthesizable 6809 instruction compatible VHDL CPU core            --
+--                                                                           --
+--===========================================================================--
 --
 -- File name      : cpu09.vhd
 --
--- Purpose        : 6809 CPU core
+-- Entity name    : cpu09
 --
--- Dependencies   : ieee.Std_Logic_1164
+-- Purpose        : 6809 instruction compatible CPU core written in VHDL
+--                  Not cycle compatible with the original 6809 CPU
+--
+-- Dependencies   : ieee.std_logic_1164
 --                  ieee.std_logic_unsigned
 --
--- Uses           : None
---
 -- Author         : John E. Kent
---                  dilbert57@opencores.org      
 --
---===========================================================================----
+-- Email          : dilbert57@opencores.org      
 --
--- Revision History:
+-- Web            : http://opencores.org/project,system09
+--
+-- 
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
 --===========================================================================--
 --
 -- Version 0.1 - 26 June 2003 - John Kent
@@ -169,18 +188,18 @@ use ieee.std_logic_unsigned.all;
 
 entity cpu09 is
 	port (	
-		clk:	    in  std_logic;
-		rst:	    in  std_logic;
-		rw:	    out std_logic;
-		vma:	    out std_logic;
-		address:	 out std_logic_vector(15 downto 0);
-	   data_in:	 in  std_logic_vector(7 downto 0);
-	   data_out: out std_logic_vector(7 downto 0);
-		halt:     in  std_logic;
-		hold:     in  std_logic;
-		irq:      in  std_logic;
-		firq:     in  std_logic;
-		nmi:      in  std_logic
+		clk      :	in std_logic;
+		rst      :  in std_logic;
+		vma      : out std_logic;
+		addr     : out std_logic_vector(15 downto 0);
+		rw       : out std_logic;
+	   data_out : out std_logic_vector(7 downto 0);
+	   data_in  :  in std_logic_vector(7 downto 0);
+		irq      :  in std_logic;
+		firq     :  in std_logic;
+		nmi      :  in std_logic;
+		halt     :  in std_logic;
+		hold     :  in std_logic
 		);
 end cpu09;
 
@@ -913,22 +932,18 @@ end process;
 ------------------------------------
 
 --nmi_handler : process( clk, rst, nmi, nmi_ack, nmi_req, nmi_enable )
-nmi_handler : process( clk )
+nmi_handler : process( rst, clk )
 begin
-  if clk'event and clk='0' then
-    if rst='1' then
-	   nmi_req <= '0';
-    else
+  if rst='1' then
+	 nmi_req <= '0';
+  elsif clk'event and clk='0' then
 	   if (nmi='1') and (nmi_ack='0') and (nmi_enable='1') then
 	     nmi_req <= '1';
 	   else
 		  if (nmi='0') and (nmi_ack='1') then
 	       nmi_req <= '0';
-	     else
-	       nmi_req <= nmi_req;
 		  end if;
 		end if;
-	 end if;
   end if;
 end process;
 
@@ -943,49 +958,49 @@ addr_mux: process( addr_ctrl, pc, ea, up, sp, iv )
 begin
   case addr_ctrl is
     when idle_ad =>
-	   address <= "1111111111111111";
-		vma     <= '0';
-		rw      <= '1';
+		vma  <= '0';
+	   addr <= "1111111111111111";
+		rw   <= '1';
     when fetch_ad =>
-	   address <= pc;
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= pc;
+		rw   <= '1';
 	 when read_ad =>
-	   address <= ea;
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= ea;
+		rw   <= '1';
     when write_ad =>
-	   address <= ea;
-		vma     <= '1';
-		rw      <= '0';
+		vma  <= '1';
+	   addr <= ea;
+		rw   <= '0';
 	 when pushs_ad =>
-	   address <= sp;
-		vma     <= '1';
-		rw      <= '0';
+		vma  <= '1';
+	   addr <= sp;
+		rw   <= '0';
     when pulls_ad =>
-	   address <= sp;
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= sp;
+		rw   <= '1';
 	 when pushu_ad =>
-	   address <= up;
-		vma     <= '1';
-		rw      <= '0';
+		vma  <= '1';
+	   addr <= up;
+		rw   <= '0';
     when pullu_ad =>
-	   address <= up;
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= up;
+		rw   <= '1';
 	 when int_hi_ad =>
-	   address <= "111111111111" & iv & "0";
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= "111111111111" & iv & "0";
+		rw   <= '1';
     when int_lo_ad =>
-	   address <= "111111111111" & iv & "1";
-		vma     <= '1';
-		rw      <= '1';
+		vma  <= '1';
+	   addr <= "111111111111" & iv & "1";
+		rw   <= '1';
 	 when others =>
-	   address <= "1111111111111111";
-		vma     <= '0';
-		rw      <= '1';
+		vma  <= '0';
+	   addr <= "1111111111111111";
+		rw   <= '1';
   end case;
 end process;
 
@@ -1488,7 +1503,7 @@ begin
         return_state <= fetch_state;
         next_state   <= fetch_state;
 
-		  case state is
+		    case state is
           when reset_state =>        --  released from reset
 			    -- reset the registers
              op_ctrl    <= reset_op;
@@ -1830,12 +1845,12 @@ begin
 			        next_state <= decode1_state;
                end if;
 				 end if;
-			 --
-			 -- Here to decode instruction
-			 -- and fetch next byte of intruction
-			 -- whether it be necessary or not
-			 --
-          when decode1_state =>
+			  --
+			  -- Here to decode instruction
+			  -- and fetch next byte of intruction
+			  -- whether it be necessary or not
+			  --
+           when decode1_state =>
 				 -- fetch first byte of address or immediate data
              ea_ctrl    <= fetch_first_ea;
 				 md_ctrl    <= fetch_first_md;
@@ -4191,6 +4206,9 @@ begin
              left_ctrl  <= sp_left;
              right_ctrl <= one_right;
              alu_ctrl   <= alu_sub16;
+				 -- idle	address
+             addr_ctrl  <= idle_ad;
+			    dout_ctrl  <= cc_dout; 
 				 if ea(7 downto 0) = "00000000" then
                sp_ctrl    <= latch_sp;
 				 else

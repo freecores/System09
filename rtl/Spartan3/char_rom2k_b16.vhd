@@ -1,13 +1,58 @@
-----------------------------------------------------------------
+--===========================================================================--
+--                                                                           --
+--    Synthesizable Character Generator using Xilinx RAMB16_S9 Block RAM     --
+--                                                                           --
+--===========================================================================--
 --
--- Character generator ROM
+--  File name      : char_rom2k_b16.vhd
 --
--- 7 pixels x 11 rows x 128 characters.
+--  Entity name    : char_rom
 --
--- Last Updated
--- 18th Oct 2004
--- J. E. Kent.
-----------------------------------------------------------------
+--  Purpose        : Implements a character generator ROM
+--                   using one Xilinx RAMB16_S9 Block RAM
+--                   Used by vdu8.vhd in the System09 SoC
+--
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--
+--  Uses           : RAMB16_S9 (Xilinx 16KBit Block RAM)
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Description    : Characters are 7 pixels x 11 rows x 128 characters
+--                   Stored as 8 bits x 16 locations x 128 characters
+--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Date        Author     Changes
+--
+-- 0.1     2004-10-18  John Kent  Initial relaease
+--
+-- 0.2     2010-06-17  John Kent  Updated header and description and added GPL
+--     
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -17,13 +62,13 @@ library unisim;
 
 entity char_rom is
     Port (
-       clk   : in  std_logic;
-       rst   : in  std_logic;
-       cs    : in  std_logic;
-       rw    : in  std_logic;
-       addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       rw       : in  std_logic;
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end char_rom;
 
@@ -104,11 +149,11 @@ begin
     )
 
     port map (
-	  do    => rdata,
+	  do    => data_out,
 	  dop(0)=> dp,
 	  addr  => addr,
 	  clk   => clk,
-     di    => wdata,
+     di    => data_in,
 	  dip(0)=> dp,
 	  en    => cs,
 	  ssr   => rst,

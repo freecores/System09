@@ -1,54 +1,33 @@
----------------------------------------------------------------------------------------
+--===========================================================================--
+--                                                                           --
+--  ps2_keyboard.vhd - Synthesizable PS/2 Keyboard Interface                 --
+--                                                                           --
+--===========================================================================--
 --
--- Author: John Clayton
--- Date  : April 30, 2001
--- Update: 4/30/01 copied this file from lcd_2.v (pared down).
--- Update: 5/24/01 changed the first module from "ps2_keyboard_receiver"
---                 to "ps2_keyboard_interface"
--- Update: 5/29/01 Added input synchronizing flip-flops.  Changed state
---                 encoding (m1) for good operation after part config.
--- Update: 5/31/01 Added low drive strength and slow transitions to ps2_clk
---                 and ps2_data in the constraints file.  Added the signal
---                 "tx_shifting_done" as distinguished from "rx_shifting_done."
---                 Debugged the transmitter portion in the lab.
--- Update: 6/01/01 Added horizontal tab to the ascii output.
--- Update: 6/01/01 Added parameter TRAP_SHIFT_KEYS.
--- Update: 6/05/01 Debugged the "debounce" timer functionality.
---                 Used 60usec timer as a "watchdog" timeout during
---                 receive from the keyboard.  This means that a keyboard
---                 can now be "hot plugged" into the interface, without
---                 messing up the bit_count, since the bit_count is reset
---                 to zero during periods of inactivity anyway.  This was
---                 difficult to debug.  I ended up using the logic analyzer,
---                 and had to scratch my head quite a bit.
--- Update: 6/06/01 Removed extra comments before the input synchronizing
---                 flip-flops.  Used the correct parameter to size the
---                 5usec_timer_count.  Changed the name of this file from
---                 ps2.v to ps2_keyboard.v
--- Update: 6/06/01 Removed "&& q[7:0]" in output_strobe logic.  Removed extra
---                 commented out "else" condition in the shift register and
---                 bit counter.
--- Update: 6/07/01 Changed default values for 60usec timer parameters so that
---                 they correspond to 60usec for a 49.152MHz clock.
+--  File name      : ps2_keyboard.vhd
 --
---	Converted to VHDL: 10 February 2004 - John Kent
--- 11 Sept 04   added ctrl key 
---              changed undefined key codes to x"ff"
---              reversed clock polarity
+--  Purpose        : Implements a PS/2 Keyboard Interface
+--                  
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   ieee.std_logic_arith
+--                   ieee.numeric_std
+--                   unisim.vcomponents
 --
--- 18th Oct 04  added ctrl keys to ASCII ROM
---              added CAPS Lock toggle.
+--  Author         : Original Verilog version by John Clayton
+--                   Converted to VHDL by John E. Kent
 --
--- 6th Feb 2007 Added Generic Clock parameter
+--  Email          : dilbert57@opencores.org      
 --
----------------------------------------------------------------------------------------
--- Description:
----------------------------------------------------------------------------------------
+--  Web            : http://opencores.org/project,system09
+--
+--  Description     :
+--
 -- This is a state-machine driven serial-to-parallel and parallel-to-serial
 -- interface to the ps2 style keyboard interface.  The details of the operation
 -- of the keyboard interface were obtained from the following website:
 --
---   http:--www.beyondlogic.org/keyboard/keybrd.htm
+--   http://www.beyondlogic.org/keyboard/keybrd.htm
 --
 -- Some aspects of the keyboard interface are not implemented (e.g, parity
 -- checking for the receive side, and recognition of the various commands
@@ -109,48 +88,112 @@
 -- A parameter TRAP_SHIFT_KEYS allows the user to eliminate shift keypresses
 -- from producing scan codes (along with their "undefined" ASCII equivalents)
 -- at the output of the interface.  If TRAP_SHIFT_KEYS is non-zero, the shift
--- key status will only be reported by rx_shift_key_on.  No ascii or scan
+-- key status will only be reported by rx_shift_on.  No ascii or scan
 -- codes will be reported for the shift keys.  This is useful for those who
 -- wish to use the ASCII data stream, and who don't want to have to "filter
 -- out" the shift key codes.
+-- 
+--  Copyright (C) 2001 - 2010 John Clayton and John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Author: John Clayton
+-- 2001-04-30 copied this file from lcd_2.v (pared down).
+-- 2001-05-24 changed the first module from "ps2_keyboard_receiver"
+--            to "ps2_keyboard_interface"
+-- 2001-05-29 Added input synchronizing flip-flops.  Changed state
+--            encoding (m1) for good operation after part config.
+-- 2001-05-31 Added low drive strength and slow transitions to ps2_clk
+--            and ps2_data in the constraints file.  Added the signal
+--            "tx_shifting_done" as distinguished from "rx_shifting_done."
+--            Debugged the transmitter portion in the lab.
+-- 2001-06-01 Added horizontal tab to the ascii output.
+-- 2001-06-01 Added parameter TRAP_SHIFT_KEYS.
+-- 2001-06-05 Debugged the "debounce" timer functionality.
+--            Used 60usec timer as a "watchdog" timeout during
+--            receive from the keyboard.  This means that a keyboard
+--            can now be "hot plugged" into the interface, without
+--            messing up the bit_count, since the bit_count is reset
+--            to zero during periods of inactivity anyway.  This was
+--            difficult to debug.  I ended up using the logic analyzer,
+--            and had to scratch my head quite a bit.
+-- 2001-06-06 Removed extra comments before the input synchronizing
+--            flip-flops.  Used the correct parameter to size the
+--            5usec_timer_count.  Changed the name of this file from
+--            ps2.v to ps2_keyboard.v
+-- 2001-06/06 Removed "&& q[7:0]" in output_strobe logic.  Removed extra
+--            commented out "else" condition in the shift register and
+--            bit counter.
+-- 2001-06-07 Changed default values for 60usec timer parameters so that
+--            they correspond to 60usec for a 49.152MHz clock.
+--
+-- Author: John Kent
+--	2001-02-10 Converted to VHDL
+-- 2004-09-11 Added ctrl key 
+--            Changed undefined key codes to x"ff"
+--            Reversed clock polarity
+-- 2004-10-18 Added ctrl keys to ASCII ROM
+--            Added CAPS Lock toggle.
+-- 2007-02-06 Added Generic Clock parameter
+-- 2010-05-31 Revised header, added GPL
+-- 2010-06-17 Change some signal names for consistancy
+--
 --
 --
 ---------------------------------------------------------------------------------------
 
 library ieee;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
+library unisim;
+   use unisim.vcomponents.all;
 
-entity ps2_keyboard_interface is
+entity ps2_keyboard is
   generic (
-  Frequency_MHz   : integer
+  CLK_FREQ_MHZ   : integer
   );
 
   port(
   clk             : in    std_logic;
   reset           : in    std_logic;
-  ps2_clk         : inout std_logic;
-  ps2_data        : inout std_logic;
+  rx_data         : out   std_logic_vector(7 downto 0);
+  rx_read         : in    std_logic;
+  rx_data_ready   : out   std_logic;
   rx_extended     : out   std_logic;
   rx_released     : out   std_logic;
-  rx_shift_key_on : out   std_logic;
---  rx_scan_code    : out   std_logic_vector(7 downto 0);
-  rx_ascii        : out   std_logic_vector(7 downto 0);
-  rx_data_ready   : out   std_logic;       -- rx_read_o
-  rx_read         : in    std_logic;       -- rx_read_ack_i
+  rx_shift_on     : out   std_logic;
   tx_data         : in    std_logic_vector(7 downto 0);
   tx_write        : in    std_logic;
-  tx_write_ack    : out   std_logic;
-  tx_error_no_keyboard_ack	: out  std_logic
+  tx_data_empty   : out   std_logic;
+  tx_error	      : out   std_logic;
+  ps2_clk         : inout std_logic;
+  ps2_data        : inout std_logic
   );
-end ps2_keyboard_interface;
+end ps2_keyboard;
 
 -------------------------------------------------------------------------------
 -- Architecture for ps2 keyboard interface
 -------------------------------------------------------------------------------
-architecture rtl of ps2_keyboard_interface is
+architecture rtl of ps2_keyboard is
   -----------------------------------------------------------------------------
 
 
@@ -185,9 +228,9 @@ constant CAPS_CODE    : integer := 16#58#;
 --constant TIMER_5USEC_BITS_PP   : integer := 7;    -- Number of bits needed for timer
 
 -- Values for  generic Clock up to 50 MHz
-constant TIMER_60USEC_VALUE_PP : integer := Frequency_MHz * 60; -- Number of sys_clks for 60usec.
+constant TIMER_60USEC_VALUE_PP : integer := CLK_FREQ_MHZ * 60;  -- Number of sys_clks for 60usec.
 constant TIMER_60USEC_BITS_PP  : integer := 12;                 -- Number of bits needed for timer
-constant TIMER_5USEC_VALUE_PP  : integer := Frequency_MHz * 5;  -- Number of sys_clks for debounce
+constant TIMER_5USEC_VALUE_PP  : integer := CLK_FREQ_MHZ * 5;   -- Number of sys_clks for debounce
 constant TIMER_5USEC_BITS_PP   : integer := 8;                  -- Number of bits needed for timer
 
 constant TRAP_SHIFT_KEYS_PP    : integer := 1;   -- Default: No shift key trap.
@@ -209,7 +252,7 @@ type m1_type is ( m1_rx_clk_h, m1_rx_clk_l,
                   m1_tx_wait_clk_h, m1_tx_force_clk_l,
 						m1_tx_clk_h, m1_tx_clk_l,
 						m1_tx_wait_keyboard_ack, m1_tx_done_recovery,
-						m1_tx_error_no_keyboard_ack, m1_tx_rising_edge_marker,
+						m1_tx_error, m1_tx_rising_edge_marker,
 						m1_tx_first_wait_clk_h, m1_tx_first_wait_clk_l, m1_tx_reset_timer, 
                   m1_rx_falling_edge_marker, m1_rx_rising_edge_marker );
 
@@ -254,20 +297,20 @@ signal ps2_clk_s          : std_logic;  -- Synchronous version of this input
 signal ps2_data_s         : std_logic;  -- Synchronous version of this input
 signal ps2_clk_hi_z       : std_logic;  -- Without keyboard, high Z equals 1 due to pullups.
 signal ps2_data_hi_z      : std_logic;  -- Without keyboard, high Z equals 1 due to pullups.
-signal tx_write_ack_o	  : std_logic;
+signal tx_data_empty_o	  : std_logic;
 
 --
 -- key lookup table
 --
 component keymap_rom
     Port (
-       clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
-       addr  : in  std_logic_vector (8 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+    clk      : in  std_logic;
+    rst      : in  std_logic;
+    cs       : in  std_logic;
+    rw       : in  std_logic;
+    addr     : in  std_logic_vector (8 downto 0);
+    data_in  : in  std_logic_vector (7 downto 0);
+    data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -275,13 +318,13 @@ begin
 
 my_key_map : keymap_rom
      Port map (
-	  clk  => clk,
-	  rst  => reset,
-	  cs   => '1',
-	  rw   => '1',
-	  addr => shift_key_plus_code,
-	  rdata => ascii,
-	  wdata => "00000000"
+	  clk      => clk,
+	  rst      => reset,
+	  cs       => '1',
+	  rw       => '1',
+	  addr     => shift_key_plus_code,
+	  data_in  => "00000000",
+	  data_out => ascii
 	  );
 
 ----------------------------------------------------------------------------
@@ -291,16 +334,19 @@ my_key_map : keymap_rom
 --
 ps2_direction : process( ps2_clk_hi_z, ps2_data_hi_z )
 begin
+
   if( ps2_clk_hi_z = '1' ) then
      ps2_clk <= 'Z';
   else
      ps2_clk <= '0';
   end if;
+
   if( ps2_data_hi_z = '1' ) then
      ps2_data <= 'Z';
   else
      ps2_data <= '0';
   end if;
+
 end process;
    
 -- Input "synchronizing" logic -- synchronizes the inputs to the state
@@ -334,7 +380,7 @@ begin
   -- Output signals default to this value, unless changed in a state condition.
   ps2_clk_hi_z             <= '1';
   ps2_data_hi_z            <= '1';
-  tx_error_no_keyboard_ack <= '0';
+  tx_error                 <= '0';
   enable_timer_60usec      <= '0';
   enable_timer_5usec       <= '0';
 
@@ -435,7 +481,7 @@ begin
 
   when m1_tx_wait_keyboard_ack =>
         if (ps2_clk_s = '0') and (ps2_data_s = '1') then
-           m1_next_state <= m1_tx_error_no_keyboard_ack;
+           m1_next_state <= m1_tx_error;
         elsif (ps2_clk_s = '0') and (ps2_data_s = '0') then
            m1_next_state <= m1_tx_done_recovery;
         else 
@@ -449,12 +495,12 @@ begin
 		     m1_next_state <= m1_tx_done_recovery;
         end	if;
 
-  when m1_tx_error_no_keyboard_ack =>
-        tx_error_no_keyboard_ack <= '1';
+  when m1_tx_error =>
+        tx_error <= '1';
         if (ps2_clk_s = '1') and (ps2_data_s ='1') then
 		     m1_next_state <= m1_rx_clk_h;
         else 
-		     m1_next_state <= m1_tx_error_no_keyboard_ack;
+		     m1_next_state <= m1_tx_error;
         end	if;
 
   when others =>
@@ -481,7 +527,7 @@ begin
   end if;
 end process;
 
-assign: process( bit_count, tx_write, tx_write_ack_o, m1_state )
+assign: process( bit_count, tx_write, tx_data_empty_o, m1_state )
 begin
   if (bit_count = TOTAL_BITS) then
      rx_shifting_done <= '1';
@@ -499,11 +545,11 @@ begin
 -- It also indicates "ack" to the device writing to the transmitter.
   if ((tx_write = '1') and (m1_state = m1_rx_clk_h)) or
      ((tx_write = '1') and (m1_state = m1_rx_clk_l)) then
-     tx_write_ack_o <= '1';
+     tx_data_empty_o <= '1';
   else 
-     tx_write_ack_o <= '0';
+     tx_data_empty_o <= '0';
   end if;
-  tx_write_ack <= tx_write_ack_o;
+  tx_data_empty <= tx_data_empty_o;
 end process;
 
 -- This is the ODD parity bit for the transmitted word.
@@ -513,13 +559,13 @@ tx_parity_bit <= not( tx_data(7) xor tx_data(6) xor tx_data(5) xor tx_data(4) xo
                       tx_data(3) xor tx_data(2) xor tx_data(1) xor tx_data(0) );
 
 -- This is the shift register
-q_shift : process(clk, tx_write_ack_o, tx_parity_bit, tx_data,
+q_shift : process(clk, tx_data_empty_o, tx_parity_bit, tx_data,
                   m1_state, q, ps2_data_s, rx_shifting_done )
 begin
   if clk'event and clk='0' then
     if (reset = '1') then
 	    q <= "00000000000";
-    elsif (tx_write_ack_o = '1') then
+    elsif (tx_data_empty_o = '1') then
 	    q <= "1" & tx_parity_bit & tx_data & "0";
     elsif ( (m1_state = m1_rx_falling_edge_marker)	or
             (m1_state = m1_tx_rising_edge_marker) ) then
@@ -635,7 +681,7 @@ begin
 end process;
 
 shift_key_on <= left_shift_key or right_shift_key;
-rx_shift_key_on <= shift_key_on;
+rx_shift_on <= shift_key_on;
 
 --
 -- Control keys
@@ -683,15 +729,15 @@ begin
       rx_extended <= '0';
       rx_released <= '0';
 --      rx_scan_code <= "00000000";
-      rx_ascii <= "00000000";
+      rx_data <= "00000000";
     elsif (rx_output_strobe = '1') then
       rx_extended <= hold_extended;
       rx_released <= hold_released;
 --      rx_scan_code <= q(8 downto 1);
     elsif ctrl_key_on = '1' then
-	   rx_ascii <= ascii and x"1f";
+	   rx_data <= ascii and x"1f";
     else
-      rx_ascii <= ascii;
+      rx_data <= ascii;
     end if;
   end if;
 end process;

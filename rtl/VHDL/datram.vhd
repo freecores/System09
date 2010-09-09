@@ -1,61 +1,87 @@
 --===========================================================================--
+--                                                                           --
+--         Synthesizable SWTPc 6809 Dynamic Address Translation Table        --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    Dynamic Address Translation Registers
+--  File name      : datram.vhd
 --
---  www.OpenCores.Org - December 2002
---  This core adheres to the GNU public license  
+--  Entity name    : dat_ram
 --
--- File name      : datram.vhd
---
--- entity name    : dat_ram
---
--- Purpose        : Implements a Dynamic Address Translation RAM module
---                  Maps the high order 4 address bits to 8 address lines
---                  extending the memory addressing range to 1 Mbytes
---                  Memory segments are mapped on 4 KByte boundaries
---                  The DAT registers map to the top of memory 
---                  ($FFF0 - $FFFF) and are write only so can map behind ROM.
---                  Since the DAT is not supported by SWTBUG for the 6800,
---                  the resgisters reset state map the bottom 64K of RAM. 
+--  Purpose        : Implements a Dynamic Address Translation RAM module
+--                   as found in the SWTPc MP-09 CPU card.
+--                   Maps the high order 4 address bits to 8 address lines
+--                   extending the memory addressing range from 64K to 1MByte
+--                   Memory segments are mapped on 4 KByte boundaries
+--                   The DAT registers are mapped at the the top of memory 
+--                   ($FFF0 - $FFFF) and are write only so can map behind ROM.
+--                   Since the DAT is not supported by SWTBUG for the 6800,
+--                   the resgisters reset state map the bottom 64K of RAM. 
 --                  
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   unisim.vcomponents
 --
--- Author         : John E. Kent      
+--  Author         : John E. Kent
 --
---===========================================================================----
+--  Email          : dilbert57@opencores.org      
 --
--- Revision History:
+--  Web            : http://opencores.org/project,system09
 --
--- Date          Revision  Author 
--- 10 Nov 2002   0.1       John Kent
+--  Description    :
 --
--- 21 Nov 2006   0.2       John Kent
--- Inverted bottom 4 bits of dat_addr
--- so that it is compatible with SWTPc MP-09 card.
--- DAT is initializedas follows:
+--  DAT is initializedas follows:
 --
--- DAT    Dat           Logical Physical
--- Reg    Val           Addr    Addr
---	fff0 - 0f - page 0 - $0xxx = $00xxx (RAM)
---	fff1 - 0e - page 1 - $1xxx = $01xxx (RAM) 
---	fff2 - 0d - page 0 - $2xxx = $02xxx (RAM)
---	fff3 - 0c - page 0 - $3xxx = $03xxx (RAM)
---	fff4 - 0b - page 0 - $4xxx = $04xxx (RAM)
---	fff5 - 0a - page 0 - $5xxx = $05xxx (RAM)
---	fff6 - 09 - page 0 - $6xxx = $06xxx (RAM)
---	fff7 - 08 - page 0 - $7xxx = $07xxx (RAM)
---	fff8 - 07 - page 0 - $8xxx = $08xxx (RAM)
---	fff9 - 06 - page 0 - $9xxx = $09xxx (RAM)
---	fffa - 05 - page 0 - $axxx = $0axxx (RAM)
---	fffb - 04 - page 0 - $bxxx = $0bxxx (RAM)
---	fffc - 03 - page 0 - $cxxx = $0cxxx (RAM)
---	fffd - 02 - page 0 - $dxxx = $0dxxx (RAM)
---	fffe - f1 - page 0 - $exxx = $fexxx (I/O)
---	ffff - f0 - page 0 - $fxxx = $ffxxx (ROM/DMFA2)
-
--- 25 Feb 2007   0.3      John Kent
--- modify the sensitivity lists
+--  DAT    Dat           Logical Physical
+--  Reg    Val           Addr    Addr
+--	 fff0 - 0f - page 0 - $0xxx = $00xxx (RAM)
+--	 fff1 - 0e - page 1 - $1xxx = $01xxx (RAM) 
+--	 fff2 - 0d - page 0 - $2xxx = $02xxx (RAM)
+--	 fff3 - 0c - page 0 - $3xxx = $03xxx (RAM)
+--	 fff4 - 0b - page 0 - $4xxx = $04xxx (RAM)
+--	 fff5 - 0a - page 0 - $5xxx = $05xxx (RAM)
+--	 fff6 - 09 - page 0 - $6xxx = $06xxx (RAM)
+--	 fff7 - 08 - page 0 - $7xxx = $07xxx (RAM)
+--	 fff8 - 07 - page 0 - $8xxx = $08xxx (RAM)
+--	 fff9 - 06 - page 0 - $9xxx = $09xxx (RAM)
+--	 fffa - 05 - page 0 - $axxx = $0axxx (RAM)
+--	 fffb - 04 - page 0 - $bxxx = $0bxxx (RAM)
+--	 fffc - 03 - page 0 - $cxxx = $0cxxx (RAM)
+--	 fffd - 02 - page 0 - $dxxx = $0dxxx (RAM)
+--	 fffe - f1 - page 0 - $exxx = $fexxx (I/O)
+--	 ffff - f0 - page 0 - $fxxx = $ffxxx (ROM/DMFA2)
+--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Date        Author     Changes
+--
+-- 0.1     2002-11-10  John Kent  Initial version
+--
+-- 0.2     2006-11-21  John Kent  Inverted bottom 4 bits of dat_addr
+--                                so that it is compatible with SWTPc MP-09 card.
+--
+-- 0.3     2007-02-25  John Kent  Modify the sensitivity lists
+--
+-- 0.4     2010-06-17  John Kent  Update header and added GPL
 --
 
 library ieee;
@@ -69,24 +95,24 @@ entity dat_ram is
 	 clk       : in  std_logic;
     rst       : in  std_logic;
     cs        : in  std_logic;
-    rw        : in  std_logic;
     addr_hi   : in  std_logic_vector(3 downto 0);
     addr_lo   : in  std_logic_vector(3 downto 0);
+    rw        : in  std_logic;
     data_in   : in  std_logic_vector(7 downto 0);
 	 data_out  : out std_logic_vector(7 downto 0));
 end dat_ram;
 
 architecture rtl of dat_ram is
-signal dat_reg0 : std_logic_vector(7 downto 0);
-signal dat_reg1 : std_logic_vector(7 downto 0);
-signal dat_reg2 : std_logic_vector(7 downto 0);
-signal dat_reg3 : std_logic_vector(7 downto 0);
-signal dat_reg4 : std_logic_vector(7 downto 0);
-signal dat_reg5 : std_logic_vector(7 downto 0);
-signal dat_reg6 : std_logic_vector(7 downto 0);
-signal dat_reg7 : std_logic_vector(7 downto 0);
-signal dat_reg8 : std_logic_vector(7 downto 0);
-signal dat_reg9 : std_logic_vector(7 downto 0);
+signal dat_reg0  : std_logic_vector(7 downto 0);
+signal dat_reg1  : std_logic_vector(7 downto 0);
+signal dat_reg2  : std_logic_vector(7 downto 0);
+signal dat_reg3  : std_logic_vector(7 downto 0);
+signal dat_reg4  : std_logic_vector(7 downto 0);
+signal dat_reg5  : std_logic_vector(7 downto 0);
+signal dat_reg6  : std_logic_vector(7 downto 0);
+signal dat_reg7  : std_logic_vector(7 downto 0);
+signal dat_reg8  : std_logic_vector(7 downto 0);
+signal dat_reg9  : std_logic_vector(7 downto 0);
 signal dat_reg10 : std_logic_vector(7 downto 0);
 signal dat_reg11 : std_logic_vector(7 downto 0);
 signal dat_reg12 : std_logic_vector(7 downto 0);

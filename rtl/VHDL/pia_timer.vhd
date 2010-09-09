@@ -1,46 +1,76 @@
--- $Id: pia_timer.vhd,v 1.2 2008-03-14 15:52:46 dilbert57 Exp $
+--===========================================================================--
+--                                                                           --
+--  pia_timer.vhd - Synthesizable Parallel Interface Adapter with Timer      --
+--                                                                           --
 --===========================================================================--
 --
---  S Y N T H E Z I A B L E    I/O Port   C O R E
+--  File name      : pia_timer.vhd
 --
---  www.OpenCores.Org - May 2004
---  This core adheres to the GNU public license  
+--  Entity name    : pia_timer
 --
--- File name      : pia_timer.vhd
---
--- Purpose        : Implements 2 x 8 bit parallel I/O ports
---                  with 8 bit presetable counter.
---                  port a = output connected to presettable counter input
---                  port b = input connected to counter output
+--  Purpose        : Implements 2 x 8 bit parallel I/O ports
+--                   with 8 bit presetable counter.
+--                   Port A Data = output connected to presettable counter input
+--                   Port B Data = input connected to counter output
+--                   Used with Digilent Spartan 3E starter board
+--                   to implement a single step trace function.
 --                  
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   unisim.vcomponents
 --
--- Author         : John E. Kent      
+--  Author         : John E. Kent
 --
---===========================================================================----
+--  Email          : dilbert57@opencores.org      
 --
--- Revision History:
+--  Web            : http://opencores.org/project,system09
+-- 
+--  Description    : Register Memory Map
 --
--- Date:          Revision         Author
--- 1 May 2004     0.0              John Kent
--- Initial version developed from ioport.vhd
+--                   Base + $00 - Port A Data & Direction register
+--                   Base + $01 - Port A Control register
+--                   Base + $02 - Port B Data & Direction Direction Register
+--                   Base + $03 - Port B Control Register
 --
--- 22 April 2006  1.0              John Kent
--- Removed I/O ports and hard wired a binary
--- down counter. Port A is the preset output.
--- Port B is the timer count input.
--- CA1 & CB1 are interrupt inputs
--- CA2 is the counter load (active low)
--- CB2 is the counter reset (active high)
--- It may be necessary to offset the counter
--- to compensate for differences in cpu cycle
--- times between FPGA and real 6809 systems.
+--  Copyright (C) 2004 - 2010 John Kent
 --
--- 24 May 2006	1.1					John Kent
--- Modified counter to subtract one from preset
--- so FPGA version of the CMC_BUG monitor is
--- compatible with the reference design.
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date               Description
+-- 0.0      John Kent     1st May 2004       Initial version developed from ioport.vhd
+--
+-- 1.0      John Kent     22nd April 2006    Removed I/O ports and hard wired a binary
+--                                           down counter. Port A is the preset output.
+--                                           Port B is the timer count input.
+--                                           CA1 & CB1 are interrupt inputs
+--                                           CA2 is the counter load (active low)
+--                                           CB2 is the counter reset (active high)
+--                                           It may be necessary to offset the counter
+--                                           to compensate for differences in cpu cycle
+--                                           times between FPGA and real 6809 systems.
+--
+-- 1.1      John Kent     24th May 2006      Modified counter to subtract one from preset
+--                                           so FPGA version of the CMC_BUG monitor is
+--                                           compatible with the reference design.
+--
+-- 1.2      John Kent     30th May 2010      Revised header and added updated GPL
 --
 --===========================================================================----
 --
@@ -53,8 +83,10 @@
 --
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+   use ieee.std_logic_1164.all;
+   use ieee.std_logic_unsigned.all;
+library unisim;
+   use unisim.vcomponents.all;
 
 entity pia_timer is
 	port (	

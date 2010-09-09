@@ -19,12 +19,13 @@
 #
 #    make                     - makes all variants
 #    make all                 - makes all variants
-#    make sys09xes.vhd        - For XSA-3S100/XST-3.0 with 16 Bit IDE interface
+#    make sys09swt.vhd        - For SWTPc compatible computers
+#    make sys09ads.vhd        - For Ackerman Digital 6809 S100 board
+#    make sys09b3s.vhd        - For B3-SPARTAN2 with 16 bit IDE interface 
 #    make sys09b5x.vhd        - For B5-X300 with CF card with 8 bit inte
 #    make sys09s3s.vhd        - For Digilent Spartan 3 starter board with RAM disk
 #    make sys09s3e.vhd        - For Digilent Spartan 3E starter board
-#    make sys09swt.vhd        - For SWTPc compatible computers
-#    make sys09ads.vhd        - For Ackerman Digital 6809 S100 board
+#    make sys09xes.vhd        - For XSA-3S100/XST-3.0 with 16 Bit IDE interface
 #
 # Target Descriptions:
 #  The first file listed is the source file passed to assembler.
@@ -38,6 +39,7 @@
 #
 # Revision History:
 #   dgb 2008-04-07   Original version
+#   jek 2008-09-07   Added B3-SPARTAN2
 #
 #-----------------------------------------------------------------
 
@@ -47,15 +49,25 @@ endif
 
 include $(MKFRAGS)/def_rules.mk
 
-all: sys09xes.vhd sys09b5x.vhd sys09s3s.vhd sys09s3e.vhd sys09swt.vhd sys09ads.vhd
+all: sys09swt.vhd sys09ads.vhd sys09b3s.vhd sys09b5x.vhd sys09s3s.vhd sys09s3e.vhd sys09xes.vhd
 
-sys09xes.vhd: sys09xes.asm opt_xes.asm sys09equ.asm sys09ide.asm sys09bug.asm
-sys09xes.vhd: ADDRS=F000 F800
-sys09xes.vhd: ENTITY=SYS09BUG
-sys09xes.vhd: TOP_RAM=mon_rom_vhd
+sys09swt.vhd: sys09swt.asm opt_swt.asm sys09equ.asm sys09bug.asm
+sys09swt.vhd: ADDRS=F800
+sys09swt.vhd: ENTITY=SYS09BUG
+sys09swt.vhd: TOP_RAM=mon_rom_vhd
+
+sys09ads.vhd: sys09ads.asm opt_ads.asm sys09equ.asm sys09bug.asm
+sys09ads.vhd: ADDRS=F800
+sys09ads.vhd: ENTITY=SYS09BUG
+sys09ads.vhd: TOP_RAM=mon_rom_vhd
+
+sys09b3s.vhd: sys09b3s.asm opt_b3s.asm sys09equ.asm sys09bug.asm
+sys09b3s.vhd: ADDRS=F800
+sys09b3s.vhd: ENTITY=SYS09BUG
+sys09b3s.vhd: TOP_RAM=mon_rom_vhd
 
 sys09b5x.vhd: sys09b5x.asm opt_b5x.asm sys09equ.asm sys09bug.asm
-sys09b5x.vhd: ADDRS=F000 F800
+sys09b5x.vhd: ADDRS=F800
 sys09b5x.vhd: ENTITY=SYS09BUG
 sys09b5x.vhd: TOP_RAM=mon_rom_vhd
 
@@ -69,18 +81,14 @@ sys09s3e.vhd: ADDRS=F000 F800
 sys09s3e.vhd: ENTITY=SYS09BUG
 sys09s3e.vhd: TOP_RAM=mon_rom_vhd
 
-sys09swt.vhd: sys09swt.asm opt_swt.asm sys09equ.asm sys09bug.asm
-sys09swt.vhd: ADDRS=F000 F800
-sys09swt.vhd: ENTITY=SYS09BUG
-sys09swt.vhd: TOP_RAM=mon_rom_vhd
+sys09xes.vhd: sys09xes.asm opt_xes.asm sys09equ.asm sys09ide.asm sys09bug.asm
+sys09xes.vhd: ADDRS=F000 F800
+sys09xes.vhd: ENTITY=SYS09BUG
+sys09xes.vhd: TOP_RAM=mon_rom_vhd
 
-sys09ads.vhd: sys09ads.asm opt_ads.asm sys09equ.asm sys09bug.asm
-sys09ads.vhd: ADDRS=F000 F800
-sys09ads.vhd: ENTITY=SYS09BUG
-sys09ads.vhd: TOP_RAM=mon_rom_vhd
 
 .PHONY: clean
 clean:
-	-$(RM) *.s19 *.S19
+	-$(RM) *.S19
 	-$(RM) *.lst
 	-$(RM) *.vhd

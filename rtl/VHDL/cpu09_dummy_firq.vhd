@@ -1,26 +1,49 @@
--- $Id: cpu09_dummy_firq.vhd,v 1.1 2009-03-02 21:34:22 davidgb Exp $
---===========================================================================----
+--==================================================================================--
+--                                                                                  --
+--  cpu09_dummy_firq.vhd - Synthesizable 6809 instruction compatible VHDL CPU core  --
+--                                                                                  --
+--==================================================================================--
 --
---  S Y N T H E Z I A B L E    CPU09 - 6809 compatible CPU Core
+-- File name      : cpu09_dummy_firq.vhd
 --
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+-- Purpose        : 6809 instruction compatible CPU core
+--                  This core is not bus cycle compatible with the original 6809
+--                  This version of the core has been patched to perform a RTI
+--                  after receiving an FIRQ interrupt.
+--                  This was done to try and diagnose a problem someone was having
+--                  with the FIRQ on a Williams Pinball Controller.
 --
--- File name      : cpu09.vhd
---
--- Purpose        : 6809 CPU core
---
--- Dependencies   : ieee.Std_Logic_1164
+-- Dependencies   : ieee.std_logic_1164
 --                  ieee.std_logic_unsigned
 --
--- Uses           : None
---
 -- Author         : John E. Kent
---                  dilbert57@opencores.org      
 --
---===========================================================================----
+-- Email          : dilbert57@opencores.org      
 --
--- Revision History:
+-- Web            : http://opencores.org/project,system09
+--
+--  cpu09_dummy_firq.vhd is a 6809 instruction compatible CPU core written in VHDL.
+--  This cpu09.vhd is not cycle compatible with the original 6809 CPU.
+--  
+--  Copyright (C) 2002 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
 --===========================================================================--
 --
 -- Version 0.1 - 26 June 2003 - John Kent

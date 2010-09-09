@@ -1,36 +1,64 @@
 --===========================================================================--
+--                                                                           --
+--  SevenSegment.vhd - Synthesizable Multiplex Seven Segment LED Driver      --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    Dynamic Address Translation Registers
+--  File name      : SevenSegment.vhd
 --
---  www.OpenCores.Org - December 2002
---  This core adheres to the GNU public license  
+--  Entity name    : SevenSegment
 --
--- File name      : SevenSegment.vhd
---
--- entity name    : SevenSegment
---
--- Purpose        : 4 x 8 bit lathes to display 7 segments
+--  Purpose        : 4 x 8 bit lathes to display 7 segments
+--                   Multiplexes segment registers across 4 displays.
+--                   For use on the Digilent Spartan 3 Starter Board
 --                  
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   unisim.vcomponents
 --
--- Author         : John E. Kent      
+--  Author         : John E. Kent
 --
---===========================================================================----
+--  Email          : dilbert57@opencores.org      
 --
--- Revision History:
+--  Web            : http://opencores.org/project,system09
 --
--- Date          Revision  Author 
--- 19 Oct 2004   0.1       John Kent
+--  SevenSegment.vhd is a multiplexed seven segment LED display driver written in VHDL
+-- 
+--  Copyright (C) 2004 - 2010 John Kent
 --
--- 21 Nov 2006   0.2       John Kent
--- Inverted segment registers 
--- so '0' in segment registers switches segment OFF
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date               Description
+-- 0.1      John Kent     19 Oct 2004        Initial version
+-- 0.2      John Kent     21 Nov 2006        Inverted segment registers 
+--                                           so '0' in segment registers 
+--                                           switches segment OFF
+-- 0.3      John Kent     31 May 2010        Updated Header and GPL.
 --
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+   use ieee.std_logic_1164.all;
+   use ieee.std_logic_unsigned.all;
+
+library unisim;
+   use unisim.vcomponents.all;
 
 entity seven_segment is
 	port (	
@@ -47,13 +75,13 @@ entity seven_segment is
 end;
 
 architecture rtl of seven_segment is
-signal seg_reg0 : std_logic_vector(7 downto 0);
-signal seg_reg1 : std_logic_vector(7 downto 0);
-signal seg_reg2 : std_logic_vector(7 downto 0);
-signal seg_reg3 : std_logic_vector(7 downto 0);
+signal seg_reg0     : std_logic_vector(7 downto 0);
+signal seg_reg1     : std_logic_vector(7 downto 0);
+signal seg_reg2     : std_logic_vector(7 downto 0);
+signal seg_reg3     : std_logic_vector(7 downto 0);
 
-signal ClockDivider		: std_logic_vector(13 downto 0);
-signal WhichDigit			: std_logic_vector(1 downto 0);
+signal ClockDivider : std_logic_vector(13 downto 0);
+signal WhichDigit   : std_logic_vector(1 downto 0);
 
 begin
 
@@ -134,13 +162,13 @@ begin
 						Digits   <= "1110"; 
 						Segments <= not( seg_reg0 );
 					when "01" => 
-						Digits <= "1101"; 
+						Digits   <= "1101"; 
 						Segments <= not( seg_reg1 );
 					when "10" => 
-						Digits <= "1011"; 
+						Digits   <= "1011"; 
 						Segments <= not( seg_reg2 );
 					when "11" => 
-						Digits <= "0111"; 
+						Digits   <= "0111"; 
 						Segments <= not( seg_reg3 );
 					when others => 
 					   null;

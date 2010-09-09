@@ -1,11 +1,13 @@
---===========================================================================----
+--=============================================================================--
+--                                                                             --
+--  System09 - Synthesizable System On a Chip - VHDL FPGA core top level file. --
+--                                                                             --
+--=============================================================================--
 --
---  S Y N T H E Z I A B L E    System09 - SOC.
 --
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+-- File name      : System09_Digilent_3S200.vhd
 --
--- File name      : System09.vhd
+-- Entity name    : System09
 --
 -- Purpose        : Top level file for 6809 compatible system on a chip
 --                  Designed with Xilinx XC3S200 Spartan 3 FPGA.
@@ -16,27 +18,72 @@
 --                  ieee.std_logic_arith
 --                  ieee.numeric_std
 --
--- Uses           : mon_rom   (sys09bug_rom4k_b16.vhd) Monitor ROM
---                  cpu09     (cpu09.vhd)              CPU core
---                  dat_ram   (datram.vhd)             Dynamic Address Translation
---                  acia_6850 (acia_6850.vhd)          ACIA (UART)
---                            (acia_rx.vhd)
---                            (acia_tx.vhd)
---                  keyboard  (keyboard.vhd)           PS/2 Keyboard
---                            (ps2_keyboard.vhd)
---                            (keymap_rom)
---                  vdu8      (vdu8.vhd)		          Video Display Unit
---                            (char_rom2K_b16.vhd)
---                            (ram2k_b16.vhd)
---                  seven_segment (SevenSegment.vhd)   Seven Segment Display
+-- Uses           : cpu09         (..\VHDL\cpu09.vhd)              CPU core
+--                  dat_ram       (..\VHDL\datram.vhd)             Dynamic Address Translation
+--                  SYS09BUG_F800 (..\Spartan3\sys093s3_b16.vhd)   Monitor ROM
+--                  acia6850      (..\VHDL\acia6850.vhd)           ACIA (UART)
+--                  ACIA_Clock    (..\VHDL\ACIA_Clock.vhd)         ACIA Baud Rate Clock Divider
+--                  keyboard      (..\VHDL\keyboard.vhd)           PS/2 Keyboard register interface
+--                  ps2_keyboard  (..\VHDL\ps2_keyboard.vhd)       PS/2 Keyboard interface logic
+--                  keymap_rom    (..\Spartan2\keymap_rom.vhd)     PS/2 Keyboard key code look up table
+--                  vdu8          (..\VHDL\vdu8.vhd)		          Video Display Unit
+--                                (..\Spartan3\char_rom2K_b16.vhd) Character Generator ROM (B16_RAM)
+--                                (..\Spartan3\ram2k_b16.vhd)      Text & Attribute RAM Buffer
+--                  seven_segment (..\VHDL\SevenSegment.vhd)       Seven Segment Display
 -- 
 -- Author         : John E. Kent      
 --                  dilbert57@opencores.org      
 --
---===========================================================================----
+-- Memory Map     :
 --
--- Revision History:
+-- $0000 - $DFFF System RAM (256K Mapped via DAT)
+-- $E000 - ACIA (SWTPc)
+-- $E010 - Reserved for SWTPc FD-01 FD1771 FDC
+-- $E020 - Keyboard
+-- $E030 - VDU
+-- $E040 - Reserved for SWTPc MP-T (was Compact Flash)
+-- $E050 - Timer
+-- $E060 - Reserved for Bus Trap (Hardware Breakpoint Logic)
+-- $E070 - Reserved for Trace Buffer
+-- $E080 - Reserved for SWTPc MP-ID 6821 PIA (?)
+-- $E090 - Reserved for SWTPc MP-ID 6840 PTM (?)
+-- $E0A0 - Switches in / LEDS out
+-- $E0B0 - 7 Segment display
+-- $E0C0 - Reserved
+-- $E0D0 - Reserved
+-- $E0E0 - Reserved
+-- $E0F0 - Reserved
+-- $E100 - $E13F Reserved IDE / Compact Flash Card
+-- $E140 - $E17F Reserved for Ethernet MAC (XESS)
+-- $E180 - $E1BF Reserved for Expansion Slot 0 (XESS)
+-- $E1C0 - $E1FF Reserved for Expansion Slot 1 (XESS)
+-- $E200 - $EFFF Reserved for Future I/O
+-- $F000 - $F7FF RAM for Sys09bug monitor extensions
+-- $F800 - $FFFF Sys09bug ROM (Read only)
+-- $FFF0 - $FFFF DAT - Dynamic Address Translation (Write Only)
+--
+--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
 --===========================================================================--
+--
+--                              Revision History:
+--
+--===========================================================================--
+--
 -- Version 0.1 - 20 March 2003
 -- Version 0.2 - 30 March 2003
 -- Version 0.3 - 29 April 2003
@@ -91,6 +138,17 @@
 -- Version 2.4 - 31 January 2008 - John Kent
 --	ACIA does not appear to work.
 -- Made RAM OE and WE strobes synchonous to sys_clk
+--
+-- Version 2.5 - 23rd Feburary 2009 - John Kent
+-- Implemented recommendation to remove vga_clk clock buffer
+--
+-- Version 2.6 - 5th september 2010 - John Kent
+-- Renamed ACIA_6850 to acia6850
+-- Updated generics on VDU8
+-- Shortened the "keyboard" label
+-- Fixed up address label on CPU09
+-- Removed Flex RAM
+-- Map RAM at $F000 - $F7FF
 --
 --===========================================================================--
 library ieee;
@@ -152,29 +210,44 @@ architecture my_computer of my_system09 is
   -----------------------------------------------------------------------------
   -- constants
   -----------------------------------------------------------------------------
-  constant SYS_Clock_Frequency  : integer := 50000000;  -- FPGA System Clock
-  constant VGA_Clock_Frequency  : integer := 25000000;  -- VGA Pixel Clock
-  constant CPU_Clock_Frequency  : integer := 25000000;  -- CPU Clock
-  constant BAUD_Rate            : integer := 57600;	  -- Baud Rate
-  constant ACIA_Clock_Frequency : integer := BAUD_Rate * 16;
+  constant SYS_CLK_FREQ  : integer := 50000000;  -- FPGA System Clock
+  constant VGA_CLK_FREQ  : integer := 25000000;  -- VGA Pixel Clock
+  constant CPU_CLK_FREQ  : integer := 25000000;  -- CPU Clock
+  constant BAUD_Rate     : integer := 57600;	  -- Baud Rate
+  constant ACIA_CLK_FREQ : integer := BAUD_Rate * 16;
 
   type hold_state_type is ( hold_release_state, hold_request_state );
 
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
+
+  -- CPU Interface signals
+  signal cpu_clk       : Std_Logic;
+  signal cpu_rst       : Std_Logic;
+  signal cpu_rw        : std_logic;
+  signal cpu_vma       : std_logic;
+  signal cpu_halt      : std_logic;
+  signal cpu_hold      : std_logic;
+  signal cpu_firq      : std_logic;
+  signal cpu_irq       : std_logic;
+  signal cpu_nmi       : std_logic;
+  signal cpu_addr      : std_logic_vector(15 downto 0);
+  signal cpu_data_in   : std_logic_vector(7 downto 0);
+  signal cpu_data_out  : std_logic_vector(7 downto 0);
+
+  -- Dynamic Address Translation
+  signal dat_cs        : std_logic;
+  signal dat_addr      : std_logic_vector(7 downto 0);
+
   -- BOOT ROM
   signal rom_cs        : Std_logic;
   signal rom_data_out  : Std_Logic_Vector(7 downto 0);
 
-  -- FLEX9 RAM
-  signal flex_cs       : Std_logic;
-  signal flex_data_out : Std_Logic_Vector(7 downto 0);
-
   -- ACIA Interface signals
   signal acia_clk      : std_logic;
-  signal acia_data_out : Std_Logic_Vector(7 downto 0);  
   signal acia_cs       : Std_Logic;
+  signal acia_data_out : Std_Logic_Vector(7 downto 0);  
   signal acia_irq      : Std_Logic;
   signal acia_rxd      : Std_Logic;
   signal acia_txd      : Std_Logic;
@@ -183,13 +256,22 @@ architecture my_computer of my_system09 is
   signal acia_cts_n    : Std_Logic;
 
   -- keyboard port
-  signal keyboard_data_out : std_logic_vector(7 downto 0);
-  signal keyboard_cs       : std_logic;
-  signal keyboard_irq      : std_logic;
+  signal kbd_data_out : std_logic_vector(7 downto 0);
+  signal kbd_cs       : std_logic;
+  signal kbd_irq      : std_logic;
   
   -- LEDs
   signal leds_data_out : std_logic_vector(7 downto 0);
   signal leds_cs       : std_logic;
+
+  -- Video Display Unit
+  signal vdu_cs       : std_logic;
+  signal vdu_data_out : std_logic_vector(7 downto 0);
+  signal vga_clk      : std_logic;
+
+  -- 7 Segment Display
+  signal seg_cs       : std_logic;
+  signal seg_data_out : std_logic_vector(7 downto 0);
 
   -- RAM
   signal ram_cs       : std_logic; -- memory chip select
@@ -202,33 +284,6 @@ architecture my_computer of my_system09 is
   signal ram2_lb      : std_logic;
   signal ram_we       : std_logic;
   signal ram_oe       : std_logic;
-
-  -- CPU Interface signals
-  signal cpu_reset    : Std_Logic;
-  signal cpu_clk      : Std_Logic;
-  signal cpu_rw       : std_logic;
-  signal cpu_vma      : std_logic;
-  signal cpu_halt     : std_logic;
-  signal cpu_hold     : std_logic;
-  signal cpu_firq     : std_logic;
-  signal cpu_irq      : std_logic;
-  signal cpu_nmi      : std_logic;
-  signal cpu_addr     : std_logic_vector(15 downto 0);
-  signal cpu_data_in  : std_logic_vector(7 downto 0);
-  signal cpu_data_out : std_logic_vector(7 downto 0);
-
-  -- Dynamic Address Translation
-  signal dat_cs       : std_logic;
-  signal dat_addr     : std_logic_vector(7 downto 0);
-
-  -- Video Display Unit
-  signal vdu_cs       : std_logic;
-  signal vdu_data_out : std_logic_vector(7 downto 0);
-  signal vga_clk      : std_logic;
-
-  -- 7 Segment Display
-  signal seg_cs       : std_logic;
-  signal seg_data_out : std_logic_vector(7 downto 0);
 
   -- System Clock Prescaler
   signal clk_count    : std_logic;
@@ -243,9 +298,9 @@ component cpu09
   port (    
 	 clk      :	in  std_logic;
     rst      : in  std_logic;
-    rw       :	out std_logic;		-- Asynchronous memory interface
     vma      :	out std_logic;
-    address  : out std_logic_vector(15 downto 0);
+    addr     : out std_logic_vector(15 downto 0);
+    rw       :	out std_logic;
     data_in  : in	 std_logic_vector(7 downto 0);
 	 data_out : out std_logic_vector(7 downto 0);
 	 halt     : in  std_logic;
@@ -254,42 +309,6 @@ component cpu09
 	 nmi      : in  std_logic;
 	 firq     : in  std_logic
   );
-end component;
-
-
-----------------------------------------
---
--- 4KByte Block RAM Monitor ROM
---
-----------------------------------------
-component mon_rom
-  Port (
-    clk      : in  std_logic;
-    rst      : in  std_logic;
-    cs       : in  std_logic;
-    rw       : in  std_logic;
-    addr     : in  std_logic_vector (11 downto 0);
-    data_out    : out std_logic_vector (7 downto 0);
-    data_in    : in  std_logic_vector (7 downto 0)
-    );
-end component;
-
-----------------------------------------
---
--- 8KBytes Block RAM for FLEX9
--- $C000 - $DFFF
---
-----------------------------------------
-component flex_ram
-  Port (
-    clk      : in  std_logic;
-    rst      : in  std_logic;
-    cs       : in  std_logic;
-    rw       : in  std_logic;
-    addr     : in  std_logic_vector (12 downto 0);
-    data_out    : out std_logic_vector (7 downto 0);
-    data_in    : in  std_logic_vector (7 downto 0)
-    );
 end component;
 
 ----------------------------------------
@@ -310,22 +329,39 @@ component dat_ram
   );
 end component;
 
+----------------------------------------
+--
+-- 4KByte Block RAM Monitor ROM
+--
+----------------------------------------
+component SYS09BUG_F800
+  Port (
+    clk      : in  std_logic;
+    rst      : in  std_logic;
+    cs       : in  std_logic;
+    rw       : in  std_logic;
+    addr     : in  std_logic_vector (10 downto 0);
+    data_in  : in  std_logic_vector (7 downto 0);
+    data_out : out std_logic_vector (7 downto 0)
+    );
+end component;
+
 -----------------------------------------------------------------
 --
 -- 6850 ACIA
 --
 -----------------------------------------------------------------
 
-component ACIA_6850
+component acia6850
   port (
     clk      : in  Std_Logic;  -- System Clock
     rst      : in  Std_Logic;  -- Reset input (active high)
     cs       : in  Std_Logic;  -- ACIA Chip Select
     rw       : in  Std_Logic;  -- Read / Not Write
+    addr     : in  Std_Logic;  -- Register Select
+    data_in  : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
+    data_out : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
     irq      : out Std_Logic;  -- Interrupt
-    Addr     : in  Std_Logic;  -- Register Select
-    DataIn   : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
-    DataOut  : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
     RxC      : in  Std_Logic;  -- Receive Baud Clock
     TxC      : in  Std_Logic;  -- Transmit Baud Clock
     RxD      : in  Std_Logic;  -- Receive Data
@@ -344,15 +380,14 @@ end component;
 
 component ACIA_Clock
   generic (
-     SYS_Clock_Frequency  : integer :=  SYS_Clock_Frequency;
-	  ACIA_Clock_Frequency : integer := ACIA_Clock_Frequency
+     SYS_CLK_FREQ  : integer :=  SYS_CLK_FREQ;
+	  ACIA_CLK_FREQ : integer := ACIA_CLK_FREQ
   );   
   port (
      clk      : in  Std_Logic;  -- System Clock Input
-	  ACIA_clk : out Std_logic   -- ACIA Clock output
+	  acia_clk : out Std_logic   -- ACIA Clock output
   );
 end component;
-
 
 ----------------------------------------
 --
@@ -362,19 +397,19 @@ end component;
 
 component keyboard
   generic(
-  KBD_Clock_Frequency : integer := CPU_Clock_Frequency
+    KBD_CLK_FREQ : integer := CPU_CLK_FREQ
   );
   port(
-  clk             : in    std_logic;
-  rst             : in    std_logic;
-  cs              : in    std_logic;
-  rw              : in    std_logic;
-  addr            : in    std_logic;
-  data_in         : in    std_logic_vector(7 downto 0);
-  data_out        : out   std_logic_vector(7 downto 0);
-  irq             : out   std_logic;
-  kbd_clk         : inout std_logic;
-  kbd_data        : inout std_logic
+    clk             : in    std_logic;
+    rst             : in    std_logic;
+    cs              : in    std_logic;
+    addr            : in    std_logic;
+    rw              : in    std_logic;
+    data_in         : in    std_logic_vector(7 downto 0);
+    data_out        : out   std_logic_vector(7 downto 0);
+    irq             : out   std_logic;
+    kbd_clk         : inout std_logic;
+    kbd_data        : inout std_logic
   );
 end component;
 
@@ -384,38 +419,37 @@ end component;
 --
 ----------------------------------------
 component vdu8
-      generic(
-        VDU_CLOCK_FREQUENCY    : integer := CPU_Clock_Frequency; -- HZ
-        VGA_CLOCK_FREQUENCY    : integer := VGA_Clock_Frequency; -- HZ
-	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS
-	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS
-	     VGA_PIXELS_PER_CHAR    : integer := 8;  -- PIXELS
-	     VGA_LINES_PER_CHAR     : integer := 16; -- LINES
-	     VGA_HOR_BACK_PORCH     : integer := 40; -- PIXELS
-	     VGA_HOR_SYNC           : integer := 96; -- PIXELS
-	     VGA_HOR_FRONT_PORCH    : integer := 24; -- PIXELS
-	     VGA_VER_BACK_PORCH     : integer := 13; -- LINES
-	     VGA_VER_SYNC           : integer := 1;  -- LINES
-	     VGA_VER_FRONT_PORCH    : integer := 36  -- LINES
-      );
-      port(
-		-- control register interface
-      vdu_clk      : in  std_logic;	 -- CPU Clock - 12.5MHz
-      vdu_rst      : in  std_logic;
-		vdu_cs       : in  std_logic;
-		vdu_rw       : in  std_logic;
-		vdu_addr     : in  std_logic_vector(2 downto 0);
-      vdu_data_in  : in  std_logic_vector(7 downto 0);
-      vdu_data_out : out std_logic_vector(7 downto 0);
+  generic(
+    VGA_CLK_FREQ           : integer := VGA_CLK_FREQ; -- HZ
+	 VGA_HOR_CHARS          : integer := 80; -- CHARACTERS 25.6us
+	 VGA_HOR_CHAR_PIXELS    : integer := 8;  -- PIXELS 0.32us
+	 VGA_HOR_FRONT_PORCH    : integer := 16; -- PIXELS 0.64us
+	 VGA_HOR_SYNC           : integer := 96; -- PIXELS 3.84us
+	 VGA_HOR_BACK_PORCH     : integer := 48; -- PIXELS 1.92us
+	 VGA_VER_CHARS          : integer := 25; -- CHARACTERS 12.8ms
+	 VGA_VER_CHAR_LINES     : integer := 16; -- LINES 0.512ms
+	 VGA_VER_FRONT_PORCH    : integer := 10; -- LINES 0.320ms
+	 VGA_VER_SYNC           : integer := 2;  -- LINES 0.064ms
+	 VGA_VER_BACK_PORCH     : integer := 34  -- LINES 1.088ms
+  );
+  port(
+    -- control register interface
+    vdu_clk      : in  std_logic;	 -- CPU Clock - 12.5MHz
+    vdu_rst      : in  std_logic;
+    vdu_cs       : in  std_logic;
+    vdu_rw       : in  std_logic;
+    vdu_addr     : in  std_logic_vector(2 downto 0);
+    vdu_data_in  : in  std_logic_vector(7 downto 0);
+    vdu_data_out : out std_logic_vector(7 downto 0);
 
-      -- vga port connections
-		vga_clk      : in  std_logic;	-- VGA Pixel Clock - 25 MHz
-      vga_red_o    : out std_logic;
-      vga_green_o  : out std_logic;
-      vga_blue_o   : out std_logic;
-      vga_hsync_o  : out std_logic;
-      vga_vsync_o  : out std_logic
-   );
+    -- vga port connections
+    vga_clk      : in  std_logic;	-- VGA Pixel Clock - 25 MHz
+    vga_red_o    : out std_logic;
+    vga_green_o  : out std_logic;
+    vga_blue_o   : out std_logic;
+    vga_hsync_o  : out std_logic;
+    vga_vsync_o  : out std_logic
+  );
 end component;
 
 ----------------------------------------
@@ -425,17 +459,17 @@ end component;
 ----------------------------------------
 
 component seven_segment is
-	port (	
-	  clk         : in  std_logic;
-     rst         : in  std_logic;
-     cs          : in  std_logic;
-     rw          : in  std_logic;
-     addr        : in  std_logic_vector(1 downto 0);
-     data_in     : in  std_logic_vector(7 downto 0);
-	  data_out    : out std_logic_vector(7 downto 0);
-	  segments    : out std_logic_vector(7 downto 0);
-	  digits	     : out std_logic_vector(3 downto 0)
-	);
+  port (	
+    clk         : in  std_logic;
+    rst         : in  std_logic;
+    cs          : in  std_logic;
+    addr        : in  std_logic_vector(1 downto 0);
+    rw          : in  std_logic;
+    data_in     : in  std_logic_vector(7 downto 0);
+	 data_out    : out std_logic_vector(7 downto 0);
+	 segments    : out std_logic_vector(7 downto 0);
+	 digits	     : out std_logic_vector(3 downto 0)
+  );
 end component;
 
 component BUFG 
@@ -452,10 +486,10 @@ begin
 
 my_cpu : cpu09  port map (    
 	 clk	     => cpu_clk,
-    rst       => cpu_reset,
-    rw	     => cpu_rw,
+    rst       => cpu_rst,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
+    addr      => cpu_addr(15 downto 0),
+    rw	     => cpu_rw,
     data_in   => cpu_data_in,
 	 data_out  => cpu_data_out,
 	 halt      => cpu_halt,
@@ -465,46 +499,36 @@ my_cpu : cpu09  port map (
 	 firq      => cpu_firq
     );
 
-my_rom : mon_rom port map (
-    clk       => cpu_clk,
-    rst       => cpu_reset,
-	 cs        => rom_cs,
-	 rw        => '1',
-    addr      => cpu_addr(11 downto 0),
-    data_out     => rom_data_out,
-    data_in     => cpu_data_out
-    );
-
-my_flex : flex_ram port map (
-    clk       => cpu_clk,
-    rst       => cpu_reset,
-	 cs        => flex_cs,
-	 rw        => cpu_rw,
-    addr      => cpu_addr(12 downto 0),
-    data_out     => flex_data_out,
-    data_in     => cpu_data_out
-    );
-
 my_dat : dat_ram port map (
     clk       => cpu_clk,
-	 rst       => cpu_reset,
+	 rst       => cpu_rst,
 	 cs        => dat_cs,
-	 rw        => cpu_rw,
 	 addr_hi   => cpu_addr(15 downto 12),
 	 addr_lo   => cpu_addr(3 downto 0),
+	 rw        => cpu_rw,
     data_in   => cpu_data_out,
 	 data_out  => dat_addr(7 downto 0)
 	 );
 
-my_acia  : ACIA_6850 port map (
+my_rom : SYS09BUG_F800 port map (
+    clk       => cpu_clk,
+    rst       => cpu_rst,
+	 cs        => rom_cs,
+	 rw        => '1',
+    addr      => cpu_addr(10 downto 0),
+    data_in   => cpu_data_out,
+    data_out  => rom_data_out
+    );
+
+my_acia  : acia6850 port map (
 	 clk	     => cpu_clk,
-	 rst       => cpu_reset,
+	 rst       => cpu_rst,
     cs        => acia_cs,
+    addr      => cpu_addr(0),
 	 rw        => cpu_rw,
+	 data_in   => cpu_data_out,
+	 data_out  => acia_data_out,
     irq       => acia_irq,
-    Addr      => cpu_addr(0),
-	 Datain    => cpu_data_out,
-	 DataOut   => acia_data_out,
 	 RxC       => acia_clk,
 	 TxC       => acia_clk,
 	 RxD       => acia_rxd,
@@ -512,7 +536,7 @@ my_acia  : ACIA_6850 port map (
 	 DCD_n     => acia_dcd_n,
 	 CTS_n     => acia_cts_n,
 	 RTS_n     => open
-	 );
+    );
 
 
 ----------------------------------------
@@ -522,8 +546,8 @@ my_acia  : ACIA_6850 port map (
 ----------------------------------------
 my_ACIA_Clock : ACIA_Clock
   generic map(
-    SYS_Clock_Frequency  => SYS_Clock_Frequency,
-	 ACIA_Clock_Frequency => ACIA_Clock_Frequency
+    SYS_CLK_FREQ  => SYS_CLK_FREQ,
+	 ACIA_CLK_FREQ => ACIA_CLK_FREQ
   ) 
   port map(
     clk        => sys_clk,
@@ -538,19 +562,19 @@ my_ACIA_Clock : ACIA_Clock
 ----------------------------------------
 my_keyboard : keyboard
    generic map (
-	KBD_Clock_Frequency => CPU_Clock_frequency
+	  KBD_CLK_FREQ => CPU_CLK_FREQ
 	) 
    port map(
-	clk          => cpu_clk,
-	rst          => cpu_reset,
-	cs           => keyboard_cs,
-	rw           => cpu_rw,
-	addr         => cpu_addr(0),
-	data_in      => cpu_data_out(7 downto 0),
-	data_out     => keyboard_data_out(7 downto 0),
-	irq          => keyboard_irq,
-	kbd_clk      => ps2c,
-	kbd_data     => ps2d
+	  clk          => cpu_clk,
+	  rst          => cpu_rst,
+	  cs           => kbd_cs,
+	  addr         => cpu_addr(0),
+	  rw           => cpu_rw,
+	  data_in      => cpu_data_out(7 downto 0),
+	  data_out     => kbd_data_out(7 downto 0),
+	  irq          => kbd_irq,
+	  kbd_clk      => ps2c,
+	  kbd_data     => ps2d
 	);
 
 ----------------------------------------
@@ -560,38 +584,37 @@ my_keyboard : keyboard
 ----------------------------------------
 my_vdu : vdu8 
   generic map(
-      VDU_CLOCK_FREQUENCY    => CPU_Clock_Frequency, -- HZ
-      VGA_CLOCK_FREQUENCY    => VGA_Clock_Frequency, -- HZ
-	   VGA_HOR_CHARS          => 80, -- CHARACTERS
-	   VGA_VER_CHARS          => 25, -- CHARACTERS
-	   VGA_PIXELS_PER_CHAR    => 8,  -- PIXELS
-	   VGA_LINES_PER_CHAR     => 16, -- LINES
-	   VGA_HOR_BACK_PORCH     => 40, -- PIXELS
-	   VGA_HOR_SYNC           => 96, -- PIXELS
-	   VGA_HOR_FRONT_PORCH    => 24, -- PIXELS
-	   VGA_VER_BACK_PORCH     => 13, -- LINES
-	   VGA_VER_SYNC           => 1,  -- LINES
-	   VGA_VER_FRONT_PORCH    => 36  -- LINES
+    VGA_CLK_FREQ           => VGA_CLK_FREQ, -- 25MHZ
+    VGA_HOR_CHARS          => 80, -- CHARACTERS 25.6us
+    VGA_HOR_CHAR_PIXELS    => 8,  -- PIXELS 0.32us
+    VGA_HOR_FRONT_PORCH    => 16, -- PIXELS 0.64us
+    VGA_HOR_SYNC           => 96, -- PIXELS 3.84us
+    VGA_HOR_BACK_PORCH     => 48, -- PIXELS 1.92us
+    VGA_VER_CHARS          => 25, -- CHARACTERS 12.8ms
+    VGA_VER_CHAR_LINES     => 16, -- LINES 0.512ms
+    VGA_VER_FRONT_PORCH    => 10, -- LINES 0.320ms
+    VGA_VER_SYNC           => 2,  -- LINES 0.064ms
+    VGA_VER_BACK_PORCH     => 34  -- LINES 1.088ms
   )
   port map(
 
-		-- Control Registers
-		vdu_clk       => cpu_clk,					 -- 12.5 MHz System Clock in
-      vdu_rst       => cpu_reset,
-		vdu_cs        => vdu_cs,
-		vdu_rw        => cpu_rw,
-		vdu_addr      => cpu_addr(2 downto 0),
-		vdu_data_in   => cpu_data_out,
-		vdu_data_out  => vdu_data_out,
+    -- Control Registers
+    vdu_clk       => cpu_clk,					 -- 12.5 MHz System Clock in
+    vdu_rst       => cpu_rst,
+    vdu_cs        => vdu_cs,
+    vdu_addr      => cpu_addr(2 downto 0),
+    vdu_rw        => cpu_rw,
+    vdu_data_in   => cpu_data_out,
+    vdu_data_out  => vdu_data_out,
 
-      -- vga port connections
-      vga_clk       => vga_clk,					 -- 25 MHz VDU pixel clock
-      vga_red_o     => red,
-      vga_green_o   => green,
-      vga_blue_o    => blue,
-      vga_hsync_o   => hs,
-      vga_vsync_o   => vs
-   );
+    -- vga port connections
+    vga_clk       => vga_clk,					 -- 25 MHz VDU pixel clock
+    vga_red_o     => red,
+    vga_green_o   => green,
+    vga_blue_o    => blue,
+    vga_hsync_o   => hs,
+    vga_vsync_o   => vs
+  );
 
 
 ----------------------------------------
@@ -602,7 +625,7 @@ my_vdu : vdu8
 
 my_seg : seven_segment port map (
     clk        => cpu_clk,
-	 rst        => cpu_reset,
+	 rst        => cpu_rst,
 	 cs         => seg_cs,
 	 rw         => cpu_rw,
 	 addr       => cpu_addr(1 downto 0),
@@ -612,11 +635,12 @@ my_seg : seven_segment port map (
 	 digits     => digits
 	 );
 
+--vga_clk_buffer : BUFG port map(
+--    i => clk_count,
+--	 o => vga_clk
+--    );
 
-vga_clk_buffer : BUFG port map(
-    i => clk_count,
-	 o => vga_clk
-    );
+vga_clk <= cpu_clk;
 	 	 
 cpu_clk_buffer : BUFG port map(
     i => clk_count,
@@ -646,11 +670,10 @@ mem_decode: process( cpu_addr, cpu_rw, cpu_vma,
 					      dat_cs, dat_addr,
 					      rom_data_out,
 						   acia_data_out,
-							keyboard_data_out,
+							kbd_data_out,
 							vdu_data_out,
 							seg_data_out,
 							leds_data_out,
-							flex_data_out,
 							ram_data_out
 							)
 begin
@@ -658,11 +681,10 @@ begin
       dat_cs      <= '0';
       rom_cs      <= '0';
       acia_cs     <= '0';
-      keyboard_cs <= '0';
+      kbd_cs      <= '0';
       vdu_cs      <= '0';
       seg_cs      <= '0';
       leds_cs     <= '0';
-      flex_cs     <= '0';
       ram_cs      <= '0';
 --	     timer_cs    <= '0';
 --      trap_cs     <= '0';
@@ -680,12 +702,19 @@ begin
 		-- Sys09Bug Monitor ROM $F000 - $FFFF
 		--
 	   elsif dat_addr(3 downto 0) = "1111" then -- $XF000 - $XFFFF
-	   --
-		-- Monitor ROM $F000 - $FFFF
-		--
-        cpu_data_in <= rom_data_out;
-        rom_cs      <= cpu_vma;          -- read  ROM
-
+        if cpu_addr(11) = '1' then
+          --
+		    -- Monitor ROM $F800 - $FFFF
+		    --
+          cpu_data_in <= rom_data_out;
+          rom_cs      <= cpu_vma;          -- read  ROM
+        else
+          --
+		    -- SRAM $F000 - $F7FF
+		    --
+          cpu_data_in <= ram_data_out;
+          ram_cs      <= cpu_vma;
+        end if;
       --
 		-- IO Devices $E000 - $EFFF
 		--
@@ -711,8 +740,8 @@ begin
            -- Keyboard port ($E020 - $E02F)
 			  --
 			  when "0010" =>
-             cpu_data_in <= keyboard_data_out;
-			    keyboard_cs <= cpu_vma;
+             cpu_data_in <= kbd_data_out;
+			    kbd_cs <= cpu_vma;
 
            --
            -- VDU port ($E030 - $E03F)
@@ -764,54 +793,12 @@ begin
 			  when others => -- $EXC0 to $EXFF
 			    null;
 		     end case;
-			--
-			-- XST-3.0 Peripheral Bus goes here
-			--	$E100 to $E1FF
-			--	Four devices
-			-- IDE, Ethernet, Slot1, Slot2
-			--
---			when "0001" =>
---			  cpu_data_in <= pb_data_out;
---			  pb_cs       <= cpu_vma;
---		     case cpu_addr(7 downto 6) is
-			  --
-			  -- IDE Interface $E100 to $E13F
-			  --
---			  when "00" =>
---			    ide_cs   <= cpu_vma;
-			  --
-			  -- Ethernet Interface $E140 to $E17F
-			  --
---			  when "01" =>
---			    ether_cs <= cpu_vma;
-			  --
-			  -- Slot 1 Interface $E180 to $E1BF
-			  --
---			  when "10" =>
---			    slot1_cs <= cpu_vma;
-			  --
-			  -- Slot 2 Interface $E1C0 to $E1FF
-			  --
---			  when "11" =>
---			    slot2_cs <= cpu_vma;
-           --
-			  -- Nothing else
-			  --
---         when others =>
---           null;
---         end case;
          --
-			--	$E200 to $EFFF reserved for future use
+			--	$E100 to $EFFF reserved for future use
 			--
         	when others =>
 			  null;
          end case;
-	   --
-		-- FLEX RAM $0C000 - $0DFFF
-		--
-		elsif dat_addr(7 downto 1) = "0000110" then -- $0C000 - $0DFFF
-        cpu_data_in <= flex_data_out;
-        flex_cs     <= cpu_vma;
 		--
 		-- Everything else is RAM
 		--
@@ -826,7 +813,7 @@ end process;
 -- 1M byte SRAM Control
 -- Processes to read and write memory based on bus signals
 --
-ram_process: process( cpu_reset, sys_clk,
+ram_process: process( cpu_rst, sys_clk,
                       cpu_addr, cpu_rw, cpu_vma, cpu_data_out,
 					       dat_addr, ram_cs,
                       ram1_ce, ram1_ub, ram1_lb, ram1_data,
@@ -836,7 +823,7 @@ begin
     --
     -- ram_hold signal helps 
     --
-    if( cpu_reset = '1' ) then
+    if( cpu_rst = '1' ) then
 	   ram_we   <= '0';
 	   ram_oe   <= '0';
     --
@@ -911,9 +898,9 @@ end process;
 --
 -- LEDS output register
 --
-leds_output : process( cpu_clk, cpu_reset, switches )
+leds_output : process( cpu_clk, cpu_rst, switches )
 begin
-	if cpu_reset = '1' then
+	if cpu_rst = '1' then
 		leds <= "00000000";
 	elsif cpu_clk'event and cpu_clk='0' then
 		if	leds_cs = '1' and cpu_rw = '0' then
@@ -926,16 +913,13 @@ end process;
 --
 -- Interrupts and other bus control signals
 --
-interrupts : process(	rst_sw, 
-								acia_irq,
-								keyboard_irq,
-								nmi_sw
-							 )
+interrupts : process(	sys_clk, rst_sw, 
+								acia_irq, kbd_irq, nmi_sw )
 begin
    if sys_clk'event and sys_clk = '1' then
-	  cpu_reset  <= rst_sw; -- CPU reset is active high
+	  cpu_rst  <= rst_sw; -- CPU reset is active high
    end if;
-	cpu_firq   <= keyboard_irq;
+	cpu_firq   <= kbd_irq;
 	cpu_nmi    <= nmi_sw;
 	cpu_irq    <= acia_irq;
 	cpu_halt   <= '0';

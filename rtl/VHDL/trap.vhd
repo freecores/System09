@@ -1,51 +1,72 @@
 --===========================================================================--
+--                                                                           --
+--             Synthesizable Hardware Breakpoint Trap                        --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    Timer   C O R E
+--  File name      : trap.vhd
 --
---  www.OpenCores.Org - May 2003
---  This core adheres to the GNU public license  
+--  Entity name    : trap
 --
--- File name      : Trap.vhd
+--  Purpose        : Implements a 8 bit address and data hardware breakpoint comparator
+--                   which generates an interrupt output on qualified match conditions
 --
--- entity name    : trap
+--  Dependencies   : ieee.Std_Logic_1164
+--                   ieee.std_logic_unsigned
 --
--- Purpose        : Implements a 8 bit address and data comparitor module
+--  Author         : John E. Kent      
 --
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
+--  Email          : dilbert57@opencores.org      
 --
--- Author         : John E. Kent      
+--  Web            : http://opencores.org/project,system09
+-- 
+--  Description    : Register Memory Map
 --
---===========================================================================----
+--                   Base + $00 - Address Comparitor High Byte
+--                   Base + $01 - Address Comparitor Low byte
+--                   Base + $02 - Data    Comparitor
+--                   Base + $03 - Control Comparitor
+--                   Base + $04 - Address Qualifier High Byte
+--                   Base + $05 - Address Qualifier Low byte
+--                   Base + $06 - Data    Qualifier
+--                   Base + $07 - Control Qualifier
 --
--- Revision History:
+--                   Address, Data and Control signals 
+--                   must match in the Comparitor registers 
+--                   Matches are qualified by setting a bit 
+--                   in the Qualifier registers
 --
--- Date:          Revision         Author
--- 5 May 2003     0.1              John Kent
+--                   Control Comparitor / Control Qualify (write)
+--                   b0 - r/w        1=read  0=write
+--                   b1 - vma        1=valid 0=invalid
+--                   b7 - irq output 1=match 0=mismatch
 --
---===========================================================================----
+--                   Control Qualifier Read
+--                   b7 - match flag
 --
--- Register Memory Map
+--  Copyright (C) 2003 - 2010 John Kent
 --
--- $00 - Address Comparitor High Byte
--- $01 - Address Comparitor Low byte
--- $02 - Data    Comparitor
--- $03 - Control Comparitor
--- $04 - Address Qualifier High Byte
--- $05 - Address Qualifier Low byte
--- $06 - Data    Qualifier
--- $07 - Control Qualifier
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
 --
--- Address, Data and Control signals must match in the Comparitor registers 
--- Matches are qualified by setting a bit in the Qualifier registers
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
 --
--- Control Comparitor / Qualify (write)
--- b0 - r/w        1=read  0=write
--- b1 - vma        1=valid 0=invalid
--- b7 - irq output 1=match 0=mismatch
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
--- Control Qualifier Read
--- b7 - match flag
+--===========================================================================--
+--                                                                           --
+--                             Revision History                              --
+--                                                                           --
+--===========================================================================--
+-- Version Author     Date        Description
+-- 0.1     John Kent  2003-05-05  Initial version
+-- 0.2     John kent  2010-08-09  Updated header & GPL information
 --
 library ieee;
 use ieee.std_logic_1164.all;
@@ -265,20 +286,17 @@ begin
            ((comp_ctrl(0)    xor rw        ) and qual_ctrl(0)    ) or
            ((comp_ctrl(1)    xor vma       ) and qual_ctrl(1)    );
 
-   match := not ( match_addr_hi or match_addr_lo or match_data or match_ctrl);
+  match := not ( match_addr_hi or match_addr_lo or match_data or match_ctrl);
 
-    if clk'event and clk = '0' then
-	   if rst = '1' then
-		  match_flag <= '0';
-      elsif cs = '1' and rw = '0' then
+	 if rst = '1' then
+		match_flag <= '0';
+    elsif clk'event and clk = '0' then
+      if cs = '1' and rw = '0' then
 		  match_flag <= '0';
       else
 		  if match = comp_ctrl(7) then
 		    match_flag <= '1';
-		  else
-		    match_flag <= match_flag;
 		  end if;
-
 		end if;
     end if; 
 	 irq <= match_flag and qual_ctrl(7);

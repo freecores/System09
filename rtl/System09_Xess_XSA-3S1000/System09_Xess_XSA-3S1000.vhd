@@ -26,9 +26,7 @@
 --
 -- Uses           : mon_rom    (sys09bug_rom4k_b16.vhd) Sys09Bug Monitor ROM
 --                  cpu09      (cpu09.vhd)          CPU core
---                  ACIA_6850  (ACIA_6850.vhd)      ACIA / UART
---                             (ACIA_RX.vhd)
---                             (ACIA_TX.vhd)
+--                  ACIA_6850  (acia6850.vhd)      ACIA / UART
 --                  ACIA_Clock (ACIA_Clock.vhd)      ACIA clock.
 --                  keyboard   (keyboard.vhd)        PS/2 Keyboard interface
 --                             (ps2_keyboard.vhd)
@@ -367,16 +365,16 @@ component cpu09
   port (    
 	 clk:	     in	std_logic;
     rst:      in	std_logic;
-    rw:	     out	std_logic;		-- Asynchronous memory interface
     vma:	     out	std_logic;
-    address:  out	std_logic_vector(15 downto 0);
-    data_in:  in	std_logic_vector(7 downto 0);
+    addr:  out	std_logic_vector(15 downto 0);
+    rw:	     out	std_logic;		-- Asynchronous memory interface
 	 data_out: out std_logic_vector(7 downto 0);
-	 halt:     in  std_logic;
-	 hold:     in  std_logic;
+    data_in:  in	std_logic_vector(7 downto 0);
 	 irq:      in  std_logic;
+	 firq:     in  std_logic;
 	 nmi:      in  std_logic;
-	 firq:     in  std_logic
+	 halt:     in  std_logic;
+	 hold:     in  std_logic
   );
 end component;
 
@@ -423,16 +421,16 @@ end component;
 --
 -----------------------------------------------------------------
 
-component ACIA_6850
+component acia6850
   port (
      clk      : in  Std_Logic;  -- System Clock
      rst      : in  Std_Logic;  -- Reset input (active high)
      cs       : in  Std_Logic;  -- miniUART Chip Select
      rw       : in  Std_Logic;  -- Read / Not Write
+     addr     : in  Std_Logic;  -- Register Select
+     data_in  : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
+     data_out : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
      irq      : out Std_Logic;  -- Interrupt
-     Addr     : in  Std_Logic;  -- Register Select
-     DataIn   : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
-     DataOut  : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
      RxC      : in  Std_Logic;  -- Receive Baud Clock
      TxC      : in  Std_Logic;  -- Transmit Baud Clock
      RxD      : in  Std_Logic;  -- Receive Data
@@ -451,12 +449,12 @@ end component;
 
 component ACIA_Clock
   generic (
-     SYS_Clock_Frequency  : integer :=  SYS_Clock_Frequency;
-	  ACIA_Clock_Frequency : integer := ACIA_Clock_Frequency
+     SYS_CLK_FREQ  : integer :=  SYS_Clock_Frequency;
+	  ACIA_CLK_FREQ : integer := ACIA_Clock_Frequency
   );   
   port (
      clk      : in  Std_Logic;  -- System Clock Input
-	  ACIA_clk : out Std_logic   -- ACIA Clock output
+	  acia_clk : out Std_logic   -- ACIA Clock output
   );
 end component;
 
@@ -469,7 +467,7 @@ end component;
 
 component keyboard
   generic(
-  KBD_Clock_Frequency : integer := CPU_Clock_Frequency
+  KBD_CLK_FREQ : integer := CPU_Clock_Frequency
   );
   port(
   clk             : in    std_logic;
@@ -651,16 +649,16 @@ begin
 my_cpu : cpu09  port map (    
 	 clk	     => cpu_clk,
     rst       => cpu_reset,
-    rw	     => cpu_rw,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
-    data_in   => cpu_data_in,
+    addr   => cpu_addr(15 downto 0),
+    rw	     => cpu_rw,
 	 data_out  => cpu_data_out,
-	 halt      => cpu_halt,
-	 hold      => cpu_hold,
+    data_in   => cpu_data_in,
 	 irq       => cpu_irq,
+	 firq      => cpu_firq,
 	 nmi       => cpu_nmi,
-	 firq      => cpu_firq
+	 halt      => cpu_halt,
+	 hold      => cpu_hold
   );
 
 my_rom : mon_rom port map (
@@ -683,15 +681,16 @@ my_flex : flex_ram port map (
     data_in     => cpu_data_out
     );
 
-my_acia  : ACIA_6850 port map (
+my_acia  : acia6850 port map (
 	 clk	     => cpu_clk,
 	 rst       => cpu_reset,
     cs        => acia_cs,
 	 rw        => cpu_rw,
+    addr      => cpu_addr(0),
+	 data_in    => cpu_data_out,
+	 data_out   => acia_data_out,
     irq       => acia_irq,
-    Addr      => cpu_addr(0),
-	 Datain    => cpu_data_out,
-	 DataOut   => acia_data_out,
+
 	 RxC       => acia_clk,
 	 TxC       => acia_clk,
 	 RxD       => rxd,
@@ -704,8 +703,8 @@ my_acia  : ACIA_6850 port map (
 
 my_ACIA_Clock : ACIA_Clock
   generic map(
-    SYS_Clock_Frequency  => SYS_Clock_Frequency,
-	 ACIA_Clock_Frequency => ACIA_Clock_Frequency
+    SYS_CLK_FREQ  => SYS_Clock_Frequency,
+	 ACIA_CLK_FREQ => ACIA_Clock_Frequency
   ) 
   port map(
     clk        => Clk_i,
@@ -719,7 +718,7 @@ my_ACIA_Clock : ACIA_Clock
 ----------------------------------------
 my_keyboard : keyboard
    generic map (
-	KBD_Clock_Frequency => CPU_Clock_frequency
+	KBD_CLK_FREQ => CPU_Clock_frequency
 	) 
    port map(
 	clk          => cpu_clk,

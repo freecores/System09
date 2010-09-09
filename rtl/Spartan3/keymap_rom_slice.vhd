@@ -1,15 +1,65 @@
----------------------------------------------------------
--- keymap_rom_slice.vhd
+--===========================================================================--
+--                                                                           --
+--               Synthesizable PS/2 Keyboard Key map ROM                     --
+--                                                                           --
+--===========================================================================--
 --
--- PS2 Keycode look up table
--- converts 7 bit key code to ASCII
--- Address bit 7 = CAPS Lock
--- Address bit 8 = Shift
+--  File name      : keymap_rom_slice.vhd
 --
--- J.E.Kent
--- 18th Oct 2004
--- 28th Jan 2007 - made entity compatible with block RAM versions.
---	3rd Feb 2007 - initialized with Bit_vector
+--  Entity name    : keymap_rom 
+--
+--  Purpose        : PS/2 key code look up table for PS/2 Keyboard
+--                   Converts 7 bit key code to ASCII
+--                   Address bit 8      = Shift
+--                   Address bit 7      = CAPS Lock
+--                   Address bits 6 - 0 = Key code
+--                   Data bits 6 - 0    = ASCII code
+--                   Using constant array look up.
+--
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
+--
+--  Uses           : None
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Copyright (C) 2004 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Date        Author     Changes
+--
+-- 0.1     2004-10-18  John Kent  Initial version
+--
+-- 0.2     2007-01-28  John Kent  Made entity compatible with block RAM versions
+--
+-- 0.3     2007-02-03  John Kent  Initialized with bit_vector
+--
+-- 0.4     2010-06-17  John Kent  Updated header and added GPL
+--                                Renamed data_in and data_out signals
+--
 --
 library IEEE;
 use ieee.std_logic_1164.all;
@@ -18,20 +68,17 @@ use ieee.std_logic_unsigned.all;
 
 entity keymap_rom is
     Port (
-       clk   : in  std_logic;
-       rst   : in  std_logic;
-       cs    : in  std_logic;
-       rw    : in  std_logic;
-       addr  : in  std_logic_vector (8 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       rw       : in  std_logic;
+       addr     : in  std_logic_vector (8 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end keymap_rom;
 
 architecture rtl of keymap_rom is
-  constant width   : integer := 8;
-  constant memsize : integer := 512;
-  signal rvect : std_logic_vector(255 downto 0);
 
   type rom_array is array(0 to 15) of std_logic_vector (255 downto 0);
 
@@ -57,9 +104,16 @@ architecture rtl of keymap_rom is
     x"00007c007d0d000000002b7b00220000005f703a6c3f3e000028296f696b3c00",	-- DF - C0
     x"0000000000000000001b000000007f0000000000000000000008000000000000"	   -- FF - E0
   );
+
+  signal rom_out : std_logic_vector(255 downto 0);
+
 begin
 
-   rvect <= rom_data(conv_integer(addr(8 downto 5))); 
-	rdata <= rvect( conv_integer(addr(4 downto 0))*8+7 downto conv_integer(addr(4 downto 0))*8);
+  process( addr, rom_data, rom_out )
+  begin
+    rom_out  <= rom_data(conv_integer(addr(8 downto 5))); 
+	 data_out <= rom_out( conv_integer(addr(4 downto 0))*8+7 downto conv_integer(addr(4 downto 0))*8);
+  end;
+
 end architecture rtl;
 

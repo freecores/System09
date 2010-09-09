@@ -1,44 +1,73 @@
---===========================================================================----
+--===========================================================================--
+--                                                                           --
+--       Synthesizable Quad Core 6809 instruction compatible CPU Module      --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    unicpu09.vhd - Quad core 6809 processor
+--  File name      : quadcpu09.vhd
 --
---===========================================================================----
+--  Entity name    : quadcpu09
 --
---  This core adheres to the GNU public license  
+--  Purpose        : Top level file for quad Core 6809 compatible system on a chip
+--                   Designed for Xilinx XC3S1000 Spartan 3 FPGA.
+--                   Intended for Digilent Xilinx Spartan 3 Starter FPGA board,
+--                   or XESS XSA-3S1000 FPGA board.
 --
--- File name      : quadcpu09.vhd
+--  Dependencies   : ieee.Std_Logic_1164
+--                   ieee.std_logic_unsigned
+--                   ieee.std_logic_arith
+--                   ieee.numeric_std
+--                   unisim.vcomponents
+--                   work.bit_funcs
 --
--- Purpose        : Top level file for quad Core 6809 compatible system on a chip
---                  Designed with Xilinx XC3S1000 Spartan 3 FPGA.
---                  Implemented With Digilent Xilinx Starter FPGA board,
+--  Status:        : *** Still under development ***
 --
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
---                  ieee.std_logic_arith
---                  ieee.numeric_std
+--  Uses           : unicpu09  (unicpu09.vhd)   CPU09 core module
 --
--- Uses           : 
---                  unicpu09  (unicpu09.vhd)     6809 CPU core	module
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  quadcpu09.vhd is a top level file for a quad CPU09 core written in VHDL.
 -- 
--- Author         : John E. Kent      
---                  dilbert57@opencores.org      
+--  Copyright (C) 2003 - 2010 John Kent
 --
---===========================================================================----
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
 --
--- Revision History:
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 --===========================================================================--
--- Version 0.1 - 20 March 2003
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date               Description
+-- 0.1      John Kent     20th March 2003    Initial version
+-- 0.2      John Kent     30th May 2010      Updated Header and GPL
 --
 --===========================================================================--
 
 library ieee;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
+
 library unisim;
 	use unisim.vcomponents.all;
+
 library work;
    use work.bit_funcs.all;
 
@@ -46,16 +75,16 @@ entity quadcpu09 is
   port (    
 	 clk      :	in  std_logic;
     rst      : in  std_logic;
-    rw       :	out std_logic;
     vma      :	out std_logic;
-    address  : out std_logic_vector(19 downto 0);
+    addr     : out std_logic_vector(19 downto 0);
+    rw       :	out std_logic;
     data_in  : in	 std_logic_vector(7 downto 0);
 	 data_out : out std_logic_vector(7 downto 0);
-	 halt     : in  std_logic;
-	 hold     : in  std_logic;
 	 irq      : in  std_logic;
 	 nmi      : in  std_logic;
-	 firq     : in  std_logic
+	 firq     : in  std_logic;
+	 halt     : in  std_logic;
+	 hold     : in  std_logic
   );
 end entity;
 
@@ -101,18 +130,15 @@ architecture RTL of quadcpu09 is
 
 
 component my_unicpu09
-  generic(
-  );
-
   port(
 	 clk      :	in  std_logic;
     rst      : in  std_logic;
 	 --
 	 -- cpu side signals
 	 --
-    rw       : out std_logic;
     vma      : out std_logic;
     addr     : out addr_type;
+    rw       : out std_logic;
     cpu_id   : in  data_type;
 	 --
 	 -- memory side signals
@@ -143,104 +169,104 @@ my_unicpu09_0 : unicpu09
 port map (    
 	 clk	     => clk,
     rst       => rst,
-    rw	     => cpu_rw(0),
     vma       => cpu_vma(0),
     addr      => cpu_addr(0),
+    rw	     => cpu_rw(0),
     id        => "00000000",
  	 --
 	 -- memory side signals
 	 --
-    mem_rw    => mem_rw,
     mem_vma   => mem_vma,
     mem_addr  => mem_addr,
+    mem_rw    => mem_rw,
     mem_dati  => mem_dati,
 	 mem_dato  => mem_dato(0),
     --
 	 -- cpu controls
 	 --
-	 halt      => cpu_halt(0),
-	 hold      => cpu_hold(0),
 	 irq       => cpu_irq(0),
 	 nmi       => cpu_nmi(0),
-	 firq      => cpu_firq(0)
+	 firq      => cpu_firq(0),
+	 halt      => cpu_halt(0),
+	 hold      => cpu_hold(0)
     );
 
 my_unicpu09_1 : unicpu09  
 port map (    
 	 clk	     => clk,
     rst       => rst,
-    rw	     => cpu_rw(1),
     vma       => cpu_vma(1),
     addr      => cpu_addr(1),
+    rw	     => cpu_rw(1),
     id        => "00010000",
  	 --
 	 -- memory side signals
 	 --
-    mem_rw    => mem_rw,
     mem_vma   => mem_vma,
     mem_addr  => mem_addr,
+    mem_rw    => mem_rw,
     mem_dati  => mem_dati,
 	 mem_dato  => mem_dato(1),
     --
 	 -- cpu controls
 	 --
-	 halt      => cpu_halt(1),
-	 hold      => cpu_hold(1),
 	 irq       => cpu_irq(1),
 	 nmi       => cpu_nmi(1),
-	 firq      => cpu_firq(1)
+	 firq      => cpu_firq(1),
+	 halt      => cpu_halt(1),
+	 hold      => cpu_hold(1)
     );
 
 my_unicpu09_2 : unicpu09  
 port map (    
 	 clk	     => clk,
     rst       => rst,
-    rw	     => cpu_rw(2),
     vma       => cpu_vma(2),
     addr      => cpu_addr(2),
+    rw	     => cpu_rw(2),
     id        => "00100000"
  	 --
 	 -- memory side signals
 	 --
-    mem_rw    => mem_rw,
     mem_vma   => mem_vma,
     mem_addr  => mem_addr,
+    mem_rw    => mem_rw,
     mem_dati  => mem_dati,
 	 mem_dato  => mem_dato(2),
     --
 	 -- cpu controls
 	 --
-	 halt      => cpu_halt(2),
-	 hold      => cpu_hold(2),
 	 irq       => cpu_irq(2),
 	 nmi       => cpu_nmi(2),
-	 firq      => cpu_firq(2)
+	 firq      => cpu_firq(2),
+	 halt      => cpu_halt(2),
+	 hold      => cpu_hold(2)
     );
 
 my_unicpu09_3 : unicpu09  
 port map (    
 	 clk	     => clk,
     rst       => rst,
-    rw	     => cpu_rw(3),
     vma       => cpu_vma(3),
     addr      => cpu_addr(3),
+    rw	     => cpu_rw(3),
     id        => "00110000",
  	 --
 	 -- memory side signals
 	 --
-    mem_rw    => mem_rw,
     mem_vma   => mem_vma,
     mem_addr  => mem_addr,
+    mem_rw    => mem_rw,
     mem_dati  => mem_dati,
 	 mem_dato  => mem_dato(3),
     --
 	 -- cpu controls
 	 --
-	 halt      => cpu_halt(3),
-	 hold      => cpu_hold(3),
 	 irq       => cpu_irq(3),
 	 nmi       => cpu_nmi(3),
-	 firq      => cpu_firq(3)
+	 firq      => cpu_firq(3),
+	 halt      => cpu_halt(3),
+	 hold      => cpu_hold(3)
     );
 
 --

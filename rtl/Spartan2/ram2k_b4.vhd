@@ -1,9 +1,49 @@
+--===========================================================================--
+--                                                                           --
+--       2K Byte RAM Block using 4KBit Block RAMs found in the Spartan 2     --
+--                                                                           --
+--===========================================================================--
 --
--- Ram2k.vhd
+-- File name      : ram2k_b4.vhd
 --
--- 2K Byte RAM made out of 4 x 512 byte Block RAMs.
--- John Kent
--- 11 February 2004
+-- Entity name    : ram_2k
+--
+-- Purpose        : 2KB RAM block used for a character text buffer for vdu8 
+--                  using 4 x 4KBit Block RAMs
+--
+-- Dependencies   : ieee.Std_Logic_1164
+--                  ieee.std_logic_arith
+--                  ieee.std_logic_unsigned
+--                  unisim.vcomponents
+-- 
+-- Author         : John E. Kent      
+--                  dilbert57@opencores.org
+--
+--
+--  Copyright (C) 2004 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                             Revision History:                             --
+--===========================================================================--
+--
+-- Version Date       Author      Comments
+--
+-- 0.1     2004-02-11 John Kent   Initial Version
+-- 0.2     2010-08-27 John Kent   Added header
+--                                Changed data input & output signals
 --
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -14,28 +54,27 @@ library unisim;
 
 entity ram_2k is
     Port (
-       clk   : in  std_logic;
-       rst   : in  std_logic;
-       cs    : in  std_logic;
-       rw    : in  std_logic;
-       addr  : in  std_logic_vector (10 downto 0);
-       wdata : in  std_logic_vector (7 downto 0);
-       rdata : out std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       rw       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end ram_2k;
 
 architecture rtl of ram_2k is
 
-   signal we       : std_logic;
-   signal reset    : std_logic;
-   signal rdata0   : std_logic_vector (7 downto 0);
-   signal rdata1   : std_logic_vector (7 downto 0);
-   signal rdata2   : std_logic_vector (7 downto 0);
-   signal rdata3   : std_logic_vector (7 downto 0);
-   signal ena0     : std_logic;
-   signal ena1     : std_logic;
-   signal ena2     : std_logic;
-   signal ena3     : std_logic;
+   signal we        : std_logic;
+   signal data_out0 : std_logic_vector (7 downto 0);
+   signal data_out1 : std_logic_vector (7 downto 0);
+   signal data_out2 : std_logic_vector (7 downto 0);
+   signal data_out3 : std_logic_vector (7 downto 0);
+   signal ena0      : std_logic;
+   signal ena1      : std_logic;
+   signal ena2      : std_logic;
+   signal ena3      : std_logic;
 
    component RAMB4_S8
     generic (
@@ -79,10 +118,10 @@ INIT_0F => x"1000100C02423C0070180C060C18700000007E007E0000000E18306030180E10"
     port map ( clk => clk,
 	            en  => ena0,
 				   we  => we,
-				   rst => reset,
+				   rst => rst,
 				   addr(8 downto 0) => addr(8 downto 0),
-               di(7 downto 0)   => wdata(7 downto 0),
-				   do(7 downto 0)   => rdata0(7 downto 0)
+               di(7 downto 0)   => data_in(7 downto 0),
+				   do(7 downto 0)   => data_out0(7 downto 0)
 	);
 
   MY_RAM1 : RAMB4_S8
@@ -109,10 +148,10 @@ INIT_0F => x"0010207F20100000080808082A1C0800003C04040404043C006E70103C10100C"
     port map ( clk => clk,
 	            en  => ena1,
 				   we  => we,
-				   rst => reset,
+				   rst => rst,
 				   addr(8 downto 0) => addr(8 downto 0),
-               di(7 downto 0)   => wdata(7 downto 0),
-				   do(7 downto 0)   => rdata1(7 downto 0)
+               di(7 downto 0)   => data_in(7 downto 0),
+				   do(7 downto 0)   => data_out1(7 downto 0)
 	);
 
   MY_RAM2 : RAMB4_S8
@@ -138,10 +177,10 @@ INIT_0F => x"1000100C02423C0070180C060C18700000007E007E0000000E18306030180E10"
     port map ( clk => clk,
 	            en  => ena2,
 				   we  => we,
-				   rst => reset,
+				   rst => rst,
 				   addr(8 downto 0) => addr(8 downto 0),
-               di(7 downto 0)   => wdata(7 downto 0),
-				   do(7 downto 0)   => rdata2(7 downto 0)
+               di(7 downto 0)   => data_in(7 downto 0),
+				   do(7 downto 0)   => data_out2(7 downto 0)
 	);
 
   MY_RAM3 : RAMB4_S8
@@ -168,45 +207,36 @@ INIT_0F => x"0010207F20100000080808082A1C0800003C04040404043C006E70103C10100C"
     port map ( clk => clk,
 	            en  => ena3,
 				   we  => we,
-				   rst => reset,
+				   rst => rst,
 				   addr(8 downto 0) => addr(8 downto 0),
-               di(7 downto 0)   => wdata(7 downto 0),
-				   do(7 downto 0)   => rdata3(7 downto 0)
+               di(7 downto 0)   => data_in(7 downto 0),
+				   do(7 downto 0)   => data_out3(7 downto 0)
 	);
 
-my_ram_2k : process ( clk, rst, cs, rw, addr, rdata0, rdata1, rdata2, rdata3 )
+my_ram_2k : process ( cs, rw, addr, data_out0, data_out1, data_out2, data_out3 )
 begin
+    ena0 <= '0';
+	 ena1 <= '0';
+    ena2 <= '0';
+	 ena3 <= '0';
 	 case addr(10 downto 9) is
 	 when "00" =>
-      ena0 <= cs;
-	   ena1 <= '0';
-      ena2 <= '0';
-	   ena3 <= '0';
-		rdata <= rdata0;
+      ena0     <= cs;
+		data_out <= data_out0;
 	 when "01" =>
-      ena0 <= '0';
-	   ena1 <= cs;
-      ena2 <= '0';
-	   ena3 <= '0';
-		rdata <= rdata1;
+	   ena1     <= cs;
+		data_out <= data_out1;
 	 when "10" =>
-      ena0 <= '0';
-	   ena1 <= '0';
-      ena2 <= cs;
-	   ena3 <= '0';
-		rdata <= rdata2;
+      ena2     <= cs;
+		data_out <= data_out2;
 	 when "11" =>
-      ena0 <= '0';
-	   ena1 <= '0';
-      ena2 <= '0';
-	   ena3 <= cs;
-		rdata <= rdata3;
+	   ena3     <= cs;
+		data_out <= data_out3;
 	 when others =>
       null;
 	 end case;
 
-	 we <= cs and (not rw);
-    reset <= rst;
+	 we <= not rw;
 
 end process;
 

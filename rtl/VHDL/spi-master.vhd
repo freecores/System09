@@ -1,54 +1,126 @@
--- SPI bus master for System09 (http://members.optushome.com.au/jekent/system09/index.html)
-
--- This core implements a SPI master interface.  Transfer size is 4, 8, 12 or
--- 16 bits.  The SPI clock is 0 when idle, sampled on the rising edge of the SPI
--- clock.  The SPI clock is derived from the bus clock input divided 
--- by 2, 4, 8 or 16.
-
--- clk, reset, cs, rw, addr, data_in, data_out and irq represent the System09
--- bus interface.
--- spi_clk, spi_mosi, spi_miso and spi_cs_n are the standard SPI signals meant
--- to be routed off-chip.
-
--- The SPI core provides for four register addresses that the CPU can read or
--- write:
-
--- 0 -> DL: Data LSB
--- 1 -> DH: Data MSB
--- 2 -> CS: Command/Status
--- 3 -> CO: Config
-
--- Write bits, CS:
+--===========================================================================--
+--                                                                           --
+--             Synthesizable Serial Peripheral Interface Master              --
+--                                                                           --
+--===========================================================================--
 --
--- START CS[0]:   Start transfer
--- END   CS[1]:   Deselect device after transfer (or immediately if START = '0')
--- IRQEN CS[2]:   Generate IRQ at end of transfer
--- SPIAD CS[6:4]: SPI device address
+--  File name      : spi-master.vhd
+--
+--  Entity name    : spi-master
+--
+--  Purpose        : Implements a SPI Master Controller
+--                  
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
+--                   ieee.numeric_std
+--                   unisim.vcomponents
+--
+--  Author         : Hans Huebner
+--
+--  Email          : hans@huebner.org  
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Description    : This core implements a SPI master interface.  
+--                   Transfer size is 4, 8, 12 or 16 bits.  
+--                   The SPI clock is 0 when idle, sampled on 
+--                   the rising edge of the SPI clock.  
+--                   The SPI clock is derived from the bus clock input 
+--                   divided by 2, 4, 8 or 16.
+--
+--                   clk, reset, cs, rw, addr, data_in, data_out and irq 
+--                   represent the System09 bus interface. 
+--                   spi_clk, spi_mosi, spi_miso and spi_cs_n are the 
+--                   standard SPI signals meant to be routed off-chip.
+--
+--                   The SPI core provides for four register addresses 
+--                   that the CPU can read or writen to:
+--
+--                   Base + $00 -> DL: Data Low LSB
+--                   Base + $01 -> DH: Data High MSB
+--                   Base + $02 -> CS: Command/Status
+--                   Base + $03 -> CO: Config
+--
+--                   CS: Write bits:
+--
+--                   CS[0]   START : Start transfer
+--                   CS[1]   END   : Deselect device after transfer 
+--                                   (or immediately if START = '0')
+--                   CS[2]   IRQEN : Generate IRQ at end of transfer
+--                   CS[6:4] SPIAD : SPI device address
 -- 
--- Read bits, CS:
+--                   CS: Read bits
 --
--- BUSY  CS[0]: Currently transmitting data
+--                   CS[0]   BUSY  : Currently transmitting data
 --
--- Write BITS, CO:
+--                   CO: Write bits
 --
--- DIVIDE CO[1:0]: SPI clock divisor, 00=clk/2, 01=clk/4, 10=clk/8, 11=clk/16
--- LENGTH CO[3:2]: Transfer length, 00=4 bits, 01=8 bits, 10=12 bits, 11=16 bits
+--                   CO[1:0] DIVIDE: SPI clock divisor, 
+--                                   00=clk/2, 
+--                                   01=clk/4,
+--                                   10=clk/8,
+--                                   11=clk/16
+--                   CO[3:2] LENGTH: Transfer length, 
+--                                   00= 4 bits, 
+--                                   01= 8 bits,
+--                                   10=12 bits,
+--                                   11=16 bits
+--
+--  Copyright (C) 2009 - 2010 Hans Huebner
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date               Description
+--
+-- 0.1      Hans Huebner  23 February 2009   SPI bus master for System09 
+-- 0.2      John Kent     16 June 2010       Added GPL notice
+--
 --
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+  use ieee.std_logic_1164.all;
+  use ieee.std_logic_unsigned.all;
 
 entity spi_master is
   port (
-    clk, reset, cs, rw : in  std_logic;
+    --
+    -- CPU Interface Signals
+    --
+    clk                : in  std_logic;
+    reset              : in  std_logic;
+    cs                 : in  std_logic;
+    rw                 : in  std_logic;
     addr               : in  std_logic_vector(1 downto 0);
     data_in            : in  std_logic_vector(7 downto 0);
     data_out           : out std_logic_vector(7 downto 0);
     irq                : out std_logic;
-    spi_clk, spi_mosi  : out std_logic;
-    spi_cs_n           : out std_logic_vector(7 downto 0);
-    spi_miso           : in  std_logic);
+    --
+    -- SPI Interface Signals
+    --
+    spi_miso           : in  std_logic;
+    spi_mosi           : out std_logic;
+    spi_clk            : out std_logic;
+    spi_cs_n           : out std_logic_vector(7 downto 0)
+    );
 end;
 
 architecture rtl of spi_master is

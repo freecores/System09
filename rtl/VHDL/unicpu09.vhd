@@ -1,64 +1,88 @@
---===========================================================================----
+--===========================================================================--
+--                                                                           --
+--       Synthesizable Single 6809 Instruction Compatible CPU Module         --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    unicpu09.vhd - Single 6809 processor core
+--  File name      : unicpu09.vhd
 --
---===========================================================================----
+--  Purpose        : Implements a single 6809 CPU module with
+--                   Dynamic Address Translation
+--                   CPU Module ID register and
+--                   32 bit Hardware Multiplier register
+--                  
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   ieee.std_logic_arith
+--                   ieee.numeric_std
+--                   unisim.vcomponents
 --
---  This core adheres to the GNU public license  
+--  Uses           : cpu09   (cpu09.vhd)    6809 CPU core
+--                   mmu     (mmu.vhd)      Memory Management Unit
+--                   mul32   (mul32.vhd)    32 bit hardware multiplier
 --
--- File name      : System09.vhd
+--  Author         : John E. Kent
 --
--- Purpose        : Top level file for Hex Core 6809 compatible system on a chip
---                  Designed with Xilinx XC3S1000 Spartan 3 FPGA.
---                  Implemented With Digilent Xilinx Starter FPGA board,
+--  Email          : dilbert57@opencores.org      
 --
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
---                  ieee.std_logic_arith
---                  ieee.numeric_std
+--  Web            : http://opencores.org/project,system09
 --
--- Uses           : 
---                  cpu09  (cpu09.vhd)           6809 CPU core
--- 
--- Author         : John E. Kent      
---                  dilbert57@opencores.org      
 --
---===========================================================================----
+--  Copyright (C) 2003 - 2010 John Kent
 --
--- Revision History:
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 --===========================================================================--
--- Version 0.1 - 20 March 2003
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Author        Date         Changes
+--
+-- 0.1     John Kent     2003-03-20   Started work on design (?)
+-- 0.2     John Kent     2010-06-16   Updated header with GPL
 --
 --===========================================================================--
 library ieee;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
 library unisim;
 	use unisim.vcomponents.all;
 
 entity unicpu09 is
-
-  port(
+  port
+  (
 	 clk      :	in  std_logic;
     rst      : in  std_logic;
 	 --
 	 -- cpu side signals
 	 --
-    rw       : out std_logic;
-    vma      : out std_logic;
-    addr     : out std_logic_vector(19 downto 0);
     id       : in  std_logic_vector( 7 downto 0);
+    vma      : out std_logic;
+    rw       : out std_logic;
+    addr     : out std_logic_vector(19 downto 0);
 	 --
 	 -- memory side signals
 	 --
-    mem_rw   : in  std_logic;
-    mem_vma  :	in  std_logic;
-    mem_addr : in  std_logic_vector(19 downto 0);
-    mem_dati : in	 std_logic_vector(7 downto 0);
-	 mem_dato : out std_logic_vector(7 downto 0);
+    mem_vma      : in  std_logic;
+    mem_rw       : in  std_logic;
+    mem_addr     : in  std_logic_vector(19 downto 0);
+    mem_data_in  : in  std_logic_vector(7 downto 0);
+	 mem_data_out : out std_logic_vector(7 downto 0);
 	 --
 	 -- controls
 	 --
@@ -67,49 +91,50 @@ entity unicpu09 is
 	 irq      : in  std_logic;
 	 nmi      : in  std_logic;
 	 firq     : in  std_logic
-    );
+  );
 end entity;
 
 -------------------------------------------------------------------------------
--- Architecture for System09
+-- Architecture for unicpu09
 -------------------------------------------------------------------------------
+
 architecture RTL of unicpu09 is
 
   -- CPU Interface signals
   signal cpu_rw       : std_logic;
   signal cpu_vma      : std_logic;
   signal cpu_addr     : std_logic_vector(15 downto 0);
-  signal cpu_dati     : std_logic_vector(7 downto 0);
-  signal cpu_dato     : std_logic_vector(7 downto 0);
+  signal cpu_data_in  : std_logic_vector(7 downto 0);
+  signal cpu_data_out : std_logic_vector(7 downto 0);
 
   -- BOOT ROM
-  signal rom_cs        : Std_logic;
-  signal rom_dato      : Std_Logic_Vector(7 downto 0);
+  signal rom_cs       : std_logic;
+  signal rom_data_out : std_Logic_Vector(7 downto 0);
 
-  -- cache host signals
-  signal cache_cpu_addr : std_logic_vector(31 downto 0);
-  signal cache_cpu_dati : std_logic_vector(15 downto 0);
-  signal cache_cpu_dato : std_logic_vector(15 downto 0);
-  signal cache_cpu_vma  : std_logic;
-  signal cache_cpu_en   : std_logic;
-
-  -- cache memory signals
-  signal cache_mem_addr : std_logic_vector(31 downto 0);
-  signal cache_mem_dati : std_logic_vector(15 downto 0);
-  signal cache_mem_dato : std_logic_vector(15 downto 0);
-  signal cache_mem_vma  : std_logic;
-
-  -- Dynamic Address Translation
-  signal dat_cs       : std_logic;
-  signal dat_addr     : std_logic_vector(15 downto 0);
+  -- Memory Management Unit
+  signal mmu_cs       : std_logic;
+  signal mmu_addr     : std_logic_vector(26 downto 0);
 
   -- 32 bit harware multiplier
   signal mul_cs       : std_logic;
-  signal mul_dato     : std_logic_vector(7 downto 0);
+  signal mul_data_out : std_logic_vector(7 downto 0);
 
   -- external access
   signal ext_cs       : std_logic;
-  signal ext_dato     : std_logic_vector(7 downto 0);
+  signal ext_data_out : std_logic_vector(7 downto 0);
+
+  -- cache host signals
+  signal cache_hcs      : std_logic;
+  signal cache_haddr     : std_logic_vector(31 downto 0);
+  signal cache_hdata_in  : std_logic_vector(15 downto 0);
+  signal cache_hdata_out : std_logic_vector(15 downto 0);
+  signal cache_hen       : std_logic;
+
+  -- cache memory signals
+  signal cache_scs      : std_logic;
+  signal cache_saddr     : std_logic_vector(31 downto 0);
+  signal cache_sdata_in  : std_logic_vector(15 downto 0);
+  signal cache_sdata_out : std_logic_vector(15 downto 0);
 
 component cpu09
   port (    
@@ -130,19 +155,18 @@ end component;
 
 ----------------------------------------
 --
--- Dynamic Address Translation Registers
+-- Memory Management Unit (32 x 16)
 --
 ----------------------------------------
-component dat_ram
+component mmu
   port (
     clk      : in  std_logic;
 	 rst      : in  std_logic;
 	 cs       : in  std_logic;
 	 rw       : in  std_logic;
-	 addr_lo  : in  std_logic_vector(3 downto 0);
-	 addr_hi  : in  std_logic_vector(3 downto 0);
-    data_in  : in  std_logic_vector(7 downto 0);
-	 data_out : out std_logic_vector(7 downto 0)
+	 addr     : in  std_logic_vector(15 downto 0);
+    data_in  : in  std_logic_vector( 7 downto 0);
+	 addr_out : out std_logic_vector(26 downto 0)
   );
 end component;
 
@@ -159,32 +183,38 @@ component mon_rom
     cs       : in  std_logic;
     rw       : in  std_logic;
     addr     : in  std_logic_vector (11 downto 0);
-    rdata    : out std_logic_vector (7 downto 0);
-    wdata    : in  std_logic_vector (7 downto 0)
+    data_in  : in  std_logic_vector (7 downto 0);
+    data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
 ----------------------------------------
 --
--- Dual Port cache memory
+-- Dual Port Cache memory 2K x 8 Bit
 --
 ----------------------------------------
 component dpr_2k
   port (
-    clk_a   : in  std_logic;
-    rst_a   : in  std_logic;
-    cs_a    : in  std_logic;
-    rw_a    : in  std_logic;
-    addr_a  : in  std_logic_vector (9 downto 0);
-    dati_a  : in  std_logic_vector (15 downto 0);
-    dato_a  : out std_logic_vector (15 downto 0);
-    clk_b   : in  std_logic;
-    rst_b   : in  std_logic;
-    cs_b    : in  std_logic;
-    rw_b    : in  std_logic;
-    addr_b  : in  std_logic_vector (9 downto 0);
-    dati_b  : in  std_logic_vector (15 downto 0);
-    dato_b  : out std_logic_vector (15 downto 0)
+    --
+    -- Port A (Host)
+    --
+    clk_a      : in  std_logic;
+    rst_a      : in  std_logic;
+    cs_a       : in  std_logic;
+    rw_a       : in  std_logic;
+    addr_a     : in  std_logic_vector (10 downto 0);
+    data_in_a  : in  std_logic_vector ( 7 downto 0);
+    data_out_a : out std_logic_vector ( 7 downto 0);
+    --
+    -- Port B (Slave)
+    --
+    clk_b      : in  std_logic;
+    rst_b      : in  std_logic;
+    cs_b       : in  std_logic;
+    rw_b       : in  std_logic;
+    addr_b     : in  std_logic_vector (10 downto 0);
+    data_in_b  : in  std_logic_vector ( 7 downto 0);
+    data_out_b : out std_logic_vector ( 7 downto 0)
   );
 end component;
 
@@ -200,8 +230,8 @@ component mul32
 	 cs       : in  std_logic;
 	 rw       : in  std_logic;
 	 addr     : in  std_logic_vector(3 downto 0);
-    dati     : in  std_logic_vector(7 downto 0);
-	 dato     : out std_logic_vector(7 downto 0)
+    data_in  : in  std_logic_vector(7 downto 0);
+	 data_out : out std_logic_vector(7 downto 0)
   );
 end component;
 
@@ -216,8 +246,8 @@ my_cpu : cpu09  port map (
     rw	     => cpu_rw,
     vma       => cpu_vma,
     address   => cpu_addr(15 downto 0),
-    data_in   => cpu_dati,
-	 data_out  => cpu_dato,
+    data_in   => cpu_data_in,
+	 data_out  => cpu_data_out,
 	 halt      => halt,
 	 hold      => hold,
 	 irq       => irq,
@@ -225,15 +255,14 @@ my_cpu : cpu09  port map (
 	 firq      => firq
     );
 
-my_dat : dat_ram port map (
+my_mmu : mmu port map (
     clk       => clk,
 	 rst       => rst,
-	 cs        => dat_cs,
+	 cs        => mmu_cs,
 	 rw        => cpu_rw,
-	 addr_hi   => cpu_addr(15 downto 12),
-	 addr_lo   => cpu_addr(3 downto 0),
-    data_in   => cpu_dato,
-	 data_out  => dat_addr(7 downto 0)
+	 addr      => cpu_addr,
+    data_in   => cpu_data_out,
+	 addr_out  => mmu_addr
 	 );
 
 my_rom : mon_rom port map (
@@ -242,66 +271,87 @@ my_rom : mon_rom port map (
 	 cs        => rom_cs,
 	 rw        => '1',
     addr      => cpu_addr(11 downto 0),
-    rdata     => rom_dato,
-    wdata     => cpu_dato
+    data_in   => cpu_data_out,
+    data_out  => rom_data_out,
     );
+
 --
--- high address cache
+-- High Address Cache
 --
 my_dpr_0 : dpr_2k port map (
-    clk_a     => clk,
-    rst_a     => rst,
-    cs_a      => cpu_vma,
-    rw_a      => '0',
-    addr_a    => cpu_addr(9 downto 0),
-    dati_a    => dat_addr(15 downto 0),
-    dato_a    => cache_cpu_addr(31 downto 16),
-    clk_b     => clk,
-    rst_b     => rst,
-    cs_b      => mem_vma,
-    rw_b      => '1',
-    addr_b    => mem_addr(9 downto 0),
-    dati_b    => (others=>'0'),
-    dato_b    => cache_mem_addr(31 downto 16)
+    --
+    -- Port A (Host / CPU interface)
+    --
+    clk_a      => clk,
+    rst_a      => rst,
+    cs_a       => cpu_vma,
+    rw_a       => '0',
+    addr_a     => cpu_addr(10 downto 0),
+    data_in_a  => mmu_addr(26 downto 19),
+    data_out_a => cache_haddr(26 downto 19),
+    --
+    -- Port B (Slave / Memory Interface)
+    --
+    clk_b      => clk,
+    rst_b      => rst,
+    cs_b       => mem_vma,
+    rw_b       => '1',
+    addr_b     => mem_addr(10 downto 0),
+    data_in_b  => (others => '0'),
+    data_out_b => cache_saddr(26 downto 19)
   );
+
 --
--- low address cache
+-- Low Address cache
 --
 my_dpr_1 : dpr_2k port map (
-    clk_a     => clk,
-    rst_a     => rst,
-    cs_a      => cpu_vma,
-    rw_a      => '0',
-    addr_a    => cpu_addr(9 downto 0),
-    dati_a    => cpu_addr(15 downto 0),
-    dato_a    => cache_cpu_addr(15 downto 0),
-    clk_b     => clk,
-    rst_b     => rst,
-    cs_b      => mem_vma,
-    rw_b      => '1',
-    addr_b    => mem_addr(9 downto 0),
-    dati_b    => (others=>'0'),
-    dato_b    => cache_mem_addr(15 downto 0)
+    --
+    -- Port A (Host / CPU interface)
+    --
+    clk_a      => clk,
+    rst_a      => rst,
+    cs_a       => cpu_vma,
+    rw_a       => '0',
+    addr_a     => cpu_addr(10 downto  0),
+    data_in_a  => mmu_addr(18 downto 11),
+    data_out_a => cache_haddr(18 downto 11),
+    --
+    -- Port B (Slave / Memory Interface)
+    --
+    clk_b      => clk,
+    rst_b      => rst,
+    cs_b       => mem_vma,
+    rw_b       => '1',
+    addr_b     => mem_addr(10 downto 0),
+    data_in_b  => (others => '0'),
+    data_out_b => cache_saddr(18 downto 11)
   );
+
 
 --
 -- data cache
 --
 my_dpr_2 : dpr_2k port map (
-    clk_a     => clk,
-    rst_a     => rst,
-    cs_a      => cache_cpu_vma,
-    rw_a      => cpu_rw,
-    addr_a    => cpu_addr(9 downto 0),
-    dati_a    => cache_cpu_dati(15 downto 0),
-    dato_a    => cache_cpu_dato(15 downto 0),
-    clk_b     => clk,
-    rst_b     => rst,
-    cs_b      => cache_mem_vma,
-    rw_b      => mem_rw,
-    addr_b    => mem_addr(9 downto 0),
-    dati_b    => cache_mem_dati(15 downto 0),
-    dato_b    => cache_mem_dato(15 downto 0)
+    --
+    -- Port A (Host / CPU Interface)
+    --
+    clk_a      => clk,
+    rst_a      => rst,
+    cs_a       => cache_hcs,
+    rw_a       => cpu_rw,
+    addr_a     => cpu_addr(10 downto 0),
+    data_in_a  => cache_hdata_in(7 downto 0),
+    data_out_a => cache_hdata_out(7 downto 0),
+    --
+    -- Port B (Slave / Memory Interface)
+    --
+    clk_b      => clk,
+    rst_b      => rst,
+    cs_b       => cache_scs,
+    rw_b       => mem_rw,
+    addr_b     => mem_addr(10 downto 0),
+    data_in_b  => cache_sdata_in(7 downto 0),
+    data_out_b => cache_sdata_out(7 downto 0)
   );
 
 my_mul32 : mul32 port map (
@@ -310,8 +360,8 @@ my_mul32 : mul32 port map (
 	 cs        => mul_cs,
 	 rw        => cpu_rw,
 	 addr      => cpu_addr(3 downto 0),
-    dati      => cpu_dato,
-	 dato      => mul_dato
+    data_in   => cpu_data_out,
+	 data_out  => mul_data_out
 	 );
 
 ----------------------------------------------------------------------
@@ -320,37 +370,40 @@ my_mul32 : mul32 port map (
 --
 ----------------------------------------------------------------------
 
-int_decode: process( cpu_addr, cpu_rw, cpu_vma,
-                     cache_cpu_dato,
+uni_decode: process( cpu_addr, cpu_rw, cpu_vma,
+                     cache_hdata_out,
 					      dat_cs, dat_addr,
-							cache_cpu_dato,
-							mul_dato,
-							rom_dato
+							cache_hdata_out,
+							mul_data_out,
+							rom_data_out
 							)
 begin
-  cpu_dati     <= cache_cpu_dato( 7 downto 0);
-  cache_cpu_en <= '1';
+  --
+  -- By default CPU accesses memory cache
+  --
+  cpu_data_in  <= cache_hdata_out( 7 downto 0);
+  cache_hen <= '1';     -- Cache enabled by default
   ext_cs       <= cpu_vma; -- Assume external access
   dat_cs       <= '0';     -- Dynamic Address Translation
-  rom_cs       <= '0';
+  rom_cs       <= '0';     -- Monitor ROM
   mul_cs       <= '0';     -- Hardware Multiplier
 
   if cpu_addr( 15 downto 8 ) = "11111111" then
     --
     -- DAT write registers at $FFF0 to $FFFF
 	 --
-    cpu_dati     <= rom_dato;
+    cpu_data_in  <= rom_data_out;
     rom_cs       <= cpu_vma;
     dat_cs       <= cpu_vma;
 	 ext_cs       <= '0';
-    cache_cpu_en <= '0';
+    cache_hen <= '0';
   --
   -- ROM  $F000 - $FFFF
   --
   elsif dat_addr(3 downto 0) = "1111" then -- $XE000 - $XEFFF
-    cpu_dati     <= rom_dato;
+    cpu_data_in  <= rom_data_out;
     rom_cs       <= cpu_vma;
-    cache_cpu_en <= '0';
+    cache_hen <= '0';
   --
   -- IO Devices $E000 - $EFFF
   --
@@ -358,27 +411,29 @@ begin
     --
 	 -- disable cache for I/O
 	 --
-    cache_cpu_en <= '0';
+    cache_hen <= '0';
 
 	 case cpu_addr(11 downto 8) is
     --
     -- CPU specific registers from $E200 to $E2FF
     --
     when "0010" =>
-	   ext_cs   <= '0';              -- assume this segment is internal
-      cpu_dati <= (others=>'0');		-- default to null data
+	   ext_cs      <= '0';              -- assume this segment is internal
+      cpu_data_in <= (others=>'0');		-- default to null data
+
       --
-      -- Unique number to identify CPU
+      -- Module ID number
       --
       case cpu_addr(7 downto 4) is
       when "0000" =>
-        cpu_dati <= cpu_id;  -- CPU ID register
+        cpu_data_in <= id;             -- unicpu module ID
+
       --
       -- hardware 32 bit multiplier
       --
       when "0001" =>
-        cpu_dati <= mul_dato;  -- Hardware Multiplier register
-        mul_cs   <= cpu_vma;
+        cpu_data_in <= mul_data_out;   -- Hardware Multiplier register
+        mul_cs      <= cpu_vma;
 
       when others =>
 		  null;
@@ -397,8 +452,8 @@ end process;
 --
 -- cpu side cache controller
 --
-my_cpu_cache : process( cpu_vma, cpu_rw, cpu_dato, cpu_addr, dat_addr, 
-                        cache_cpu_addr, cache_cpu_en, ext_cs )
+my_cpu_cache : process( cpu_vma, cpu_rw, cpu_data_out, cpu_addr, dat_addr, 
+                        cache_haddr, cache_hen, ext_cs )
 begin
   dat_addr(15 downto 8) <= (others=>'0');
   addr(19 downto 12) <= dat_addr xor id;
@@ -408,35 +463,35 @@ begin
   --
   -- external access if cache miss or write through or if i/o space
   --
-  if (cache_cpu_addr(23 downto 16) /= dat_addr( 7 downto 0) ) or
-	  (cache_cpu_addr(11 downto  0) /= cpu_addr(11 downto 0) ) or
-     (cpu_rw = '0') or (cache_cpu_en = '0') then
+  if (cache_haddr(23 downto 16) /= dat_addr( 7 downto 0) ) or
+	  (cache_haddr(11 downto  0) /= cpu_addr(11 downto 0) ) or
+     (cpu_rw = '0') or (cache_hen = '0') then
     vma <= ext_cs;
   end if;
-  cache_cpu_dati( 7 downto 0) <= cpu_dato;    
-  cache_cpu_dati(15 downto 8) <= (others=>'0');    
+  cache_hdata_in( 7 downto 0) <= cpu_data_out;    
+  cache_hdata_in(15 downto 8) <= (others=>'0');    
 end process;
 
 --
 -- memory side cache controller
 --
-my_mem_cache : process( mem_vma, mem_addr, mem_dati, mem_rw, 
-                        cache_mem_addr, cache_mem_dato )
+my_mem_cache : process( mem_vma, mem_addr, mem_data_in, mem_rw, 
+                        cache_saddr, cache_sdata_out )
 begin
   --
   -- write through from another CPU will update cache entry
   -- if there is a cache hit
   --
-  cache_mem_vma <= '0';
-  if (cache_mem_addr(23 downto 16) = mem_addr(19 downto 12)) and
-     (cache_mem_addr(11 downto  0) = mem_addr(11 downto  0)) then
-    cache_mem_vma <= mem_vma;
+  cache_scs <= '0';
+  if (cache_saddr(23 downto 16) = mem_addr(19 downto 12)) and
+     (cache_saddr(11 downto  0) = mem_addr(11 downto  0)) then
+    cache_scs <= mem_vma;
   end if;
-  mem_dato <= cache_mem_dato( 7 downto 0);
-  cache_mem_dati( 7 downto 0) <= mem_dati;    
-  cache_mem_dati(15 downto 8) <= (others=>'0');      
+  mem_data_out <= cache_sdata_out( 7 downto 0);
+  cache_sdata_in( 7 downto 0) <= mem_data_in;    
+  cache_sdata_in(15 downto 8) <= (others=>'0');      
 end process;
 
 end architecture;
 
-  -----------------------------------------------------------------------------
+-----------------------------------------------------------------------------

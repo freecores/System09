@@ -1,36 +1,53 @@
---===========================================================================----
---
---  S Y N T H E Z I A B L E    ioport - 2 x 8 bit parallel I/O port
---
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
---
--- File name      : ioport.vhd
---
--- Purpose        : dual 8 bit I/O module for System09
---
--- Dependencies   : ieee.Std_Logic_1164
---                  ieee.std_logic_unsigned
---
--- Uses           : None
---
--- Author         : John E. Kent      
---                  dilbert57@opencores.org      
---
---===========================================================================----
---
--- Revision History:
+--===========================================================================--
+--                                                                           --
+--  ioport.vhd - Synthesizable Dual Bidirectionsal I/O Port                  --
+--                                                                           --
 --===========================================================================--
 --
--- Version 0.1 - 11 Oct 2002
---   Used a loop counter for data direction & read port signals
--- Version 0.2 - 5 Sept 2003
---   Reduced to 2 x 8 bit ports
--- Version 1.0 - 6 Sept 2003 - John Kent
---   Realeased to open Cores
---   changed Clock Edge
--- Version 1.1 - 25 Feb 2007 - John Kent
---   modified sensitivity lists
+--  File name      : ioport.vhd
+--
+--  Purpose        : Implements a dual 8 bit bidirectional I/O port
+--                  
+--  Dependencies   : ieee.std_logic_1164
+--                   ieee.std_logic_unsigned
+--                   unisim.vcomponents
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  ioport.vhd is a dual bi-directional 8 bit I/O port written in VHDL.
+-- 
+--  Copyright (C) 2002 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version  Author        Date               Description
+-- 0.1      John E. Kent  11 October 2002    Used a loop counter for 
+--                                           data direction & read port signals
+-- 0.2      John E. Kent  5 September 2003   Reduced to 2 x 8 bit ports
+-- 1.0      John E. Kent  6 September 2003   Changed Clock Edge
+-- 1.1      John E. Kent  25 Februrary 2007  Modified sensitivity lists
+-- 1.2      John E. Kent  30 May 2010        Updated Header, added unisim library
 --
 --===========================================================================
 --
@@ -38,6 +55,8 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.std_logic_unsigned.all;
+library unisim;
+  use unisim.vcomponents.all;
 
 entity ioport is
 	port (	
