@@ -1,7 +1,7 @@
 #### UCF file created by Project Navigator
 #
-NET "reset_n"      LOC = "p57" ;
-NET "sysclk"       LOC = "p77" ;
+NET "rst_n"        LOC = "p57" ;
+NET "clk_in"       LOC = "p77" ;
 #
 # For B5-Compact-Flash:
 # Connector A
@@ -161,7 +161,7 @@ NET "bus_reset"    LOC = "p187"; #pin 4
 #NET "pin7"        LOC = "p191"; #pin 7
 #NET "pin8"        LOC = "p192"; #pin 8
 #NET "pin9"        LOC = "p193"; #pin 9
-NET "timer_out"     LOC = "p194"; #pin 10
+#NET "pin10"     LOC = "p194"; #pin 10
 NET "bus_data<0>"   LOC = "p198"; #pin 11
 NET "bus_data<1>"   LOC = "p199"; #pin 12
 NET "bus_data<2>"   LOC = "p200"; #pin 13
@@ -213,15 +213,15 @@ INST "ram_csn" TNM = "gram_cs";
 #
 # Timing Constraints
 #
-#TIMEGRP "gram_cs"   OFFSET = OUT 40 ns AFTER "sysclk";
-#TIMEGRP "gram_wr"   OFFSET = OUT 40 ns AFTER "sysclk";
-#TIMEGRP "gram_addr" OFFSET = OUT 40 ns AFTER "sysclk";
-#TIMEGRP "gram_data" OFFSET = OUT 40 ns AFTER "sysclk";
-#TIMEGRP "gram_data" OFFSET = IN 15 ns BEFORE "sysclk";
-#TIMEGRP "gtest_alu" OFFSET = OUT 90 ns AFTER "sysclk";
-#TIMEGRP "gtest_cc"  OFFSET = OUT 95 ns AFTER "sysclk";
-NET "sysclk" TNM_NET = "sysclk";
-TIMESPEC "TS_sysclk" = PERIOD "sysclk" 20 ns LOW 50 %;
+#TIMEGRP "gram_cs"   OFFSET = OUT 40 ns AFTER "clk_in";
+#TIMEGRP "gram_wr"   OFFSET = OUT 40 ns AFTER "clk_in";
+#TIMEGRP "gram_addr" OFFSET = OUT 40 ns AFTER "clk_in";
+#TIMEGRP "gram_data" OFFSET = OUT 40 ns AFTER "clk_in";
+#TIMEGRP "gram_data" OFFSET = IN 15 ns BEFORE "clk_in";
+#TIMEGRP "gtest_alu" OFFSET = OUT 90 ns AFTER "clk_in";
+#TIMEGRP "gtest_cc"  OFFSET = OUT 95 ns AFTER "clk_in";
+NET "clk_in" TNM_NET = "clk_in";
+TIMESPEC "TS_clk_in" = PERIOD "clk_in" 20 ns LOW 50 %;
 #
 # Fast I/O Pins
 #
