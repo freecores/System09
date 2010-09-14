@@ -1,11 +1,13 @@
--- $Id: System09_Digilent_3S500E.vhd,v 1.4 2008-08-20 06:00:55 davidgb Exp $
+-- $Id: System09_Digilent_3S500E.vhd,v 1.3.2.1 2008/04/08 14:59:48 davidgb Exp $
 --===========================================================================----
 --
 --  S Y N T H E Z I A B L E    System09 - SOC.
 --
+--===========================================================================----
+--
 --  This core adheres to the GNU public license  
 --
--- File name      : System09.vhd
+-- File name      : System09_Digilent_3S500E.vhd
 --
 -- Purpose        : Top level file for 6809 compatible system on a chip
 --                  Designed with Xilinx XC3S500E Spartan 3E FPGA.
@@ -16,7 +18,7 @@
 --                  ieee.std_logic_arith
 --                  ieee.numeric_std
 --
--- Uses           : mon_rom  (kbug_rom2k.vhd)       Monitor ROM
+-- Uses           : mon_rom  (kbug_rom2k.vhd) Monitor ROM
 --                  cpu09    (cpu09.vhd)      CPU core
 --                  miniuart (minitUART3.vhd) ACIA / MiniUART
 --                           (rxunit3.vhd)
@@ -120,11 +122,11 @@ architecture my_computer of my_system09 is
   -----------------------------------------------------------------------------
   -- constants
   -----------------------------------------------------------------------------
-  constant SYS_Clock_Frequency  : integer := 50000000;  -- FPGA System Clock
-  constant PIX_Clock_Frequency  : integer := 25000000;  -- VGA Pixel Clock
-  constant CPU_Clock_Frequency  : integer := 25000000;  -- CPU Clock
-  constant BAUD_Rate            : integer := 57600;	  -- Baud Rate
-  constant ACIA_Clock_Frequency : integer := BAUD_Rate * 16;
+  constant SYS_CLK_FREQ  : integer := 50000000;  -- FPGA System Clock
+  constant VGA_CLK_FREQ  : integer := 25000000;  -- VGA Pixel Clock
+  constant CPU_CLK_FREQ  : integer := 25000000;  -- CPU Clock
+  constant BAUD_RATE     : integer := 57600;	  -- Baud Rate
+  constant ACIA_CLK_FREQ : integer := BAUD_RATE * 16;
 
   -----------------------------------------------------------------------------
   -- Signals
@@ -166,7 +168,7 @@ architecture my_computer of my_system09 is
   signal keyboard_irq      : std_logic;
 
   -- Video Display Unit
-  signal pix_clk      : std_logic;
+  signal vga_clk      : std_logic;
   signal vdu_cs       : std_logic;
   signal vdu_data_out : std_logic_vector(7 downto 0);
 
@@ -202,18 +204,18 @@ architecture my_computer of my_system09 is
 
 component cpu09
   port (    
-	 clk:	     in	std_logic;
-    rst:      in	std_logic;
-    rw:	     out	std_logic;		-- Asynchronous memory interface
-    vma:	     out	std_logic;
-    address:  out	std_logic_vector(15 downto 0);
-    data_in:  in	std_logic_vector(7 downto 0);
-	 data_out: out std_logic_vector(7 downto 0);
-	 halt:     in  std_logic;
-	 hold:     in  std_logic;
-	 irq:      in  std_logic;
-	 nmi:      in  std_logic;
-	 firq:     in  std_logic
+	 clk      :	 in std_logic;
+    rst      :  in std_logic;
+    rw       :	out std_logic;
+    vma      :	out std_logic;
+    address  : out std_logic_vector(15 downto 0);
+	 data_out : out std_logic_vector(7 downto 0);
+    data_in  :  in std_logic_vector(7 downto 0);
+	 irq      :  in std_logic;
+	 nmi      :  in std_logic;
+	 firq     :  in std_logic;
+	 halt     :  in std_logic;
+	 hold     :  in std_logic
   );
 end component;
 
@@ -225,13 +227,13 @@ end component;
 ----------------------------------------
 component mon_rom
     Port (
-       clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
-       addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+		 rst      : in  std_logic;
+		 cs       : in  std_logic;
+		 rw       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -242,13 +244,13 @@ end component;
 ----------------------------------------
 component ram_32k
     Port (
-       clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
-       addr  : in  std_logic_vector (14 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+		 rst      : in  std_logic;
+		 cs       : in  std_logic;
+		 rw       : in  std_logic;
+       addr     : in  std_logic_vector (14 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -285,10 +287,10 @@ component ACIA_6850
      rst      : in  Std_Logic;  -- Reset input (active high)
      cs       : in  Std_Logic;  -- miniUART Chip Select
      rw       : in  Std_Logic;  -- Read / Not Write
+     addr     : in  Std_Logic;  -- Register Select
+     data_in  : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
+     data_out : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
      irq      : out Std_Logic;  -- Interrupt
-     Addr     : in  Std_Logic;  -- Register Select
-     DataIn   : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
-     DataOut  : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
      RxC      : in  Std_Logic;  -- Receive Baud Clock
      TxC      : in  Std_Logic;  -- Transmit Baud Clock
      RxD      : in  Std_Logic;  -- Receive Data
@@ -306,8 +308,8 @@ end component;
 
 component ACIA_Clock
   generic (
-     SYS_Clock_Frequency  : integer :=  SYS_Clock_Frequency;
-	  ACIA_Clock_Frequency : integer := ACIA_Clock_Frequency
+     SYS_CLK_FREQ  : integer :=  SYS_CLK_FREQ;
+	  ACIA_CLK_FREQ : integer := ACIA_CLK_FREQ
   );   
   port (
      clk      : in  Std_Logic;  -- System Clock Input
@@ -331,9 +333,6 @@ component timer
      data_in   : in std_logic_vector(7 downto 0);
 	  data_out  : out std_logic_vector(7 downto 0);
 	  irq       : out std_logic 
-	  -- ;
-     -- timer_in  : in std_logic;
-	  -- timer_out : out std_logic
 	  );
 end component;
 
@@ -365,7 +364,7 @@ end component;
 
 component keyboard
   generic(
-  KBD_Clock_Frequency : integer := CPU_Clock_Frequency
+  KBD_CLK_FREQ : integer := CPU_CLK_FREQ
   );
   port(
   clk             : in    std_logic;
@@ -388,18 +387,17 @@ end component;
 ----------------------------------------
 component vdu8
       generic(
-        VDU_CLOCK_FREQUENCY    : integer := CPU_Clock_Frequency; -- HZ
-        VGA_CLOCK_FREQUENCY    : integer := PIX_Clock_Frequency; -- HZ
-	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS
-	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS
-	     VGA_PIXELS_PER_CHAR    : integer := 8;  -- PIXELS
-	     VGA_LINES_PER_CHAR     : integer := 16; -- LINES
-	     VGA_HOR_BACK_PORCH     : integer := 40; -- PIXELS
-	     VGA_HOR_SYNC           : integer := 96; -- PIXELS
-	     VGA_HOR_FRONT_PORCH    : integer := 24; -- PIXELS
-	     VGA_VER_BACK_PORCH     : integer := 13; -- LINES
-	     VGA_VER_SYNC           : integer := 1;  -- LINES
-	     VGA_VER_FRONT_PORCH    : integer := 36  -- LINES
+        VGA_CLK_FREQ           : integer := VGA_CLK_FREQ; -- 25MHz
+	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS 25.6us
+	     VGA_HOR_CHAR_PIXELS    : integer :=  8; -- PIXELS 0.32us
+	     VGA_HOR_FRONT_PORCH    : integer := 16; -- PIXELS 0.64us (0.94us)
+	     VGA_HOR_SYNC           : integer := 96; -- PIXELS 3.84us (3.77us)
+	     VGA_HOR_BACK_PORCH     : integer := 48; -- PIXELS 1.92us (1.89us)
+	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS 12.8ms
+	     VGA_VER_CHAR_LINES     : integer := 16; -- LINES 0.512ms
+	     VGA_VER_FRONT_PORCH    : integer := 10; -- LINES 0.320ms
+	     VGA_VER_SYNC           : integer :=  2; -- LINES 0.064ms
+	     VGA_VER_BACK_PORCH     : integer := 34  -- LINES 1.088ms
       );
       port(
 		-- control register interface
@@ -440,33 +438,33 @@ my_cpu : cpu09  port map (
     rw	     => cpu_rw,
     vma       => cpu_vma,
     address   => cpu_addr(15 downto 0),
-    data_in   => cpu_data_in,
 	 data_out  => cpu_data_out,
-	 halt      => cpu_halt,
-	 hold      => cpu_hold,
+    data_in   => cpu_data_in,
 	 irq       => cpu_irq,
 	 nmi       => cpu_nmi,
-	 firq      => cpu_firq
+	 firq      => cpu_firq,
+	 halt      => cpu_halt,
+	 hold      => cpu_hold
   );
 
 my_rom : mon_rom port map (
-       clk   => cpu_clk,
-		 rst   => cpu_reset,
-		 cs    => rom_cs,
-		 rw    => '1',
-       addr  => cpu_addr(10 downto 0),
-       rdata => rom_data_out,
-       wdata => cpu_data_out
+       clk      => cpu_clk,
+		 rst      => cpu_reset,
+		 cs       => rom_cs,
+		 rw       => '1',
+       addr     => cpu_addr(10 downto 0),
+       data_in  => cpu_data_out,
+       data_out => rom_data_out
     );
 
 my_ram : ram_32k port map (
-       clk   => cpu_clk,
-		 rst   => cpu_reset,
-		 cs    => ram_cs,
-		 rw    => cpu_rw,
-       addr  => cpu_addr(14 downto 0),
-       rdata => ram_data_out,
-       wdata => cpu_data_out
+       clk      => cpu_clk,
+		 rst      => cpu_reset,
+		 cs       => ram_cs,
+		 rw       => cpu_rw,
+       addr     => cpu_addr(14 downto 0),
+       data_in  => cpu_data_out,
+       data_out => ram_data_out
     );
 
 my_pia  : pia_timer port map (
@@ -492,10 +490,10 @@ my_ACIA  : ACIA_6850 port map (
 	 rst       => cpu_reset,
     cs        => uart_cs,
 	 rw        => cpu_rw,
+    addr      => cpu_addr(0),
+	 data_in   => cpu_data_out,
+	 data_out  => uart_data_out,
     irq       => uart_irq,
-    Addr      => cpu_addr(0),
-	 Datain    => cpu_data_out,
-	 DataOut   => uart_data_out,
 	 RxC       => uart_clk,
 	 TxC       => uart_clk,
 	 RxD       => rxbit,
@@ -512,8 +510,8 @@ my_ACIA  : ACIA_6850 port map (
 ----------------------------------------
 my_ACIA_Clock : ACIA_Clock
   generic map(
-    SYS_Clock_Frequency  => SYS_Clock_Frequency,
-	 ACIA_Clock_Frequency => ACIA_Clock_Frequency
+    SYS_CLK_FREQ  => SYS_CLK_FREQ,
+	 ACIA_CLK_FREQ => ACIA_CLK_FREQ
   ) 
   port map(
     clk        => SysClk,
@@ -529,7 +527,7 @@ my_ACIA_Clock : ACIA_Clock
 ----------------------------------------
 my_keyboard : keyboard
    generic map (
-	KBD_Clock_Frequency => CPU_Clock_frequency
+	KBD_CLK_FREQ => CPU_CLK_FREQ
 	) 
    port map(
 	clk          => cpu_clk,
@@ -551,18 +549,17 @@ my_keyboard : keyboard
 ----------------------------------------
 my_vdu : vdu8 
   generic map(
-      VDU_CLOCK_FREQUENCY    => CPU_Clock_Frequency, -- HZ
-      VGA_CLOCK_FREQUENCY    => PIX_Clock_Frequency, -- HZ
+      VGA_CLK_FREQ           => VGA_CLK_FREQ, -- HZ
 	   VGA_HOR_CHARS          => 80, -- CHARACTERS
-	   VGA_VER_CHARS          => 25, -- CHARACTERS
-	   VGA_PIXELS_PER_CHAR    => 8,  -- PIXELS
-	   VGA_LINES_PER_CHAR     => 16, -- LINES
-	   VGA_HOR_BACK_PORCH     => 40, -- PIXELS
+	   VGA_HOR_CHAR_PIXELS    =>  8,  -- PIXELS
+	   VGA_HOR_FRONT_PORCH    => 16, -- PIXELS
 	   VGA_HOR_SYNC           => 96, -- PIXELS
-	   VGA_HOR_FRONT_PORCH    => 24, -- PIXELS
-	   VGA_VER_BACK_PORCH     => 13, -- LINES
-	   VGA_VER_SYNC           => 1,  -- LINES
-	   VGA_VER_FRONT_PORCH    => 36  -- LINES
+	   VGA_HOR_BACK_PORCH     => 48, -- PIXELS
+	   VGA_VER_CHARS          => 25, -- CHARACTERS
+	   VGA_VER_CHAR_LINES     => 16, -- LINES
+	   VGA_VER_FRONT_PORCH    => 10, -- LINES
+	   VGA_VER_SYNC           =>  2, -- LINES
+	   VGA_VER_FRONT_PORCH    => 34  -- LINES
   )
   port map(
 
@@ -576,7 +573,7 @@ my_vdu : vdu8
 		vdu_data_out  => vdu_data_out,
 
       -- vga port connections
-      vga_clk       => pix_clk,					 -- 25 MHz VDU pixel clock
+      vga_clk       => vga_clk,					 -- 25 MHz VDU pixel clock
       vga_red_o     => vga_red,
       vga_green_o   => vga_green,
       vga_blue_o    => vga_blue,
@@ -599,9 +596,6 @@ my_timer  : timer port map (
 	 data_in   => cpu_data_out,
 	 data_out  => timer_data_out,
     irq       => timer_irq
-	 -- ,
-	 -- timer_in  => CountL(5)
---	 timer_out => timer_out
     );
 
 ----------------------------------------
@@ -634,7 +628,7 @@ cpu_clk_buffer : BUFG port map(
 --
 vga_clk_buffer : BUFG port map(
     i => clock_div(0),
-	 o => pix_clk
+	 o => vga_clk
     );	 
 	 
 ----------------------------------------------------------------------
