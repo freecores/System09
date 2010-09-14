@@ -4,51 +4,53 @@
 # XC2S200.
 #
 # B3 Connector J3
-# B5-X300 Connector C
+# IDE / CF Interface
+# Note that this pin out is NOT consistant with the B5-IDE
 #
-#NET "b5_clk"       LOC = "p185"; #pin 2 (Global clock input)
-NET "bus_addr<0>"  LOC = "p181"; #pin 3
-NET "bus_addr<1>"  LOC = "p187"; #pin 4
-NET "bus_addr<2>"  LOC = "p188"; #pin 5
-NET "bus_addr<3>"  LOC = "p189"; #pin 6
-NET "bus_addr<4>"  LOC = "p191"; #pin 7
-NET "bus_addr<5>"  LOC = "p192"; #pin 8
-NET "bus_addr<6>"  LOC = "p193"; #pin 9
-NET "bus_addr<7>"  LOC = "p194"; #pin 10
-NET "bus_addr<8>"  LOC = "p195"; #pin 11
-NET "bus_addr<9>"  LOC = "p199"; #pin 12
-NET "bus_addr<10>" LOC = "p200"; #pin 13
-NET "bus_addr<11>" LOC = "p201"; #pin 14
-NET "bus_addr<12>" LOC = "p202"; #pin 15
-NET "bus_addr<13>" LOC = "p203"; #pin 16
-NET "bus_addr<14>" LOC = "p204"; #pin 17
-NET "bus_addr<15>" LOC = "p205"; #pin 18
-NET "bus_csn"      LOC = "p206"; #pin 19
+#NET "ide_gclk1"    LOC = "p185"; #pin 2 (Global clock input)
+#NET "ide_spare1"   LOC = "p181"; #pin 3
+NET "ide_rst_n"    LOC = "p187"; #pin 4  - ide pin 1
+NET "ide_dmarq"    LOC = "p188"; #pin 5  - ide pin 21
+NET "pb_iowr_n"    LOC = "p189"; #pin 6  - ide pin 23
+NET "pb_iord_n"    LOC = "p191"; #pin 7  - ide pin 25
+NET "ide_iordy"    LOC = "p192"; #pin 8  - ide pin 27
+NET "ide_con_csel" LOC = "p193"; #pin 9  - ide pin 28
+NET "ide_dmack_n"  LOC = "p194"; #pin 10 - ide pin 29
+NET "ide_intrq"    LOC = "p195"; #pin 11 - ide pin 31
+NET "ide_iocs16_n" LOC = "p199"; #pin 12 - ide pin 32
+NET "pb_addr<1>"   LOC = "p200"; #pin 13 - ide pin 33
+NET "ide_pdiag_n"  LOC = "p201"; #pin 14 - ide pin 34
+NET "pb_addr<0>"   LOC = "p202"; #pin 15 - ide pin 35
+NET "pb_addr<2>"   LOC = "p203"; #pin 16 - ide pin 36
+NET "ide_cs0_n"    LOC = "p204"; #pin 17 - ide pin 37
+NET "ide_cs1_n"    LOC = "p205"; #pin 18 - ide pin 38
+NET "ide_dasp_n"   LOC = "p206"; #pin 19 - ide pin 39
 #
 # B3 Connector J4
-# B5-X300 Connector D
+# IDE / CF Interface
+# Note that this pin out is NOT consistant with the B5-IDE
+# It's called the peripheral bus for consistance with the XESS board
 #
-#NET "GCK2"         LOC = "p182"; #pin 2 (Global clock input)
-NET "bus_clk"      LOC = "p160"; #pin 3
-NET "bus_reset"    LOC = "p161"; #pin 4
-#NET "bus_hold"     LOC = "p162"; #pin 5
-#NET "bus_irq"      LOC = "p163"; #pin 6
-NET "bus_addr<16>" LOC = "p164"; #pin 7
-NET "bus_addr<17>" LOC = "p165"; #pin 8
-NET "bus_addr<18>" LOC = "p166"; #pin 9
-NET "bus_addr<19>" LOC = "p167"; #pin 10
-NET "bus_data<0>"  LOC = "p168"; #pin 11
-NET "bus_data<1>"  LOC = "p172"; #pin 12
-NET "bus_data<2>"  LOC = "p173"; #pin 13
-NET "bus_data<3>"  LOC = "p174"; #pin 14
-NET "bus_data<4>"  LOC = "p175"; #pin 15
-NET "bus_data<5>"  LOC = "p176"; #pin 16
-NET "bus_data<6>"  LOC = "p178"; #pin 17
-NET "bus_data<7>"  LOC = "p179"; #pin 18
-NET "bus_rw"       LOC = "p180"; #pin 19
+#NET "pb_gclk2"    LOC = "p182"; #pin 2 (Global clock input)
+#NET "pb_spare2"   LOC = "p160"; #pin 3
+NET "pb_data<7>"  LOC = "p161"; #pin 4  - ide pin 3
+NET "pb_data<8>"  LOC = "p162"; #pin 5  - ide pin 4
+NET "pb_data<6>"  LOC = "p163"; #pin 6  - ide pin 5
+NET "pb_data<9>"  LOC = "p164"; #pin 7  - ide pin 6
+NET "pb_data<5>"  LOC = "p165"; #pin 8  - ide pin 7
+NET "pb_data<10>" LOC = "p166"; #pin 9  - ide pin 8
+NET "pb_data<4>"  LOC = "p167"; #pin 10 - ide pin 9
+NET "pb_data<11>" LOC = "p168"; #pin 11 - ide pin 10
+NET "pb_data<3>"  LOC = "p172"; #pin 12 - ide pin 11
+NET "pb_data<12>" LOC = "p173"; #pin 13 - ide pin 12
+NET "pb_data<2>"  LOC = "p174"; #pin 14 - ide pin 13
+NET "pb_data<13>" LOC = "p175"; #pin 15 - ide pin 14
+NET "pb_data<1>"  LOC = "p176"; #pin 16 - ide pin 15
+NET "pb_data<14>" LOC = "p178"; #pin 17 - ide pin 16
+NET "pb_data<0>"  LOC = "p179"; #pin 18 - ide pin 17
+NET "pb_data<15>" LOC = "p180"; #pin 19 - ide pin 18
 #
 # Connector J3
-#
 # For B5-Compact-Flash:
 #
 #NET "GCK3"      LOC = "P185"; #J2-2 (Global Clock input)
@@ -71,7 +73,6 @@ NET "bus_rw"       LOC = "p180"; #pin 19
 #NET "cf_rst_n"  LOC = "P206"; #J2-19
 #
 # Connector J4
-#
 # For B5-Compact-Flash:
 #
 #NET "GCK2"       LOC = "P182"; #J1-2 (Global Clock Input)
@@ -142,45 +143,48 @@ NET "ram_addr<15>" LOC = "p129"; #J1-18
 NET "ram_addr<16>" LOC = "p132"; #J1-19
 #
 # Connector J10
+# B5-X300 Interface to Dual Port RAM
 #
-#
-NET "SysClk"     LOC = "p77"; #pin 2 (GCK1 - global clock input)
-NET "led"        LOC = "p49"; #pin 3 (LED output)
-#NET "uart_csn"   LOC = "p57"; #pin 4
-#NET "test_rw"    LOC = "p58"; #pin 5
-#NET "test_d0"    LOC = "p59"; #pin 6
-#NET "test_d1"    LOC = "p60"; #pin 7
-NET "reset_n"    LOC = "p61"; #pin 8 (Test Input button)
-#NET "test_cc<0>" LOC = "p67"; #pin 11
-#NET "test_cc<1>" LOC = "p68"; #pin 12
-#NET "test_cc<2>" LOC = "p69"; #pin 13
-#NET "test_cc<3>" LOC = "p70"; #pin 14
-#NET "test_cc<4>" LOC = "p71"; #pin 15
-#NET "test_cc<5>" LOC = "p73"; #pin 16
-#NET "test_cc<6>" LOC = "p74"; #pin 17
-#NET "test_cc<7>" LOC = "p75"; #pin 18
-#NET "IO"         LOC = "p81"; #pin 19
+NET "clk_in"       LOC = "p77"; #pin 2 (GCK1 - global clock input)
+NET "led"          LOC = "p49"; #pin 3 (LED output)
+NET "bus_cs_n"     LOC = "p57"; #pin 4
+NET "bus_rw"       LOC = "p58"; #pin 5
+NET "bus_addr<12>" LOC = "p59"; #pin 6
+NET "bus_addr<11>" LOC = "p60"; #pin 7
+NET "rst_n"        LOC = "p61"; #pin 8 (Test Input button)
+NET "bus_addr<10>" LOC = "p62"; #pin 9
+NET "bus_addr<9>"  LOC = "p63"; #pin 10
+NET "bus_addr<8>"  LOC = "p67"; #pin 11
+NET "bus_addr<7>"  LOC = "p68"; #pin 12
+NET "bus_addr<6>"  LOC = "p69"; #pin 13
+NET "bus_addr<5>"  LOC = "p70"; #pin 14
+NET "bus_addr<4>"  LOC = "p71"; #pin 15
+NET "bus_addr<3>"  LOC = "p73"; #pin 16
+NET "bus_addr<2>"  LOC = "p74"; #pin 17
+NET "bus_addr<1>"  LOC = "p75"; #pin 18
+NET "bus_addr<0>"  LOC = "p81"; #pin 19
 #
 # Connector J11
+# B5-X300 Interface to Dual Port RAM
 #
 #NET "GCK0"         LOC = "p80";  #pin 2 (Global Clock input)
-NET "porta<0>"  LOC = "p82";  #pin 3
-NET "porta<1>"  LOC = "p83";  #pin 4
-NET "porta<2>"  LOC = "p84";  #pin 5
-NET "porta<3>"  LOC = "p86";  #pin 6
-NET "porta<4>"  LOC = "p87";  #pin 7
-NET "porta<5>"  LOC = "p88";  #pin 8
-NET "porta<6>"  LOC = "p89";  #pin 9
-NET "porta<7>"  LOC = "p90";  #pin 10
-NET "portb<0>"  LOC = "p94";  #pin 11
-NET "portb<1>"  LOC = "p95";  #pin 12
-NET "portb<2>"  LOC = "p96";  #pin 13
-NET "portb<3>"  LOC = "p97";  #pin 14
-NET "portb<4>"  LOC = "p98";  #pin 15
-NET "portb<5>"  LOC = "p99";  #pin 16
-NET "portb<6>"  LOC = "p100"; #pin 17
-NET "portb<7>"  LOC = "p101"; #pin 18
-NET "timer_out" LOC = "p102"; #pin 19
+NET "bus_data_in<7>"  LOC = "p82";  #pin 3
+NET "bus_data_in<6>"  LOC = "p83";  #pin 4
+NET "bus_data_in<5>"  LOC = "p84";  #pin 5
+NET "bus_data_in<4>"  LOC = "p86";  #pin 6
+NET "bus_data_in<3>"  LOC = "p87";  #pin 7
+NET "bus_data_in<2>"  LOC = "p88";  #pin 8
+NET "bus_data_in<1>"  LOC = "p89";  #pin 9
+NET "bus_data_in<0>"  LOC = "p90";  #pin 10
+NET "bus_data_out<7>" LOC = "p94";  #pin 11
+NET "bus_data_out<6>" LOC = "p95";  #pin 12
+NET "bus_data_out<5>" LOC = "p96";  #pin 13
+NET "bus_data_out<4>" LOC = "p97";  #pin 14
+NET "bus_data_out<3>" LOC = "p98";  #pin 15
+NET "bus_data_out<2>" LOC = "p99";  #pin 16
+NET "bus_data_out<1>" LOC = "p100"; #pin 17
+NET "bus_data_out<0>" LOC = "p101"; #pin 18
+NET "bus_clk"         LOC = "p102"; #pin 19
 #
 # Connector J8
 #
@@ -190,42 +194,84 @@ NET "timer_out" LOC = "p102"; #pin 19
 #NET "buzzer"       LOC = "p27"; #J1-3
 #NET "mouse_clock"  LOC = "p29"; #J1-4
 #NET "mouse_data"   LOC = "p30"; #J1-5
-NET "cts_n"        LOC = "p31"; #J1-6
-NET "rts_n"        LOC = "p33"; #J1-7
-NET "txbit"        LOC = "p34"; #J1-8
-NET "rxbit"        LOC = "p35"; #J1-9
+NET "acia_cts_n"   LOC = "p31"; #J1-6
+NET "acia_rts_n"   LOC = "p33"; #J1-7
+NET "acia_txd"     LOC = "p34"; #J1-8
+NET "acia_rxd"     LOC = "p35"; #J1-9
 NET "kb_clock"     LOC = "p36"; #J1-10
 NET "kb_data"      LOC = "p37"; #J1-11
-NET "v_drive"      LOC = "p41"; #J1-12
-NET "h_drive"      LOC = "p42"; #J1-13
-NET "blue_lo"      LOC = "p43"; #J1-14
-NET "blue_hi"      LOC = "p44"; #J1-15
-NET "green_lo"     LOC = "p45"; #J1-16
-NET "green_hi"     LOC = "p46"; #J1-17
-NET "red_lo"       LOC = "p47"; #J1-18
-NET "red_hi"       LOC = "p48"; #J1-19
+NET "vga_vsync"    LOC = "p41"; #J1-12
+NET "vga_hsync"    LOC = "p42"; #J1-13
+NET "vga_blue<0>"  LOC = "p43"; #J1-14
+NET "vga_blue<1>"  LOC = "p44"; #J1-15
+NET "vga_green<0>" LOC = "p45"; #J1-16
+NET "vga_green<1>" LOC = "p46"; #J1-17
+NET "vga_red<0>"   LOC = "p47"; #J1-18
+NET "vga_red<1>"   LOC = "p48"; #J1-19
 #
 # Connector J5
 #
 # Printer port
 #
-#NET "strobe_n"     LOC = "p3";  #J5-1
-#NET "autofd_n"     LOC = "p4";  #J5-2
-#NET "pd<0>"        LOC = "p5";  #J5-3
-#NET "fault_n"      LOC = "p6";  #J5-4
-#NET "pd<1>"        LOC = "p7";  #J5-5
-#NET "init_n"       LOC = "p8";  #J5-6
-#NET "pd<2>"        LOC = "p9";  #J5-7
-#NET "selin"        LOC = "p10"; #J5-8
-#NET "pd<3>"        LOC = "p14"; #J5-9
-#NET "pd<4>"        LOC = "p15"; #J5-11
-#NET "pd<5>"        LOC = "p16"; #J5-13
-#NET "pd<6>"        LOC = "p17"; #J5-15
-#NET "pd<7>"        LOC = "p18"; #J5-17
-#NET "ack"          LOC = "p20"; #J5-19
-#NET "busy"         LOC = "p21"; #J5-21
-#NET "pe"           LOC = "p22"; #J5-23
-#NET "sel"          LOC = "p23"; #J5-25
+NET "pp_ctrl<0>"    LOC = "p3";  #J5-1	 DB25 -  1 strobe_n
+NET "pp_ctrl<1>"    LOC = "p4";  #J5-2	 DB25 - 14 auto Linefeed
+NET "pp_data<0>"    LOC = "p5";  #J5-3	 DB25 -  2 data<0>
+NET "pp_stat<3>"    LOC = "p6";  #J5-4	 DB25 - 15 error_n
+NET "pp_data<1>"    LOC = "p7";  #J5-5	 DB25 -  3 data<1>
+NET "pp_ctrl<2>"    LOC = "p8";  #J5-6	 DB25 - 16 initialize_n
+NET "pp_data<2>"    LOC = "p9";  #J5-7	 DB25 -  4 data<2>
+NET "pp_ctrl<3>"    LOC = "p10"; #J5-8	 DB25 - 17 select_printer_n
+NET "pp_data<3>"    LOC = "p14"; #J5-9	 DB25 -  5 data<3>
+#                                #J5-10 DB25 - 18 ground
+NET "pp_data<4>"    LOC = "p15"; #J5-11 DB25 -  6 data<4>
+#                                #J5-12 DB25 - 19 ground
+NET "pp_data<5>"    LOC = "p16"; #J5-13 DB25 -  7 data<5>
+#                                #J5-14 DB25 - 20 ground
+NET "pp_data<6>"    LOC = "p17"; #J5-15 DB25 -  8 data<6>
+#                                #J5-16 DB25 - 21 ground
+NET "pp_data<7>"    LOC = "p18"; #J5-17 DB25 -  9 data<7>
+#                                #J5-18 DB25 - 22 ground
+NET "pp_stat<6>"    LOC = "p20"; #J5-19 DB25 - 10 ack_n
+#                                #J5-20 DB25 - 23 ground
+NET "pp_stat<7>"    LOC = "p21"; #J5-21 DB25 - 11 busy
+#                                #J5-22 DB25 - 24 ground
+NET "pp_stat<5>"    LOC = "p22"; #J5-23 DB25 - 12 paper_out
+#                                #J5-24 DB25 - 25 ground
+NET "pp_stat<4>"    LOC = "p23"; #J5-25 DB25 - 13 select
+#                                #J5-26 +3.3V
+# Parallel printer port pin assignment
+#
+# Pin No (DB25) SPP Signal      EPP Signal    Direction Register  Bit Inverted
+# 1 	          nStrobe 	     Write_n       Out       Control-0 Yes
+# 2 	          Data0           Data0         In/Out    Data-0 	No
+# 3 	          Data1           Data1         In/Out    Data-1 	No
+# 4 	          Data2           Data2         In/Out    Data-2 	No
+# 5 	          Data3           Data3         In/Out    Data-3 	No
+# 6 	          Data4           Data4         In/Out    Data-4 	No
+# 7 	          Data5           Data5         In/Out    Data-5 	No
+# 8 	          Data6           Data6         In/Out    Data-6 	No
+# 9 	          Data7           Data7         In/Out    Data-7 	No
+# 10 	          nAck            Interrupt     In        Status-6  No
+# 11 	          Busy            Wait          In        Status-7  Yes
+# 12 	          Paper-Out       Spare         In        Status-5  No
+# 13 	          Select          Spare         In        Status-4  No
+#
+# 14 	          Linefeed        Data_Strobe_n Out       Control-1 Yes
+# 15 	          nError          Spare         In        Status-3  No
+# 16            nInitialize     Reset         Out       Control-2 No
+# 17            nSelect-Printer Addr_Strobe_n Out       Control-3 Yes
+# 18-25         Ground          Ground        -         -         -
+#
+# Address                              MSB                         LSB
+#                                Bit:    7   6   5   4   3   2   1   0
+#Base   (SPP Data port)    Write Pin: 	  9   8   7   6   5   4   3   2
+#Base+1 (SPP Status port)  Read  Pin: 	~11  10  12  13  15 				
+#Base+2 (SPP Control port) Write Pin: 					    ~17  16 ~14  ~1
+#Base+3 (EPP Address port) R/W
+#Base+4 (EPP Data port)    R/W
+#
+# ~ indicates a hardware inversion of the bit.
+#
 #
 # Timing Groups
 #
@@ -268,16 +314,15 @@ INST "ram_wrln" TNM = "ram_wr";
 INST "ram_wrun" TNM = "ram_wr";
 #INST "ram_csn"  TNM = "ram_cs";
 #
-#
 # Timing Constraints
 #
-NET "SysClk" TNM_NET = "SysClk";
-TIMESPEC "TS_SysClk" = PERIOD "SysClk" 20 ns HIGH 50 %;
-#TIMEGRP "ram_cs"   OFFSET = OUT 40 ns AFTER "SysClk";
-TIMEGRP "ram_wr"   OFFSET = OUT 40 ns AFTER "SysClk";
-TIMEGRP "ram_addr" OFFSET = OUT 40 ns AFTER "SysClk";
-TIMEGRP "ram_data" OFFSET = OUT 40 ns AFTER "SysClk";
-TIMEGRP "ram_data" OFFSET = IN 15 ns BEFORE "SysClk";
+NET "clk_in" TNM_NET = "clk_in";
+TIMESPEC "TS_clk_in" = PERIOD "clk_in" 20 ns HIGH 50 %;
+#TIMEGRP "ram_cs"   OFFSET = OUT 55 ns AFTER "clk_in";
+#TIMEGRP "ram_wr"   OFFSET = OUT 55 ns AFTER "clk_in";
+#TIMEGRP "ram_addr" OFFSET = OUT 55 ns AFTER "clk_in";
+#TIMEGRP "ram_data" OFFSET = OUT 55 ns AFTER "clk_in";
+#TIMEGRP "ram_data" OFFSET = IN 15 ns BEFORE "clk_in";
 #
 # Fast I/O Pins
 #
