@@ -38,7 +38,7 @@ export BRAM_TYPE
 #
 # This name must match the name of the design in Xilinx ISE (case
 # sensitive). 
-DESIGN_NAME := my_system09
+DESIGN_NAME := system09
 #
 # Constraint file (unfortunately it cannot be extracted from ISE)
 UCF_FILE    := XSA-3S1000.ucf

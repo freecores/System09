@@ -136,7 +136,7 @@ library work;
 library unisim;
    use unisim.vcomponents.all;
 
-entity my_system09 is
+entity system09 is
   port(
     CLKA       : in  Std_Logic;  -- 100MHz Clock input
 	 SW2_N        : in  Std_logic;  -- Master Reset input (active low)
@@ -206,12 +206,12 @@ entity my_system09 is
 	 -- Disable Flash
 	 FLASH_CE_N   : out std_logic
 	 );
-end My_System09;
+end system09;
 
 -------------------------------------------------------------------------------
 -- Architecture for System09
 -------------------------------------------------------------------------------
-architecture rtl of my_system09 is
+architecture rtl of system09 is
 
   -----------------------------------------------------------------------------
   -- constants
