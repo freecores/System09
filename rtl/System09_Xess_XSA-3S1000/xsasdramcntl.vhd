@@ -9,9 +9,12 @@
 --    Customizes the generic SDRAM controller module for the XSA Board.
 --
 -- Revision:
---    1.1.0
+--    1.2.0
 --
 -- Additional Comments:
+--    1.2.0:
+--        added upper and lower data strobe signals
+--        John Kent 2008-03-23
 --    1.1.0:
 --        Added CLK_DIV generic parameter to allow stepping-down the clock frequency.
 --        Added MULTIPLE_ACTIVE_ROWS generic parameter to enable/disable keeping an active row in each bank.
@@ -58,6 +61,8 @@ package XSASDRAM is
       rst                  : in  std_logic;  -- reset
       rd                   : in  std_logic;  -- initiate read operation
       wr                   : in  std_logic;  -- initiate write operation
+      uds                  : in  std_logic;  -- upper data strobe
+      lds                  : in  std_logic;  -- lower data strobe
       earlyOpBegun         : out std_logic;  -- read/write/self-refresh op begun     (async)
       opBegun              : out std_logic;  -- read/write/self-refresh op begun (clocked)
       rdPending            : out std_logic;  -- read operation(s) are still in the pipeline
@@ -118,6 +123,8 @@ entity XSASDRAMCntl is
     rst                  : in  std_logic;  -- reset
     rd                   : in  std_logic;  -- initiate read operation
     wr                   : in  std_logic;  -- initiate write operation
+    uds                  : in  std_logic;  -- upper data strobe
+    lds                  : in  std_logic;  -- lower data strobe
     earlyOpBegun         : out std_logic;  -- read/write/self-refresh op begun     (async)
     opBegun              : out std_logic;  -- read/write/self-refresh op begun (clocked)
     rdPending            : out std_logic;  -- read operation(s) are still in the pipeline
@@ -155,7 +162,8 @@ architecture arch of XSASDRAMCntl is
   constant MIN_LOCK_FREQ : real    := 25_000.0;
   constant IN_PHASE      : boolean := real(FREQ)/CLK_DIV >= MIN_LOCK_FREQ;
   -- Calculate the frequency of the clock for the SDRAM.
-  constant SDRAM_FREQ    : natural := int_select(IN_PHASE, (FREQ*integer(2.0*CLK_DIV))/2, FREQ);
+--  constant SDRAM_FREQ    : natural := int_select(IN_PHASE, (FREQ*integer(2.0*CLK_DIV))/2, FREQ);
+  constant SDRAM_FREQ    : natural := int_select(IN_PHASE, (FREQ*2)/integer(2.0*CLK_DIV), FREQ);
   -- Compute the CLKDV_DIVIDE generic paramter for the DLL modules.  It defaults to 2 when CLK_DIV=1
   -- because the DLL does not support a divisor of 1 on the CLKDV output.  We use the CLK0 output
   -- when CLK_DIV=1 so we don't care what is output on thr CLK_DIV output of the DLL.
@@ -181,7 +189,7 @@ begin
   -----------------------------------------------------------
 
   -- master clock must come from a dedicated clock pin
-  clkin : IBUFG port map (I => clk, O => int_clkin);
+  clkin_buf : BUFG port map (I => clk, O => int_clkin);
 
   -- The external DLL is driven from the same source as the internal DLL
   -- if the clock divisor is 1.  If CLK_DIV is greater than 1, then the external DLL 
@@ -235,11 +243,13 @@ begin
         D    => int_lock,
         Q    => dllext_rst_n
         );
-    dllext_rst <= not dllext_rst when CLK_DIV/=1.0 else ZERO;
+--    Error ???
+--    dllext_rst <= not dllext_rst when CLK_DIV/=1.0 else ZERO;
+    dllext_rst <= not dllext_rst_n when CLK_DIV/=1.0 else ZERO;
 
     -- generate an external SDRAM clock sync'ed to the master clock
     sclkfb_buf : IBUFG port map(I => sclkfb, O => sclkfb_b);  -- SDRAM clock with PCB delays
---    sclkfb_buf : BUFGMUX port map(I => sclkfb, O => sclkfb_b);  -- SDRAM clock with PCB delays
+
     dllext     : CLKDLL port map(
       CLKIN                       => ext_clkin,  -- this is either the master clock or the divided clock from the internal DLL
       CLKFB                       => sclkfb_b,
@@ -256,7 +266,7 @@ begin
   end generate;
 
   -- The buffered clock is just a buffered version of the master clock.
-  bufclk <= int_clkin;
+  bufclk_bufg : BUFG port map (I => int_clkin, O => bufclk);
   -- The host-side clock comes from the CLK0 output of the internal DLL if the clock divisor is 1.
   -- Otherwise it comes from the CLKDV output if the clock divisor is greater than 1.
   -- Otherwise it is just a copy of the master clock if the DLLs aren't being used.
@@ -291,6 +301,8 @@ begin
       rst                  => rst,      -- reset
       rd                   => rd,       -- host-side SDRAM read control from memory tester
       wr                   => wr,       -- host-side SDRAM write control from memory tester
+      uds                  => uds,      -- host-side SDRAM upper data strobe
+      lds                  => lds,      -- host-side SDRAM lower data strobe
       rdPending            => rdPending,
       opBegun              => opBegun,  -- SDRAM memory read/write done indicator
       earlyOpBegun         => earlyOpBegun,  -- SDRAM memory read/write done indicator

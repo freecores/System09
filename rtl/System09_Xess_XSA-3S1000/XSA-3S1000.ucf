@@ -160,14 +160,14 @@ net FLASH_CE_N   LOC=R4  | IOSTANDARD = LVCMOS33 ;
 #
 # Status LED
 #
-#net S<0>          loc=M6  | IOSTANDARD = LVCMOS33 ; # FPGA_D7, LED_D 
-#net S<1>          loc=M11 | IOSTANDARD = LVCMOS33 ; # FPGA_D0, LED_C 
-#net S<2>          loc=N6  | IOSTANDARD = LVCMOS33 ; # FPGA_D6, LED_E 
-#net S<3>          loc=R7  | IOSTANDARD = LVCMOS33 ; # FPGA_D5, LED_G  
-#net S<4>          loc=P10 | IOSTANDARD = LVCMOS33 ; # FPGA_D2, LED_B 
-#net S<5>          loc=T7  | IOSTANDARD = LVCMOS33 ; # FPGA_D4, LED_F  
-#net S<6>          loc=R10 | IOSTANDARD = LVCMOS33 ; # FPGA_D3, LED_A
-#net S<7>          loc=N11 | IOSTANDARD = LVCMOS33 ; # FPGA_D1, LED_DP 
+net S<0>          loc=M6  | IOSTANDARD = LVCMOS33 ; # FPGA_D7, LED_D 
+net S<1>          loc=M11 | IOSTANDARD = LVCMOS33 ; # FPGA_D0, LED_C 
+net S<2>          loc=N6  | IOSTANDARD = LVCMOS33 ; # FPGA_D6, LED_E 
+net S<3>          loc=R7  | IOSTANDARD = LVCMOS33 ; # FPGA_D5, LED_G  
+net S<4>          loc=P10 | IOSTANDARD = LVCMOS33 ; # FPGA_D2, LED_B 
+net S<5>          loc=T7  | IOSTANDARD = LVCMOS33 ; # FPGA_D4, LED_F  
+net S<6>          loc=R10 | IOSTANDARD = LVCMOS33 ; # FPGA_D3, LED_A
+net S<7>          loc=N11 | IOSTANDARD = LVCMOS33 ; # FPGA_D1, LED_DP 
 #
 # Parallel Port
 #

@@ -138,7 +138,8 @@ library unisim;
 
 entity system09 is
   port(
-    CLKA       : in  Std_Logic;  -- 100MHz Clock input
+    CLKA         : in  Std_Logic;  -- 100MHz Clock input
+--    CLKB         : in  Std_Logic;  -- 50MHz Clock input
 	 SW2_N        : in  Std_logic;  -- Master Reset input (active low)
 	 SW3_N        : in  Std_logic;  -- Non Maskable Interrupt input (active low)
 
@@ -160,7 +161,7 @@ entity system09 is
     RS232_RTS    : out Std_Logic;
 
 	 -- Status 7 segment LED
---	 S            : out std_logic_vector(7 downto 0);
+	 S            : out std_logic_vector(7 downto 0);
 
     -- SDRAM side
     SDRAM_clkfb  : in  std_logic;            -- feedback SDRAM clock after PCB delays
@@ -188,12 +189,12 @@ entity system09 is
 	 ide_cs1_n    : out std_logic;
 
     -- Ethernet $E140 - $E17F
-	 ether_cs_n   : out std_logic;
+    ether_cs_n   : out std_logic;
     ether_aen    : out std_logic; -- Ethernet address enable not 
     ether_bhe_n  : out std_logic; -- Ethernet bus high enable 
     ether_clk    : in  std_logic; -- Ethernet clock 
     ether_rdy    : in  std_logic; -- Ethernet ready
-	 ether_irq    : in  std_logic; -- Ethernet irq - Shared with BAR6
+    ether_irq    : in  std_logic; -- Ethernet irq - Shared with BAR6
 
     -- Slot 1 $E180 - $E1BF
 	 slot1_cs_n   : out std_logic;
@@ -202,6 +203,20 @@ entity system09 is
     -- Slot 2 $E1C0 - $E1FF
 	 slot2_cs_n   : out std_logic;
 --	 slot2_irq    : in  std_logic;
+
+-- CPU Debug Interface signals
+--    cpu_reset_o     : out Std_Logic;
+--    cpu_clk_o       : out Std_Logic;
+--    cpu_rw_o        : out std_logic;
+--    cpu_vma_o       : out std_logic;
+--    cpu_halt_o      : out std_logic;
+--    cpu_hold_o      : out std_logic;
+--    cpu_firq_o      : out std_logic;
+--    cpu_irq_o       : out std_logic;
+--    cpu_nmi_o       : out std_logic;
+--    cpu_addr_o      : out std_logic_vector(15 downto 0);
+--    cpu_data_in_o   : out std_logic_vector(7 downto 0);
+--    cpu_data_out_o  : out std_logic_vector(7 downto 0);
     
 	 -- Disable Flash
 	 FLASH_CE_N   : out std_logic
@@ -216,20 +231,35 @@ architecture rtl of system09 is
   -----------------------------------------------------------------------------
   -- constants
   -----------------------------------------------------------------------------
-  constant SYS_Clock_Frequency  : integer := 50000000;  -- FPGA System Clock
-  constant PIX_Clock_Frequency  : integer := 25000000;  -- VGA Pixel Clock
-  constant CPU_Clock_Frequency  : integer := 25000000;  -- CPU Clock
-  constant BAUD_Rate            : integer := 57600;	  -- Baud Rate
-  constant ACIA_Clock_Frequency : integer := BAUD_Rate * 16;
+
+  -- SDRAM
+  constant MEM_CLK_FREQ         : natural := 100_000; -- operating frequency of Memory in KHz
+  constant SYS_CLK_DIV          : real    := 2.0;    -- divisor for FREQ (can only be 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 8.0 or 16.0)
+  constant PIPE_EN              : boolean := false;  -- if true, enable pipelined read operations
+  constant MAX_NOP              : natural := 10000;  -- number of NOPs before entering self-refresh
+  constant MULTIPLE_ACTIVE_ROWS : boolean := false;  -- if true, allow an active row in each bank
+  constant DATA_WIDTH           : natural := 16;     -- host & SDRAM data width
+  constant NROWS                : natural := 8192;   -- number of rows in SDRAM array
+  constant NCOLS                : natural := 512;    -- number of columns in SDRAM array
+  constant HADDR_WIDTH          : natural := 24;     -- host-side address width
+  constant SADDR_WIDTH          : natural := 13;     -- SDRAM-side address width
+
+  constant SYS_CLK_FREQ         : natural := ((MEM_CLK_FREQ*2)/integer(SYS_CLK_DIV*2.0))*1000;  -- FPGA System Clock
+  constant CPU_CLK_FREQ         : natural := 25_000_000;  -- CPU Clock (Hz)
+  constant CPU_CLK_DIV          : natural := (SYS_CLK_FREQ/CPU_CLK_FREQ);
+  constant VGA_CLK_FREQ         : natural := 25_000_000;  -- VGA Pixel Clock
+  constant VGA_CLK_DIV          : natural := ((MEM_CLK_FREQ*1000)/VGA_CLK_FREQ);
+  constant BAUD_RATE            : integer := 57600;	  -- Baud Rate
+  constant ACIA_CLK_FREQ        : integer := BAUD_RATE * 16;
+
+  constant TRESET               : natural := 300;      -- min initialization interval (us)
+  constant RST_CYCLES           : natural := 1+(TRESET*(MEM_CLK_FREQ/1_000));  -- SDRAM power-on initialization interval
 
   type hold_state_type is ( hold_release_state, hold_request_state );
 
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
-  signal rst_n          :  Std_logic;  -- Master Reset input (active low)
-  signal nmi_n          :  Std_logic;  -- Non Maskable Interrupt input (active low)
-
   -- BOOT ROM
   signal rom_cs         : Std_logic;
   signal rom_data_out   : Std_Logic_Vector(7 downto 0);
@@ -257,7 +287,10 @@ architecture rtl of system09 is
   -- RAM
   signal ram_cs         : std_logic; -- memory chip select
   signal ram_data_out   : std_logic_vector(7 downto 0);
+  signal ram_rd_req     : std_logic; -- ram read request	(asynch set on ram read, cleared falling CPU clock edge)
+  signal ram_wr_req     : std_logic; -- ram write request (set on rising CPU clock edge, asynch clear on acknowledge) 
   signal ram_hold       : std_logic; -- hold off slow accesses
+  signal ram_release    : std_logic; -- Release ram hold
 
   -- CPU Interface signals
   signal cpu_reset      : Std_Logic;
@@ -314,46 +347,36 @@ architecture rtl of system09 is
   signal slot1_cs      : std_logic;	-- Expansion slot 1
   signal slot2_cs      : std_logic;	-- Expansion slot 2
 
-
--- SDRAM
-
-  constant  FREQ                 :     natural := 100_000; -- operating frequency in KHz
-  constant  CLK_DIV              :     real    := 2.0;    -- divisor for FREQ (can only be 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 8.0 or 16.0)
-  constant  PIPE_EN              :     boolean := false;  -- if true, enable pipelined read operations
-  constant  MAX_NOP              :     natural := 10000;  -- number of NOPs before entering self-refresh
-  constant  MULTIPLE_ACTIVE_ROWS :     boolean := false;  -- if true, allow an active row in each bank
-  constant  DATA_WIDTH           :     natural := 16;     -- host & SDRAM data width
-  constant  NROWS                :     natural := 8192;   -- number of rows in SDRAM array
-  constant  NCOLS                :     natural := 512;    -- number of columns in SDRAM array
-  constant  HADDR_WIDTH          :     natural := 24;     -- host-side address width
-  constant  SADDR_WIDTH          :     natural := 13;     -- SDRAM-side address width
-
-  signal   rst_i        : std_logic;     -- internal reset signal
-  signal   clk_i        : std_logic;     -- internal master clock signal
-  signal   lock         : std_logic;     -- SDRAM clock DLL lock indicator
+  signal rst_i         : std_logic;     -- internal reset signal
+  signal clk_i         : std_logic;     -- internal master clock signal
+  signal lock          : std_logic;     -- SDRAM clock DLL lock indicator
 
   -- signals that go through the SDRAM host-side interface
-  signal opBegun        : std_logic;        -- SDRAM operation started indicator
-  signal earlyBegun     : std_logic;        -- SDRAM operation started indicator
-  signal ramDone        : std_logic;        -- SDRAM operation complete indicator
-  signal rdDone         : std_logic;        -- SDRAM read operation complete indicator
-  signal wrDone         : std_logic;        -- SDRAM write operation complete indicator
-  signal hAddr          : std_logic_vector(HADDR_WIDTH-1 downto 0);  -- host address bus
-  signal hDIn           : std_logic_vector(DATA_WIDTH-1 downto 0);  -- host-side data to SDRAM
-  signal hDOut          : std_logic_vector(DATA_WIDTH-1 downto 0);  -- host-side data from SDRAM
-  signal hRd            : std_logic;        -- host-side read control signal
-  signal hWr            : std_logic;        -- host-side write control signal
-  signal rdPending      : std_logic;        -- read operation pending in SDRAM pipeline
-  type ram_rd_type is (rd_state0, rd_state1, rd_state2, rd_state3);
-  type ram_wr_type is (wr_state0, wr_state1, wr_state2, wr_state3, wr_state4);
-  signal ram_rd_state   : ram_rd_type;
-  signal ram_wr_state   : ram_wr_type;
+  signal opBegun       : std_logic;        -- SDRAM operation started indicator
+  signal earlyBegun    : std_logic;        -- SDRAM operation started indicator
+  signal ramDone       : std_logic;        -- SDRAM operation complete indicator
+  signal rdDone        : std_logic;        -- SDRAM read operation complete indicator
+  signal wrDone        : std_logic;        -- SDRAM write operation complete indicator
+  signal hAddr         : std_logic_vector(HADDR_WIDTH-1 downto 0);  -- host address bus
+  signal hDIn          : std_logic_vector(DATA_WIDTH-1 downto 0);  -- host-side data to SDRAM
+  signal hDOut         : std_logic_vector(DATA_WIDTH-1 downto 0);  -- host-side data from SDRAM
+  signal hRd           : std_logic;        -- host-side read control signal
+  signal hWr           : std_logic;        -- host-side write control signal
+  signal hUds          : std_logic;        -- host-side upper data strobe
+  signal hLds          : std_logic;        -- host-side lower data strobe
+  signal rdPending     : std_logic;        -- read operation pending in SDRAM pipeline
+  type ram_type is (ram_state_0, 
+                    ram_state_rd1, ram_state_rd2,
+                    ram_state_wr1,
+						  ram_state_3 );
+  signal ram_state     : ram_type;
 
---  signal BaudCount    : std_logic_vector(5 downto 0);
-  signal CountL         : std_logic_vector(23 downto 0);
-  signal clk_count      : std_logic_vector(0 downto 0);
-  signal Clk25          : std_logic;
-  signal pix_clk        : std_logic;
+
+--  signal BaudCount   : std_logic_vector(5 downto 0);
+  signal CountL        : std_logic_vector(23 downto 0);
+  signal clk_count     : natural range 0 to CPU_CLK_DIV;
+  signal Clk25         : std_logic;
+  signal vga_clk       : std_logic;
 
 -----------------------------------------------------------------
 --
@@ -366,7 +389,7 @@ component cpu09
 	 clk:	     in	std_logic;
     rst:      in	std_logic;
     vma:	     out	std_logic;
-    addr:  out	std_logic_vector(15 downto 0);
+    addr:     out	std_logic_vector(15 downto 0);
     rw:	     out	std_logic;		-- Asynchronous memory interface
 	 data_out: out std_logic_vector(7 downto 0);
     data_in:  in	std_logic_vector(7 downto 0);
@@ -449,12 +472,12 @@ end component;
 
 component ACIA_Clock
   generic (
-     SYS_CLK_FREQ  : integer :=  SYS_Clock_Frequency;
-	  ACIA_CLK_FREQ : integer := ACIA_Clock_Frequency
+     SYS_CLK_FREQ  : integer :=  SYS_CLK_FREQ;
+	  ACIA_CLK_FREQ : integer := ACIA_CLK_FREQ
   );   
   port (
      clk      : in  Std_Logic;  -- System Clock Input
-	  acia_clk : out Std_logic   -- ACIA Clock output
+	  ACIA_clk : out Std_logic   -- ACIA Clock output
   );
 end component;
 
@@ -467,7 +490,7 @@ end component;
 
 component keyboard
   generic(
-  KBD_CLK_FREQ : integer := CPU_Clock_Frequency
+  KBD_CLK_FREQ : integer := CPU_CLK_FREQ
   );
   port(
   clk             : in    std_logic;
@@ -490,18 +513,18 @@ end component;
 ----------------------------------------
 component vdu8
       generic(
-        VDU_CLOCK_FREQUENCY    : integer := CPU_Clock_Frequency; -- HZ
-        VGA_CLOCK_FREQUENCY    : integer := PIX_Clock_Frequency; -- HZ
+        VDU_CLK_FREQ           : integer := CPU_CLK_FREQ; -- HZ
+        VGA_CLK_FREQ           : integer := VGA_CLK_FREQ; -- HZ
 	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS
 	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS
-	     VGA_PIXELS_PER_CHAR    : integer := 8;  -- PIXELS
-	     VGA_LINES_PER_CHAR     : integer := 16; -- LINES
+	     VGA_PIX_PER_CHAR       : integer := 8;  -- PIXELS
+	     VGA_LIN_PER_CHAR       : integer := 16; -- LINES
 	     VGA_HOR_BACK_PORCH     : integer := 40; -- PIXELS
 	     VGA_HOR_SYNC           : integer := 96; -- PIXELS
 	     VGA_HOR_FRONT_PORCH    : integer := 24; -- PIXELS
 	     VGA_VER_BACK_PORCH     : integer := 13; -- LINES
-	     VGA_VER_SYNC           : integer := 1;  -- LINES
-	     VGA_VER_FRONT_PORCH    : integer := 36  -- LINES
+	     VGA_VER_SYNC           : integer := 2;  -- LINES
+	     VGA_VER_FRONT_PORCH    : integer := 35  -- LINES
       );
       port(
 		-- control register interface
@@ -582,10 +605,11 @@ component dat_ram
   );
 end component;
 
+
 component XSASDRAMCntl
   generic(
-    FREQ                 :     natural := FREQ;        -- operating frequency in KHz
-    CLK_DIV              :     real    := CLK_DIV;     -- divisor for FREQ (can only be 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 8.0 or 16.0)
+    FREQ                 :     natural := MEM_CLK_FREQ;-- operating frequency in KHz
+    CLK_DIV              :     real    := SYS_CLK_DIV; -- divisor for FREQ (can only be 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 8.0 or 16.0)
     PIPE_EN              :     boolean := PIPE_EN;     -- if true, enable pipelined read operations
     MAX_NOP              :     natural := MAX_NOP;     -- number of NOPs before entering self-refresh
     MULTIPLE_ACTIVE_ROWS :     boolean := MULTIPLE_ACTIVE_ROWS;  -- if true, allow an active row in each bank
@@ -605,6 +629,8 @@ component XSASDRAMCntl
     rst                  : in  std_logic;  -- reset
     rd                   : in  std_logic;  -- initiate read operation
     wr                   : in  std_logic;  -- initiate write operation
+    uds                  : in  std_logic;  -- upper data strobe
+    lds                  : in  std_logic;  -- lower data strobe
     earlyOpBegun         : out std_logic;  -- read/write/self-refresh op begun     (async)
     opBegun              : out std_logic;  -- read/write/self-refresh op begun (clocked)
     rdPending            : out std_logic;  -- read operation(s) are still in the pipeline
@@ -650,7 +676,7 @@ my_cpu : cpu09  port map (
 	 clk	     => cpu_clk,
     rst       => cpu_reset,
     vma       => cpu_vma,
-    addr   => cpu_addr(15 downto 0),
+    addr      => cpu_addr(15 downto 0),
     rw	     => cpu_rw,
 	 data_out  => cpu_data_out,
     data_in   => cpu_data_in,
@@ -687,10 +713,9 @@ my_acia  : acia6850 port map (
     cs        => acia_cs,
 	 rw        => cpu_rw,
     addr      => cpu_addr(0),
-	 data_in    => cpu_data_out,
-	 data_out   => acia_data_out,
+	 data_in   => cpu_data_out,
+	 data_out  => acia_data_out,
     irq       => acia_irq,
-
 	 RxC       => acia_clk,
 	 TxC       => acia_clk,
 	 RxD       => rxd,
@@ -703,8 +728,8 @@ my_acia  : acia6850 port map (
 
 my_ACIA_Clock : ACIA_Clock
   generic map(
-    SYS_CLK_FREQ  => SYS_Clock_Frequency,
-	 ACIA_CLK_FREQ => ACIA_Clock_Frequency
+    SYS_CLK_FREQ  =>  SYS_CLK_FREQ,
+	 ACIA_CLK_FREQ => ACIA_CLK_FREQ
   ) 
   port map(
     clk        => Clk_i,
@@ -718,7 +743,7 @@ my_ACIA_Clock : ACIA_Clock
 ----------------------------------------
 my_keyboard : keyboard
    generic map (
-	KBD_CLK_FREQ => CPU_Clock_frequency
+	KBD_CLK_FREQ => CPU_CLK_FREQ
 	) 
    port map(
 	clk          => cpu_clk,
@@ -740,18 +765,18 @@ my_keyboard : keyboard
 ----------------------------------------
 my_vdu : vdu8 
   generic map(
-      VDU_CLOCK_FREQUENCY    => CPU_Clock_Frequency, -- HZ
-      VGA_CLOCK_FREQUENCY    => PIX_Clock_Frequency, -- HZ
+      VDU_CLK_FREQ           => CPU_CLK_FREQ, -- HZ
+      VGA_CLK_FREQ           => VGA_CLK_FREQ, -- HZ
 	   VGA_HOR_CHARS          => 80, -- CHARACTERS
 	   VGA_VER_CHARS          => 25, -- CHARACTERS
-	   VGA_PIXELS_PER_CHAR    => 8,  -- PIXELS
-	   VGA_LINES_PER_CHAR     => 16, -- LINES
+	   VGA_PIX_PER_CHAR       => 8,  -- PIXELS
+	   VGA_LIN_PER_CHAR       => 16, -- LINES
 	   VGA_HOR_BACK_PORCH     => 40, -- PIXELS
 	   VGA_HOR_SYNC           => 96, -- PIXELS
 	   VGA_HOR_FRONT_PORCH    => 24, -- PIXELS
 	   VGA_VER_BACK_PORCH     => 13, -- LINES
-	   VGA_VER_SYNC           => 1,  -- LINES
-	   VGA_VER_FRONT_PORCH    => 36  -- LINES
+	   VGA_VER_SYNC           => 2,  -- LINES
+	   VGA_VER_FRONT_PORCH    => 35  -- LINES
   )
   port map(
 
@@ -765,7 +790,7 @@ my_vdu : vdu8
 		vdu_data_out  => vdu_data_out,
 
       -- vga port connections
-      vga_clk       => pix_clk,					 -- 25 MHz VDU pixel clock
+      vga_clk       => vga_clk,					 -- 25 MHz VDU pixel clock
       vga_red_o     => vga_red_o,
       vga_green_o   => vga_green_o,
       vga_blue_o    => vga_blue_o,
@@ -824,10 +849,12 @@ my_dat : dat_ram port map (
   ------------------------------------------------------------------------
   u1 : xsaSDRAMCntl
     generic map(
-      FREQ                 => FREQ,
+      FREQ                 => MEM_CLK_FREQ,
+		CLK_DIV              => SYS_CLK_DIV,
       PIPE_EN              => PIPE_EN,
-      DATA_WIDTH           => DATA_WIDTH,
+		MAX_NOP              => MAX_NOP,
       MULTIPLE_ACTIVE_ROWS => MULTIPLE_ACTIVE_ROWS,
+      DATA_WIDTH           => DATA_WIDTH,
       NROWS                => NROWS,
       NCOLS                => NCOLS,
       HADDR_WIDTH          => HADDR_WIDTH,
@@ -843,6 +870,8 @@ my_dat : dat_ram port map (
       rst                  => rst_i,    -- reset
       rd                   => hRd,      -- host-side SDRAM read control from memory tester
       wr                   => hWr,      -- host-side SDRAM write control from memory tester
+      uds                  => hUds,     -- host-side SDRAM upper data strobe
+      lds                  => hLds,     -- host-side SDRAM lower data strobe
       rdPending            => rdPending,-- read operation to SDRAM is in progress
       opBegun              => opBegun,  -- indicates memory read/write has begun
       earlyOpBegun         => earlyBegun,  -- early indicator that memory operation has begun
@@ -872,19 +901,18 @@ cpu_clk_buffer : BUFG port map(
 	 o => cpu_clk
     );	 
 
-pix_clk_buffer : BUFG port map(
+vga_clk_buffer : BUFG port map(
     i => Clk25,
-	 o => pix_clk
+	 o => vga_clk
     );	 
-	 
+  	 
 ----------------------------------------------------------------------
 --
 -- Process to decode memory map
 --
 ----------------------------------------------------------------------
 
-mem_decode: process( cpu_clk,
-                     cpu_addr, cpu_rw, cpu_vma,
+mem_decode: process( cpu_addr, cpu_rw, cpu_vma,
 							dat_addr,
 					      rom_data_out,
 							flex_data_out,
@@ -1057,7 +1085,8 @@ end process;
 -- ISA bus little endian
 -- Not sure about IDE interface
 --
-peripheral_bus: process( clk_i, cpu_reset, cpu_rw, cpu_addr, cpu_data_out )
+peripheral_bus: process( clk_i, cpu_reset, cpu_rw, cpu_addr, cpu_data_out,
+                         pb_cs, pb_wreg, pb_rreg )
 begin
   pb_wru <= pb_cs and (not cpu_rw) and (not cpu_addr(0));
   pb_wrl <= pb_cs and (not cpu_rw) and      cpu_addr(0) ;
@@ -1128,13 +1157,13 @@ end process;
 --
 -- Hold Peripheral bus accesses for a few cycles
 --
-peripheral_bus_hold: process( cpu_clk, cpu_reset, pb_rdu, pb_wrl, ether_rdy )
+peripheral_bus_hold: process( cpu_clk, cpu_reset, pb_rdu, pb_wrl ) --, ether_rdy )
 begin
     if cpu_reset = '1' then
 		 pb_release    <= '0';
 		 pb_count      <= "0000";
 	    pb_hold_state <= hold_release_state;
-	 elsif cpu_clk'event and cpu_clk='1' then
+	 elsif rising_edge(cpu_clk) then
   --
   -- The perpheral bus hold signal should be generated on 
   -- 16 bit bus read which will be on even byte reads or 
@@ -1153,10 +1182,10 @@ begin
 
 		 when hold_request_state =>
 			 if pb_count = "0000" then
-            if ether_rdy = '1' then
+--            if ether_rdy = '1' then
               pb_release    <= '1';
 				  pb_hold_state <= hold_release_state;
-            end if;
+--            end if;
           else
 		       pb_count <= pb_count - "0001";
 			 end if;
@@ -1179,62 +1208,67 @@ end process;
 --
 -- Interrupts and other bus control signals
 --
-interrupts : process( lock, rst_n, nmi_n,
-							 pb_cs, pb_hold, pb_release,
-							 ram_cs, ram_hold,
-							 ether_irq, 
+interrupts : process( SW3_N,
+							 pb_cs, pb_hold, pb_release, ram_hold,
+--							 ether_irq, 
                       acia_irq, 
 							 keyboard_irq, 
 							 trap_irq, 
 							 timer_irq
 							 )
 begin
- 	 cpu_reset <= (not rst_n) or (not lock); -- CPU reset is active high
-    pb_hold   <= pb_cs and (not pb_release);
-    cpu_irq   <= acia_irq or keyboard_irq;
-	 cpu_nmi   <= trap_irq or not( nmi_n );
-	 cpu_firq  <= timer_irq;
-	 cpu_halt  <= '0';
-	 cpu_hold  <= pb_hold or ram_hold;
+    pb_hold    <= pb_cs and (not pb_release);
+    cpu_irq    <= acia_irq or keyboard_irq;
+	 cpu_nmi    <= trap_irq or not( SW3_N );
+	 cpu_firq   <= timer_irq;
+	 cpu_halt   <= '0';
+	 cpu_hold   <= pb_hold or ram_hold;
+    FLASH_CE_N <= '1';
 end process;
 
 
 --
 -- Flash 7 segment LEDS
 --
-my_led_flasher: process( Clk_i, rst_n, CountL )
+my_led_flasher: process( clk_i, rst_i, CountL )
 begin
-    if rst_n = '0' then
+    if rst_i = '1' then
 		   CountL <= "000000000000000000000000";
-    elsif(Clk_i'event and Clk_i = '1') then
+    elsif rising_edge(clk_i) then
 		   CountL <= CountL + 1;
     end if;
 --	 S(7 downto 0) <= CountL(23 downto 16);
 end process;
 
 --
--- Generate a 25 MHz Clock from 50 MHz
+-- Generate CPU & Pixel Clock from Memory Clock
 --
-my_prescaler : process( Clk_i, clk_count )
+my_prescaler : process( clk_i, clk_count )
 begin
-  if Clk_i'event and Clk_i = '1' then
-    clk_count(0) <= not clk_count(0);
+  if rising_edge( clk_i ) then
+
+    if clk_count = 0 then
+	   clk_count <= CPU_CLK_DIV-1;
+	 else
+      clk_count <= clk_count - 1;
+	 end if;
+
+    if clk_count = 0 then
+	    clk25 <= '0';
+    elsif clk_count = (CPU_CLK_DIV/2) then
+	    clk25 <= '1';
+    end if;
+
   end if;
-  Clk25 <= clk_count(0);
 end process;
 
 --
--- Push buttons
+-- Reset button and reset timer
 --
-my_switch_assignments : process( SW2_N, SW3_N, rst_n )
+my_switch_assignments : process( rst_i, SW2_N, lock )
 begin
-  rst_n    <= SW2_N;
-  rst_i    <= not rst_n; 
-  nmi_n    <= SW3_N;
-  --
-  -- Disable Flash memory
-  --
-  FLASH_CE_N    <= '1';
+  rst_i <= not SW2_N;
+  cpu_reset <= rst_i or (not lock);
 end process;
 
 --
@@ -1285,123 +1319,162 @@ begin
 end process;
 
 --
--- SDRAM assignments
+-- SDRAM read write control
 --
-my_sdram_assignments : process( cpu_clk, clk_i, cpu_reset, 
-                                opBegun, rdDone, wrDone,
-										  ram_rd_state, ram_wr_state,
-                                cpu_addr, dat_addr,
-                                cpu_data_out, hDout,
-										  ram_cs, cpu_rw, ram_hold )
+my_sdram_rw : process( clk_i, cpu_reset, 
+                       opBegun, ramDone,
+							  ram_state,
+                       ram_rd_req, ram_wr_req )
 begin
   if( cpu_reset = '1' ) then
-    hWr    <= '0';
-	 hRd    <= '0';
-	 wrDone <= '0';
-	 ram_wr_state <= wr_state0;
-	 ram_rd_state <= rd_state0;
+	 hRd        <= '0';
+    hWr        <= '0';
+	 ram_hold   <= '0';
+	 ram_state  <= ram_state_0;
 
-  elsif( clk_i'event and clk_i='0' ) then
+  elsif( falling_edge(clk_i) ) then
     --
-	 -- read state machine
+	 -- ram state machine
 	 --
-    case ram_rd_state is
+    case ram_state is
 
-    when rd_state0 =>
-	   if (ram_hold = '1') and (cpu_rw = '1') then
-		  hRd          <= '1';
-		  ram_rd_state <= rd_state1;
+    when ram_state_0 =>
+		if ram_rd_req = '1' then 
+        ram_hold   <= '1';
+	     hRd        <= '1';
+		  ram_state  <= ram_state_rd1;
+      elsif ram_wr_req = '1' then
+	     ram_hold   <= '1';
+        hWr        <= '1';
+	     ram_state  <= ram_state_wr1;
       end if;
 
-    when rd_state1 =>
+    when ram_state_rd1 =>
 	   if opBegun = '1' then
-		  ram_rd_state <= rd_state2;
+		  hRd        <= '0';
+		  ram_state  <= ram_state_rd2;
       end if;
 
-    when rd_state2 =>
-	   if rdDone = '1' then
-		  hRd <= '0';
-		  ram_rd_state <= rd_state3;
+    when ram_state_rd2 =>
+	   if ramDone = '1' then
+		  ram_hold   <= '0';
+		  ram_state  <= ram_state_3;
 		end if;
 
-    when rd_state3 =>
-	   if rdDone = '0' then
-		  ram_rd_state <= rd_state0;
-      end if;
-
-	 when others =>
-		hRd          <= '0';
-		ram_rd_state <= rd_state0;
-	 end case;  	  
-
-	 --
-	 -- Write state machine
-	 --
-    case ram_wr_state is
-
-    when wr_state0 =>
-	   if (ram_hold = '1') and (cpu_rw = '0') then
-		  hWr          <= '1';
-        wrDone       <= '0';
-		  ram_wr_state <= wr_state1;
-      end if;
-
-    when wr_state1 =>
+    when ram_state_wr1 =>
 	   if opBegun = '1' then
-		  hWr          <= '0';
-        wrDone       <= '0';
-		  ram_wr_state <= wr_state2;
+		  ram_hold   <= '0';
+		  hWr        <= '0';
+		  ram_state  <= ram_state_3;
       end if;
 
-    when wr_state2 =>
-		hWr          <= '0';
-      wrDone       <= '0';
-		ram_wr_state <= wr_state3;
-
-    when wr_state3 =>
-		hWr          <= '0';
-      wrDone       <= '1';
-		ram_wr_state <= wr_state4;
-
-    when wr_state4 =>
-		hWr          <= '0';
-      wrDone       <= '0';
-		ram_wr_state <= wr_state0;
+    when ram_state_3 =>
+	   if ram_release = '1' then
+		  ram_state  <= ram_state_0;
+      end if;
 
 	 when others =>
-		hWr          <= '0';
-      wrDone       <= '0';
-		ram_wr_state <= wr_state0;
-
+		hRd        <= '0';
+		hWr        <= '0';
+		ram_hold   <= '0';
+		ram_state  <= ram_state_0;
 	 end case;  	  
 
   end if;
-  --
-  -- Strobe host RD and WR signals high on RAM select
-  -- Return low when cycle has started
-  --
-  if( cpu_reset = '1' ) then
-	 ram_hold     <= '0';
-  elsif( cpu_clk'event and cpu_clk='1' ) then
-    --
-    -- Hold is intitiated when the RAM is selected
-    -- and released when access cycle is complete
-    -- 
-	 if (ram_hold = '0') and (ram_cs = '1') then
-		ram_hold <= '1';
-    elsif (ram_hold = '1') and ((rdDone = '1') or (wrDone = '1')) then
-		ram_hold <= '0';
-    end if;
-  end if;
-
-  hAddr(23 downto 20) <= "0000";
-  hAddr(19 downto 12) <= dat_addr;
-  hAddr(11 downto 0)  <= cpu_addr(11 downto 0);
-  hDin(7 downto 0)    <= cpu_data_out;
-  hDin(15 downto 8)   <= (others => '0');
-  ram_data_out        <= hDout(7 downto 0);
-
 end process;
+
+--
+-- SDRAM Address and data bus assignments
+--
+my_sdram_addr_data : process( cpu_addr, dat_addr,
+                                cpu_data_out, hDout )
+begin
+  hAddr(23 downto 19)  <= "00000";
+  hAddr(18 downto 11)  <= dat_addr;
+  hAddr(10 downto 0)   <= cpu_addr(11 downto 1);
+  hUds                 <= not cpu_addr(0);
+  hLds                 <=     cpu_addr(0);
+  if cpu_addr(0) = '0' then
+     hDin( 7 downto 0) <= (others=>'0');
+     hDin(15 downto 8) <= cpu_data_out;
+     ram_data_out      <= hDout(15 downto 8);
+  else
+     hDin( 7 downto 0) <= cpu_data_out;
+     hDin(15 downto 8) <= (others=>'0');
+     ram_data_out      <= hDout( 7 downto 0);
+  end if;
+end process;
+
+--
+-- Hold RAM until falling CPU clock edge
+--
+ram_bus_hold: process( cpu_clk, cpu_reset, ram_hold )
+begin
+    if ram_hold = '1' then
+		 ram_release   <= '0';
+	 elsif falling_edge(cpu_clk) then
+		 ram_release   <= '1';
+	 end if;
+end process;
+
+--
+-- CPU read data request on rising CPU clock edge
+--
+ram_read_request: process( hRd, cpu_clk, ram_cs, cpu_rw, ram_release )
+begin
+	 if hRd = '1' then
+		ram_rd_req   <= '0';
+	 elsif rising_edge(cpu_clk) then
+	   if (ram_cs = '1') and (cpu_rw = '1') and (ram_release = '1') then
+		  ram_rd_req   <= '1';
+      end if;
+ 	 end if;
+end process;
+
+--
+-- CPU write data to RAM valid on rising CPU clock edge
+--
+ram_write_request: process( hWr, cpu_clk, ram_cs, cpu_rw, ram_release )
+begin
+    if hWr = '1' then
+		 ram_wr_req   <= '0';
+	 elsif rising_edge(cpu_clk) then
+	 	if (ram_cs = '1') and (cpu_rw = '0') and (ram_release = '1') then
+		  ram_wr_req   <= '1';
+      end if;
+	 end if;
+end process;
+
+
+
+status_leds : process( rst_i, cpu_reset, lock )
+begin
+    S(0) <= rst_i;
+	 S(1) <= cpu_reset;
+	 S(2) <= lock;
+	 S(3)	<= countL(23);
+	 S(7 downto 4) <= "0000";
+end process;
+
+--debug_proc : process( cpu_reset, cpu_clk, cpu_rw, cpu_vma,
+--                      cpu_halt, cpu_hold,
+--                      cpu_firq, cpu_irq, cpu_nmi,
+--                      cpu_addr, cpu_data_out, cpu_data_in )
+--begin
+--  cpu_reset_o    <= cpu_reset;
+--  cpu_clk_o      <= cpu_clk;
+--  cpu_rw_o       <= cpu_rw;
+--  cpu_vma_o      <= cpu_vma;
+--  cpu_halt_o     <= cpu_halt;
+--  cpu_hold_o     <= cpu_hold;
+--  cpu_firq_o     <= cpu_firq;
+--  cpu_irq_o      <= cpu_irq;
+--  cpu_nmi_o      <= cpu_nmi;
+--  cpu_addr_o     <= cpu_addr;
+--  cpu_data_out_o <= cpu_data_out;
+--  cpu_data_in_o  <= cpu_data_in;
+--end process;
+
 
 end rtl; --===================== End of architecture =======================--
 
