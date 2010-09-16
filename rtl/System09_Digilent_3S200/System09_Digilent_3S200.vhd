@@ -157,7 +157,7 @@ library ieee;
    use IEEE.STD_LOGIC_UNSIGNED.ALL;
    use ieee.numeric_std.all;
 
-entity my_system09 is
+entity system09 is
   port(
     sys_clk     : in  Std_Logic;  -- System Clock input
 	 rst_sw    : in  Std_logic;  -- Master Reset input (active high)
@@ -201,12 +201,12 @@ entity my_system09 is
 	 segments    : out std_logic_vector(7 downto 0);
 	 digits      : out std_logic_vector(3 downto 0)
 	 );
-end my_system09;
+end system09;
 
 -------------------------------------------------------------------------------
 -- Architecture for System09
 -------------------------------------------------------------------------------
-architecture my_computer of my_system09 is
+architecture my_computer of system09 is
   -----------------------------------------------------------------------------
   -- constants
   -----------------------------------------------------------------------------

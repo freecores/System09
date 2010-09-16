@@ -38,7 +38,7 @@ export BRAM_TYPE
 #
 # This name must match the name of the design in Xilinx ISE (case
 # sensitive). 
-DESIGN_NAME := my_system09
+DESIGN_NAME := system09
 #
 # Constraint file (unfortunately it cannot be extracted from ISE)
 UCF_FILE    := System09_Digilent_3S200.ucf
@@ -106,7 +106,7 @@ help:
 clean:
 	-$(MAKE) -C ../../src/sys09bug clean
 	-$(MAKE) -C ../../src/Flex9 clean
-	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp 
+	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp *.xrpt
 	-$(RM) *.ncl *.ngm *.prm *_pad.txt *.twx *.log *.syr *.par *.exo *.xpi
 	-$(RM) *.cmd_log *.ngr *.bld *_summary.html *.nc1 *.pcf *.bgn
 	-$(RM) *.pad *.placed_ncd_tracker *.routed_ncd_tracker *_pad.csv *.drc
