@@ -139,12 +139,12 @@ help:
 clean:
 	-$(MAKE) -C ../../src/sys09bug clean
 	-$(MAKE) -C ../../src/Flex9 clean
-	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp 
-	-$(RM) *.ncl *.ngm *.prm *_pad.txt *.twx *.log *.syr *.par *.exo *.xpi
-	-$(RM) *.cmd_log *.ngr *.bld *_summary.html *.nc1 *.pcf *.bgn
+	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp *.ptwx *_map.map
+	-$(RM) *.ncl *.ngm *.prm *_pad.txt *.twx *.log *.syr *.par *.exo *.xpi *.xrpt *.xml
+	-$(RM) *.cmd_log *.ngr *.bld *_summary.html *.nc1 *.pcf *.bgn tmp.ut
 	-$(RM) *.pad *.placed_ncd_tracker *.routed_ncd_tracker *_pad.csv *.drc
-	-$(RM) *.pad_txt $(DESIGN_NAME)_impact.cmd *.unroutes
-	-$(RMDIR) _ngo _xmsgs
+	-$(RM) *.pad_txt $(DESIGN_NAME)_impact.cmd *.unroutes $(DESIGN_NAME)_vhdl.prj
+	-$(RMDIR) _ngo _xmsgs xst xlnx_auto_0_xdb xst_tmp_dirs
 
 .PHONY: cleanall
 cleanall: clean
