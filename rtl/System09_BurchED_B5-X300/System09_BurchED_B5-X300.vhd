@@ -1,11 +1,12 @@
---===========================================================================----
+--===========================================================================
 --
---  S Y N T H E Z I A B L E    System09 - SOC.
+--  System09 - SoC for the BurchED B5-X300 Spartan2 FPGA board.
 --
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+--===========================================================================
 --
 -- File name      : System09_BurchED_B5-X300.vhd
+--
+-- Entity name    : my_system09
 --
 -- Purpose        : Top level file for 6809 compatible system on a chip
 --                  Designed with Xilinx XC2S300e Spartan 2+ FPGA.
@@ -17,21 +18,22 @@
 --                  ieee.std_logic_arith
 --                  ieee.numeric_std
 --
--- Uses           : 
---                  cpu09         (cpu09.vhd)      CPU core
---                  SYS09BUG_F800 (sys09b5x_b4.vhd) Monitor ROM
---                  dat_ram       (datram.vhd)     Dynamic Address Translation
---                  acia6850      (acia6850.vhd) ACIA / MiniUART
---                  ACIA_Clock    (ACIA_Clock.vhd) ACIA Baud Clock Divider
---                  keyboard      (keyboard.vhd)   PS/2 Keyboard Interface
---                  vdu8          (vdu8.vhd)       80 x 25 Video Display
---                  timer         (timer.vhd)      Timer module
---                  trap	       (trap.vhd)       Bus Trap interrupt
---                  ioport        (ioport.vhd)     Parallel I/O port.
+-- Uses           : clock_div     (../vhdl/clock_div.vhd)       System clock divider
+--                  flasher       (../vhdl/flasher.vhd)         LED flasher
+--                  BED_SRAM      (../vhdl/BED_SRAM.vhd)        BurchED SRAM interface
+--                  cpu09         (../vhdl/cpu09.vhd)           CPU core
+--                  SYS09BUG_F800 (../spartan2/sys09b5x_b4.vhd) Monitor ROM
+--                  dat_ram       (../vhdl/datram.vhd)          Dynamic Address Translation
+--                  acia6850      (../vhdl/acia6850.vhd)        ACIA
+--                  ACIA_Clock    (../vhdl/ACIA_Clock.vhd)      ACIA Baud Clock Divider
+--                  keyboard      (../vhdl/keyboard.vhd)        PS/2 Keyboard Interface
+--                  vdu8          (../vhdl/vdu8.vhd)            80 x 25 Video Display
+--                  timer         (../vhdl/timer.vhd)           Timer module
+--                  trap	       (../vhdl/trap.vhd)            Bus Trap interrupt
+--                  ioport        (../vhdl/ioport.vhd)          Parallel I/O port.
 -- 
 -- Author         : John E. Kent      
 --                  dilbert57@opencores.org      
---	Memory Map     :
 -- Memory Map     :
 --
 -- $0000 - $DFFF System RAM (256K Mapped via DAT)
@@ -57,10 +59,27 @@
 -- $F800 - $FFFF Sys09bug ROM (Read only)
 -- $FFF0 - $FFFF DAT - Dynamic Address Translation (Write Only)
 --
---===========================================================================----
 --
--- Revision History:
---===========================================================================--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================
+--
+--                             Revision History:
+--
+--===========================================================================
 -- Version 0.1 - 20 March 2003
 -- Version 0.2 - 30 March 2003
 -- Version 0.3 - 29 April 2003
@@ -141,7 +160,7 @@ library ieee;
 library unisim;
 	use unisim.vcomponents.all;
 
-entity System09 is
+entity my_system09 is
   port(
     clk_in      : in  Std_Logic;  -- System Clock input
 	 rst_n       : in  Std_logic;  -- Master Reset input (active low)
@@ -202,12 +221,12 @@ entity System09 is
     bus_addr     : out std_logic_vector(15 downto 0);
 	 bus_data     : inout std_logic_vector(7 downto 0)
 	 );
-end System09;
+end my_system09;
 
 -------------------------------------------------------------------------------
 -- Architecture for System09
 -------------------------------------------------------------------------------
-architecture rtl of System09 is
+architecture rtl of my_system09 is
   -----------------------------------------------------------------------------
   -- constants
   -----------------------------------------------------------------------------
