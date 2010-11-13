@@ -1,4 +1,4 @@
---Copyright (C) 1991-2009 Altera Corporation
+--Copyright (C) 1991-2010 Altera Corporation
 --Your use of Altera Corporation's design tools, logic functions 
 --and other software and tools, and its AMPP partner logic 
 --functions, and any output files from any of the foregoing 
@@ -13,11 +13,15 @@
 --applicable agreement for further details.
 
 
-component sys09bug_rom
-	PORT
-	(
-		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
-		clock		: IN STD_LOGIC  := '1';
-		q		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
-	);
-end component;
+FUNCTION pll 
+(
+	areset,
+	inclk0
+)
+
+RETURNS (
+	c0,
+	c1,
+	c2,
+	locked
+);
