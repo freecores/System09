@@ -13,7 +13,7 @@
 --                  
 --  Dependencies   : ieee.std_logic_1164
 --                   ieee.numeric_std
---                   unisim.vcomponents
+--                   ieee.std_logic_unsigned
 --
 --  Author         : John E. Kent
 --
@@ -125,8 +125,8 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
   use ieee.std_logic_unsigned.all;
-library unisim;
-  use unisim.vcomponents.all;
+--library unisim;
+--  use unisim.vcomponents.all;
 
 -----------------------------------------------------------------------
 -- Entity for ACIA_6850                                              --
@@ -340,11 +340,12 @@ begin
 -- Generate Read / Write strobes.
 -----------------------------------------------------------------------------
 
-  ACIA_Read_Write : process(clk, ac_rst)
+  acia_read_write : process(clk, ac_rst)
   begin
     if falling_edge(clk) then
-      if ac_rst = '1' then
-        CtrlReg <= (others => '0');
+      if rst = '1' then
+        CtrlReg(1 downto 0) <= "11";
+        CtrlReg(7 downto 2) <= (others => '0');
         TxReg   <= (others => '0');
         RxRd  <= '0';
         TxWr  <= '0';

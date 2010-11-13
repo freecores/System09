@@ -15,9 +15,7 @@
 --                   Supports 2 x 8 chunky graphics character mode.
 --                   Uses Generic arguments for setting the video synchronization timing.
 --                  
---  Dependencies   : ieee.Std_Logic_1164
---                   ieee.std_logic_unsigned
---                   ieee.std_logic_arith
+--  Dependencies   : ieee.std_logic_1164
 --                   ieee.numeric_std
 --
 --  Uses           : ram_2k (ram2k_b16.vhd)             2KByte Character & Attribute buffer
@@ -133,8 +131,8 @@
 Library IEEE;
   use IEEE.std_logic_1164.all;
   use IEEE.numeric_std.all;
-Library unisim;
-  use unisim.vcomponents.all;
+--Library unisim;
+--  use unisim.vcomponents.all;
 
 Entity vdu8 is
   generic(

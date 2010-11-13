@@ -13,7 +13,6 @@
 --                   ieee.std_logic_arith
 --                   ieee.std_logic_unsigned
 --                   ieee.numeric_std
---                   unisim.vcomponents
 --                   work.bit_funcs
 --
 --  Author         : John E. Kent
@@ -55,8 +54,8 @@ library ieee;
    use ieee.std_logic_arith.all;
    use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
-library unisim;
-	use unisim.vcomponents.all;
+--library unisim;
+--	use unisim.vcomponents.all;
 library work;
    use work.bit_funcs.all;
 

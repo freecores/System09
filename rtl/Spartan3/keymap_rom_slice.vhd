@@ -109,11 +109,11 @@ architecture rtl of keymap_rom is
 
 begin
 
-  process( addr, rom_data, rom_out )
+  process( addr, rom_out )
   begin
     rom_out  <= rom_data(conv_integer(addr(8 downto 5))); 
 	 data_out <= rom_out( conv_integer(addr(4 downto 0))*8+7 downto conv_integer(addr(4 downto 0))*8);
-  end;
+  end process;
 
 end architecture rtl;
 

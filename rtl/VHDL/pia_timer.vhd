@@ -122,14 +122,14 @@ signal ca1_del     : std_logic;
 signal ca1_rise    : std_logic;
 signal ca1_fall    : std_logic;
 signal ca1_edge    : std_logic;
-signal irqa1       : std_logic;
+signal irqa1       : std_logic := '0';
 
 signal ca2         : std_logic;
 signal ca2_del     : std_logic;
 signal ca2_rise    : std_logic;
 signal ca2_fall    : std_logic;
 signal ca2_edge    : std_logic;
-signal irqa2       : std_logic;
+signal irqa2       : std_logic := '0';
 signal ca2_out     : std_logic;
 
 signal cb1         : std_logic;
@@ -137,14 +137,14 @@ signal cb1_del     : std_logic;
 signal cb1_rise    : std_logic;
 signal cb1_fall    : std_logic;
 signal cb1_edge    : std_logic;
-signal irqb1       : std_logic;
+signal irqb1       : std_logic := '0';
 
 signal cb2         : std_logic;
 signal cb2_del     : std_logic;
 signal cb2_rise    : std_logic;
 signal cb2_fall    : std_logic;
 signal cb2_edge    : std_logic;
-signal irqb2       : std_logic;
+signal irqb2       : std_logic := '0';
 signal cb2_out     : std_logic;
 
 -- 74193 down counter
@@ -166,55 +166,57 @@ pia_read : process(  addr,	cs,
 						   pa,         pb )
 variable count : integer;
 begin
-      case addr is
-	     when "00" =>
-		    for count in 0 to 7 loop
-			   if porta_ctrl(2) = '0' then
-				  data_out(count) <= porta_ddr(count);
-			     porta_read <= '0';
+	data_out <= "00000000";
+	porta_read <= '0';
+	portb_read <= '0';
+
+   case addr is
+	when "00" =>
+		for count in 0 to 7 loop
+		   if porta_ctrl(2) = '0' then
+            data_out(count) <= porta_ddr(count);
+			   porta_read <= '0';
+         else
+				if porta_ddr(count) = '1' then
+               data_out(count) <= porta_data(count);
             else
-				  if porta_ddr(count) = '1' then
-                data_out(count) <= porta_data(count);
-              else
-                data_out(count) <= pa(count);
-              end if;
-			     porta_read <= cs;
+               data_out(count) <= pa(count);
             end if;
-			 end loop;
-			 portb_read <= '0';
+			   porta_read <= cs;
+          end if;
+		end loop;
+		portb_read <= '0';
 
-	     when "01" =>
-		    data_out <= irqa1 & irqa2 & porta_ctrl;
-			 porta_read <= '0';
-			 portb_read <= '0';
+	when "01" =>
+		data_out <= irqa1 & irqa2 & porta_ctrl;
+	   porta_read <= '0';
+		portb_read <= '0';
 
-		  when "10" =>
-		    for count in 0 to 7 loop
-			   if portb_ctrl(2) = '0' then
-				  data_out(count) <= portb_ddr(count);
-				  portb_read <= '0';
-            else
-				  if portb_ddr(count) = '1' then
+   when "10" =>
+		for count in 0 to 7 loop
+			if portb_ctrl(2) = '0' then
+				data_out(count) <= portb_ddr(count);
+				portb_read <= '0';
+         else
+				if portb_ddr(count) = '1' then
                 data_out(count) <= portb_data(count);
-              else
+            else
                 data_out(count) <= pb(count);
-				  end if;
-				  portb_read <= cs;
-            end if;
-			 end loop;
-			 porta_read <= '0';
+				end if;
+				portb_read <= cs;
+          end if;
+		end loop;
+		porta_read <= '0';
 
-		  when "11" =>
-		    data_out <= irqb1 & irqb2 & portb_ctrl;
-			 porta_read <= '0';
-			 portb_read <= '0';
+   when "11" =>
+		data_out <= irqb1 & irqb2 & portb_ctrl;
+	   porta_read <= '0';
+		portb_read <= '0';
 
-		  when others =>
-		    data_out <= "00000000";
-			 porta_read <= '0';
-			 portb_read <= '0';
+	when others =>
+      null;
+   end case;
 
-		end case;
 end process;
 
 ---------------------------------

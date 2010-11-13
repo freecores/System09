@@ -14,7 +14,6 @@
 --                   ieee.std_logic_arith
 --                   ieee.std_logic_unsigned
 --                   ieee.numeric_std
---                   unisim.vcomponents
 --
 --  Uses           : ps2_keyboard_interface
 --
@@ -88,8 +87,8 @@ library ieee;
    use ieee.std_logic_arith.all;
    use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
-library unisim;
-   use unisim.vcomponents.all;
+--library unisim;
+--   use unisim.vcomponents.all;
 
 entity keyboard is
   generic (
@@ -249,7 +248,7 @@ my_ps2_keyboard : ps2_keyboard
   --
   keyboard_status : process( kbd_data_ready, kbd_data_empty,
                              kbd_extended, kbd_released, kbd_shift_on, kbd_error,
-                             kbd_control)
+                             kbd_control, kbd_status )
   begin
     kbd_status(0) <= kbd_data_ready;
     kbd_status(1) <= kbd_data_empty;

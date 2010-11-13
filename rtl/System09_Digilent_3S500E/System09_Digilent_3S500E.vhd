@@ -1,13 +1,13 @@
 -- $Id: System09_Digilent_3S500E.vhd,v 1.3.2.1 2008/04/08 14:59:48 davidgb Exp $
---===========================================================================----
+--===========================================================================
 --
---  S Y N T H E Z I A B L E    System09 - SOC.
+--          System09 - SoC for the Digilent Spartan 3E Starter board
 --
---===========================================================================----
---
---  This core adheres to the GNU public license  
+--===========================================================================
 --
 -- File name      : System09_Digilent_3S500E.vhd
+--
+-- Entity name    : my_system09
 --
 -- Purpose        : Top level file for 6809 compatible system on a chip
 --                  Designed with Xilinx XC3S500E Spartan 3E FPGA.
@@ -18,19 +18,67 @@
 --                  ieee.std_logic_arith
 --                  ieee.numeric_std
 --
--- Uses           : mon_rom  (kbug_rom2k.vhd) Monitor ROM
---                  cpu09    (cpu09.vhd)      CPU core
---                  miniuart (minitUART3.vhd) ACIA / MiniUART
---                           (rxunit3.vhd)
---                           (tx_unit3.vhd)
+-- Uses           : clock_div  (../vhdl/clock_div.vhd)      System clock divider
+--                  flasher    (../vhdl/flasher.vhd)        LED flasher
+--                  ram_32k    (../Spartan3/ram32k_b16.vhd) 32K block RAM
+--                  cpu09      (../vhdl/cpu09.vhd)          CPU core
+--                  mon_rom    (../spartan3/sys09bug_3se_rom2k_b16.vhd) Monitor ROM
+--                  acia6850   (../vhdl/acia6850.vhd)       ACIA
+--                  ACIA_Clock (../vhdl/ACIA_Clock.vhd)     ACIA Baud Clock Divider
+--                  keyboard   (../vhdl/keyboard.vhd)       PS/2 Keyboard Interface
+--                  vdu8       (../vhdl/vdu8.vhd)           80 x 25 Video Display
+--                  timer      (../vhdl/timer.vhd)          Timer component
+--                  pia_timer  (../vhdl/pia_timer.vhd)      PIA interrupt Timer cmponent
+--                  trap	    (../vhdl/trap.vhd)           Hardware Breakpoint Bus Trap
+--                  vdu8       (../vhdl/vdu8.vhd)           VDU
 -- 
 -- Author         : John E. Kent      
 --                  dilbert57@opencores.org      
+--	Memory Map     :
 --
---===========================================================================----
+-- $0000 - $7FFF System Block RAM
+-- $E000 - ACIA (SWTPc)
+-- $E010 - Reserved for SWTPc FD-01 FD1771 FDC
+-- $E020 - Keyboard
+-- $E030 - VDU
+-- $E040 - Reserved for SWTPc MP-T (was Compact Flash)
+-- $E050 - Timer
+-- $E060 - Bus Trap (Hardware Breakpoint Interrupt Logic)
+-- $E070 - PIA Single Step Timer (was Reserved for Trace Buffer)
+-- $E080 - Reserved for SWTPc MP-ID 6821 PIA (?)
+-- $E090 - Reserved for SWTPc MP-ID 6840 PTM (?)
+-- $E0A0 - reserved for SPP Printer Port
+-- $E0B0 - Reserved
+-- $E0C0 - Reserved
+-- $E100 - $E13F Reserved IDE / Compact Flash Card
+-- $E140 - $E17F Reserved for Ethernet MAC (XESS)
+-- $E180 - $E1BF Reserved for Expansion Slot 0 (XESS)
+-- $E1C0 - $E1FF Reserved for Expansion Slot 1 (XESS)
+-- $E200 - $EFFF Dual Port RAM interface
+-- $F000 - $F7FF Reserved SWTPc DMAF-2
+-- $F800 - $FFFF Sys09bug ROM (Read only)
+-- $FFF0 - $FFFF Reserved for DAT - Dynamic Address Translation (Write Only)
 --
--- Revision History:
---===========================================================================--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================
+--
+--                              Revision History:
+--
+--===========================================================================
 -- Version 0.1 - 20 March 2003
 -- Version 0.2 - 30 March 2003
 -- Version 0.3 - 29 April 2003
@@ -83,6 +131,16 @@
 -- $E060 - Bus trap
 -- $E070 - Parallel I/O
 --
+-- Version 4.1 - July / september 2010
+-- Updated VDU interface
+-- and possible other changes.
+--
+-- Version 4.2 - 14th September 2010
+-- Replaced ACIA_6850 with acia6850
+-- Cleaned up decoding
+-- Added Flasher component
+-- Added Clock Divider component
+--
 --===========================================================================--
 library ieee;
    use ieee.std_logic_1164.all;
@@ -131,6 +189,10 @@ architecture my_computer of my_system09 is
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
+  -- Clocks
+  signal sys_clk        : std_logic;
+  signal vga_clk        : std_logic;
+
   -- BOOT ROM
   signal rom_cs         : Std_logic;
   signal rom_data_out   : Std_Logic_Vector(7 downto 0);
@@ -140,11 +202,6 @@ architecture my_computer of my_system09 is
   signal uart_cs        : Std_Logic;
   signal uart_irq       : Std_Logic;
   signal uart_clk       : Std_Logic;
-  signal rxbit          : Std_Logic;
-  signal txbit          : Std_Logic;
-  signal DCD_n          : Std_Logic;
-  signal RTS_n          : Std_Logic;
-  signal CTS_n          : Std_Logic;
 
   -- timer
   signal timer_data_out : std_logic_vector(7 downto 0);
@@ -163,38 +220,60 @@ architecture my_computer of my_system09 is
   signal pia_irq_b      : Std_Logic;
 
   -- keyboard port
-  signal keyboard_data_out : std_logic_vector(7 downto 0);
-  signal keyboard_cs       : std_logic;
-  signal keyboard_irq      : std_logic;
+  signal kbd_data_out   : std_logic_vector(7 downto 0);
+  signal kbd_cs         : std_logic;
+  signal kbd_irq        : std_logic;
 
   -- Video Display Unit
-  signal vga_clk      : std_logic;
-  signal vdu_cs       : std_logic;
-  signal vdu_data_out : std_logic_vector(7 downto 0);
+  signal vdu_cs         : std_logic;
+  signal vdu_data_out   : std_logic_vector(7 downto 0);
 
   -- RAM
-  signal ram_cs       : std_logic; -- memory chip select
-  signal ram_data_out : std_logic_vector(7 downto 0);
+  signal ram_cs         : std_logic; -- memory chip select
+  signal ram_data_out   : std_logic_vector(7 downto 0);
 
   -- CPU Interface signals
-  signal cpu_reset    : Std_Logic;
-  signal cpu_clk      : Std_Logic;
-  signal cpu_rw       : std_logic;
-  signal cpu_vma      : std_logic;
-  signal cpu_halt     : std_logic;
-  signal cpu_hold     : std_logic;
-  signal cpu_firq     : std_logic;
-  signal cpu_irq      : std_logic;
-  signal cpu_nmi      : std_logic;
-  signal cpu_addr     : std_logic_vector(15 downto 0);
-  signal cpu_data_in  : std_logic_vector(7 downto 0);
-  signal cpu_data_out : std_logic_vector(7 downto 0);
+  signal cpu_rst        : Std_Logic;
+  signal cpu_clk        : Std_Logic;
+  signal cpu_rw         : std_logic;
+  signal cpu_vma        : std_logic;
+  signal cpu_halt       : std_logic;
+  signal cpu_hold       : std_logic;
+  signal cpu_firq       : std_logic;
+  signal cpu_irq        : std_logic;
+  signal cpu_nmi        : std_logic;
+  signal cpu_addr       : std_logic_vector(15 downto 0);
+  signal cpu_data_in    : std_logic_vector(7 downto 0);
+  signal cpu_data_out   : std_logic_vector(7 downto 0);
 
-  -- CLK_50MHZ clock divide by 2
-  signal clock_div    : std_logic_vector(1 downto 0);
-  signal SysClk       : std_logic;
-  signal Reset_n      : std_logic;
-  signal CountL       : std_logic_vector(23 downto 0);
+-----------------------------------------------------------------
+--
+--                     Clock generator
+--
+-----------------------------------------------------------------
+
+component clock_div
+  port(
+    clk_in      : in  std_Logic;  -- System Clock input
+	 sys_clk     : out std_logic;  -- System Clock Out    (1/1)
+	 vga_clk     : out std_logic;  -- VGA Pixel Clock Out (1/2)
+    cpu_clk     : out std_logic   -- CPU Clock Out       (1/4)
+  );
+end component;
+
+-----------------------------------------------------------------
+--
+--                      LED Flasher
+--
+-----------------------------------------------------------------
+
+component flasher
+  port (
+    clk      : in  std_logic;           -- Clock input
+    rst      : in  std_logic;           -- Reset input (active high)
+    LED      : out Std_Logic            -- LED output        
+  );
+end component;
   
 -----------------------------------------------------------------
 --
@@ -206,9 +285,9 @@ component cpu09
   port (    
 	 clk      :	 in std_logic;
     rst      :  in std_logic;
-    rw       :	out std_logic;
     vma      :	out std_logic;
-    address  : out std_logic_vector(15 downto 0);
+    addr     : out std_logic_vector(15 downto 0);
+    rw       :	out std_logic;
 	 data_out : out std_logic_vector(7 downto 0);
     data_in  :  in std_logic_vector(7 downto 0);
 	 irq      :  in std_logic;
@@ -247,8 +326,8 @@ component ram_32k
        clk      : in  std_logic;
 		 rst      : in  std_logic;
 		 cs       : in  std_logic;
-		 rw       : in  std_logic;
        addr     : in  std_logic_vector (14 downto 0);
+		 rw       : in  std_logic;
        data_in  : in  std_logic_vector (7 downto 0);
        data_out : out std_logic_vector (7 downto 0)
     );
@@ -265,8 +344,8 @@ component pia_timer
 	 clk       : in    std_logic;
     rst       : in    std_logic;
     cs        : in    std_logic;
-    rw        : in    std_logic;
     addr      : in    std_logic_vector(1 downto 0);
+    rw        : in    std_logic;
     data_in   : in    std_logic_vector(7 downto 0);
 	 data_out  : out   std_logic_vector(7 downto 0);
 	 irqa      : out   std_logic;
@@ -281,7 +360,7 @@ end component;
 --
 -----------------------------------------------------------------
 
-component ACIA_6850
+component acia6850
   port (
      clk      : in  Std_Logic;  -- System Clock
      rst      : in  Std_Logic;  -- Reset input (active high)
@@ -325,12 +404,12 @@ end component;
 
 component timer
   port (
-     clk       : in std_logic;
-     rst       : in std_logic;
-     cs        : in std_logic;
-     rw        : in std_logic;
-     addr      : in std_logic;
-     data_in   : in std_logic_vector(7 downto 0);
+     clk       : in  std_logic;
+     rst       : in  std_logic;
+     cs        : in  std_logic;
+     addr      : in  std_logic;
+     rw        : in  std_logic;
+     data_in   : in  std_logic_vector(7 downto 0);
 	  data_out  : out std_logic_vector(7 downto 0);
 	  irq       : out std_logic 
 	  );
@@ -347,8 +426,8 @@ component trap
 	 clk        : in  std_logic;
     rst        : in  std_logic;
     cs         : in  std_logic;
-    rw         : in  std_logic;
     vma        : in  std_logic;
+    rw         : in  std_logic;
     addr       : in  std_logic_vector(15 downto 0);
     data_in    : in  std_logic_vector(7 downto 0);
 	 data_out   : out std_logic_vector(7 downto 0);
@@ -364,19 +443,19 @@ end component;
 
 component keyboard
   generic(
-  KBD_CLK_FREQ : integer := CPU_CLK_FREQ
+    KBD_CLK_FREQ : integer := CPU_CLK_FREQ
   );
   port(
-  clk             : in    std_logic;
-  rst             : in    std_logic;
-  cs              : in    std_logic;
-  rw              : in    std_logic;
-  addr            : in    std_logic;
-  data_in         : in    std_logic_vector(7 downto 0);
-  data_out        : out   std_logic_vector(7 downto 0);
-  irq             : out   std_logic;
-  kbd_clk         : inout std_logic;
-  kbd_data        : inout std_logic
+    clk             : in    std_logic;
+    rst             : in    std_logic;
+    cs              : in    std_logic;
+    addr            : in    std_logic;
+    rw              : in    std_logic;
+    data_in         : in    std_logic_vector(7 downto 0);
+    data_out        : out   std_logic_vector(7 downto 0);
+    irq             : out   std_logic;
+    kbd_clk         : inout std_logic;
+    kbd_data        : inout std_logic
   );
 end component;
 
@@ -419,25 +498,49 @@ component vdu8
    );
 end component;
 
-
-component BUFG 
-port (
-     i: in std_logic;
-	  o: out std_logic
-  );
-end component;
-
 begin
-  -----------------------------------------------------------------------------
-  -- Instantiation of internal components
-  -----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+-- Instantiation of internal components
+-----------------------------------------------------------------------------
+
+----------------------------------------
+--
+-- Clock generator
+--
+----------------------------------------
+
+my_clock_div: clock_div port map (
+    clk_in   => CLK_50MHZ,  -- Clock input
+    sys_clk  => sys_clk,  -- System Clock Out        (1/1)
+    vga_clk  => vga_clk,  -- CPU/VGA Pixel Clock Out (1/2)
+    cpu_clk  => open      --                         (1/4)
+  );
+
+-----------------------------------------
+--
+-- LED Flasher
+--
+-----------------------------------------
+
+my_LED_flasher : flasher port map (
+    clk      => cpu_clk,
+    rst      => cpu_rst,
+    LED      => LED(0)
+  );
+
+----------------------------------------
+--
+-- 6809 compatible CPU
+--
+----------------------------------------
 
 my_cpu : cpu09  port map (    
 	 clk	     => cpu_clk,
-    rst       => cpu_reset,
-    rw	     => cpu_rw,
+    rst       => cpu_rst,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
+    addr      => cpu_addr(15 downto 0),
+    rw	     => cpu_rw,
 	 data_out  => cpu_data_out,
     data_in   => cpu_data_in,
 	 irq       => cpu_irq,
@@ -449,58 +552,57 @@ my_cpu : cpu09  port map (
 
 my_rom : mon_rom port map (
        clk      => cpu_clk,
-		 rst      => cpu_reset,
+		 rst      => cpu_rst,
 		 cs       => rom_cs,
-		 rw       => '1',
        addr     => cpu_addr(10 downto 0),
+		 rw       => '1',
        data_in  => cpu_data_out,
        data_out => rom_data_out
     );
 
 my_ram : ram_32k port map (
        clk      => cpu_clk,
-		 rst      => cpu_reset,
+		 rst      => cpu_rst,
 		 cs       => ram_cs,
-		 rw       => cpu_rw,
        addr     => cpu_addr(14 downto 0),
+		 rw       => cpu_rw,
        data_in  => cpu_data_out,
        data_out => ram_data_out
     );
 
 my_pia  : pia_timer port map (
 	 clk	     => cpu_clk,
-	 rst       => cpu_reset,
+	 rst       => cpu_rst,
     cs        => pia_cs,
-	 rw        => cpu_rw,
     addr      => cpu_addr(1 downto 0),
+	 rw        => cpu_rw,
 	 data_in   => cpu_data_out,
 	 data_out  => pia_data_out,
     irqa      => pia_irq_a,
     irqb      => pia_irq_b
 	 );
 
-
 ----------------------------------------
 --
 -- ACIA/UART Serial interface
 --
 ----------------------------------------
-my_ACIA  : ACIA_6850 port map (
+my_ACIA  : acia6850 port map (
 	 clk	     => cpu_clk,
-	 rst       => cpu_reset,
+	 rst       => cpu_rst,
     cs        => uart_cs,
-	 rw        => cpu_rw,
     addr      => cpu_addr(0),
+	 rw        => cpu_rw,
 	 data_in   => cpu_data_out,
 	 data_out  => uart_data_out,
     irq       => uart_irq,
 	 RxC       => uart_clk,
 	 TxC       => uart_clk,
-	 RxD       => rxbit,
-	 TxD       => txbit,
-	 DCD_n     => dcd_n,
-	 CTS_n     => cts_n,
-	 RTS_n     => rts_n
+	 RxD       => RS232_DCE_RXD,
+	 TxD       => RS232_DCE_TXD,
+	 DCD_n     => '0',
+	 CTS_n     => '0',
+	 RTS_n     => open
 	 );
 
 ----------------------------------------
@@ -514,7 +616,7 @@ my_ACIA_Clock : ACIA_Clock
 	 ACIA_CLK_FREQ => ACIA_CLK_FREQ
   ) 
   port map(
-    clk        => SysClk,
+    clk        => sys_clk,
     acia_clk   => uart_clk
   ); 
 
@@ -527,19 +629,19 @@ my_ACIA_Clock : ACIA_Clock
 ----------------------------------------
 my_keyboard : keyboard
    generic map (
-	KBD_CLK_FREQ => CPU_CLK_FREQ
+     KBD_CLK_FREQ => CPU_CLK_FREQ
 	) 
    port map(
-	clk          => cpu_clk,
-	rst          => cpu_reset,
-	cs           => keyboard_cs,
-	rw           => cpu_rw,
-	addr         => cpu_addr(0),
-	data_in      => cpu_data_out(7 downto 0),
-	data_out     => keyboard_data_out(7 downto 0),
-	irq          => keyboard_irq,
-	kbd_clk      => PS2_CLK,
-	kbd_data     => PS2_DATA
+	  clk          => cpu_clk,
+	  rst          => cpu_rst,
+	  cs           => kbd_cs,
+	  addr         => cpu_addr(0),
+	  rw           => cpu_rw,
+	  data_in      => cpu_data_out(7 downto 0),
+	  data_out     => kbd_data_out(7 downto 0),
+	  irq          => kbd_irq,
+	  kbd_clk      => PS2_CLK,
+	  kbd_data     => PS2_DATA
 	);
 
 ----------------------------------------
@@ -559,16 +661,16 @@ my_vdu : vdu8
 	   VGA_VER_CHAR_LINES     => 16, -- LINES
 	   VGA_VER_FRONT_PORCH    => 10, -- LINES
 	   VGA_VER_SYNC           =>  2, -- LINES
-	   VGA_VER_FRONT_PORCH    => 34  -- LINES
+	   VGA_VER_BACK_PORCH     => 34  -- LINES
   )
   port map(
 
 		-- Control Registers
 		vdu_clk       => cpu_clk,					 -- 25 MHz System Clock in
-      vdu_rst       => cpu_reset,
+      vdu_rst       => cpu_rst,
 		vdu_cs        => vdu_cs,
-		vdu_rw        => cpu_rw,
 		vdu_addr      => cpu_addr(2 downto 0),
+		vdu_rw        => cpu_rw,
 		vdu_data_in   => cpu_data_out,
 		vdu_data_out  => vdu_data_out,
 
@@ -589,7 +691,7 @@ my_vdu : vdu8
 ----------------------------------------
 my_timer  : timer port map (
     clk       => cpu_clk,
-	 rst       => cpu_reset,
+	 rst       => cpu_rst,
     cs        => timer_cs,
 	 rw        => cpu_rw,
     addr      => cpu_addr(0),
@@ -605,7 +707,7 @@ my_timer  : timer port map (
 ----------------------------------------
 my_trap : trap port map (	
 	 clk        => cpu_clk,
-    rst        => cpu_reset,
+    rst        => cpu_rst,
     cs         => trap_cs,
     rw         => cpu_rw,
 	 vma        => cpu_vma,
@@ -614,22 +716,6 @@ my_trap : trap port map (
 	 data_out   => trap_data_out,
 	 irq        => trap_irq
     );
-
---
--- 25 MHz CPU clock
---
-cpu_clk_buffer : BUFG port map(
-    i => clock_div(0),
-	 o => cpu_clk
-    );
-	 	 
---
--- 25 MHz VGA Pixel clock
---
-vga_clk_buffer : BUFG port map(
-    i => clock_div(0),
-	 o => vga_clk
-    );	 
 	 
 ----------------------------------------------------------------------
 --
@@ -637,42 +723,38 @@ vga_clk_buffer : BUFG port map(
 --
 ----------------------------------------------------------------------
 
-mem_decode: process( cpu_clk, Reset_n,
-                     cpu_addr, cpu_rw, cpu_vma,
+mem_decode: process( cpu_addr, cpu_rw, cpu_vma,
 					      rom_data_out, 
 							ram_data_out,
 						   timer_data_out, 
 							trap_data_out, 
 							pia_data_out,
 						   uart_data_out,
-							keyboard_data_out,
+							kbd_data_out,
 							vdu_data_out )
-variable decode_addr : std_logic_vector(3 downto 0);
 begin
---    decode_addr := dat_addr(3 downto 0) & cpu_addr(11);
-    decode_addr := cpu_addr(15 downto 12);
 
-      case decode_addr is
+	rom_cs   <= '0';
+	ram_cs   <= '0';
+	uart_cs  <= '0';
+	timer_cs <= '0';
+	trap_cs  <= '0';
+	pia_cs   <= '0';
+	kbd_cs   <= '0';
+	vdu_cs   <= '0';
+
+      case cpu_addr(15 downto 12) is
 	   --
 		-- SBUG/KBUG/SYS09BUG Monitor ROM $F800 - $FFFF
 		--
 		when "1111" => -- $F000 - $FFFF
 		   cpu_data_in <= rom_data_out;
 			rom_cs      <= cpu_vma;              -- read ROM
-			ram_cs      <= '0';
-			uart_cs     <= '0';
-			timer_cs    <= '0';
-			trap_cs     <= '0';
-			pia_cs      <= '0';
-			keyboard_cs <= '0';
-			vdu_cs      <= '0';
 
       --
 		-- IO Devices $E000 - $EFFF
 		--
 		when "1110" => -- $E000 - $E7FF
-			rom_cs    <= '0';
-			ram_cs    <= '0';
 		   case cpu_addr(7 downto 4) is
 			--
 			-- UART / ACIA $E000
@@ -680,46 +762,25 @@ begin
 			when "0000" => -- $E000
 		     cpu_data_in <= uart_data_out;
 			  uart_cs     <= cpu_vma;
-			  timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
 			--
 			-- WD1771 FDC sites at $E010-$E01F
 			--
 			when "0001" => -- $E010
            cpu_data_in <= (others => '0');
-			  uart_cs     <= '0';
-			  timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
          --
          -- Keyboard port $E020 - $E02F
 			--
 			when "0010" => -- $E020
-           cpu_data_in <= keyboard_data_out;
-			  uart_cs     <= '0';
-           timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= cpu_vma;
-			  vdu_cs      <= '0';
+           cpu_data_in <= kbd_data_out;
+			  kbd_cs <= cpu_vma;
 
          --
          -- VDU port $E030 - $E03F
 			--
 			when "0011" => -- $E030
            cpu_data_in <= vdu_data_out;
-			  uart_cs     <= '0';
-           timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
 			  vdu_cs      <= cpu_vma;
 
          --
@@ -727,57 +788,30 @@ begin
 			--
 			when "0100" => -- $E040
            cpu_data_in <= (others => '0');
-			  uart_cs     <= '0';
-			  timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
          --
          -- Timer $E050 - $E05F
 			--
 			when "0101" => -- $E050
            cpu_data_in <= timer_data_out;
-			  uart_cs     <= '0';
            timer_cs    <= cpu_vma;
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
          --
          -- Bus Trap Logic $E060 - $E06F
 			--
 			when "0110" => -- $E060
            cpu_data_in <= trap_data_out;
-			  uart_cs     <= '0';
-           timer_cs    <= '0';
 			  trap_cs     <= cpu_vma;
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
          --
-         -- I/O port $E070 - $E07F
+         -- PIA Timer $E070 - $E07F
 			--
 			when "0111" => -- $E070
            cpu_data_in <= pia_data_out;
-			  uart_cs     <= '0';
-           timer_cs    <= '0';
-			  trap_cs     <= '0';
 			  pia_cs      <= cpu_vma;
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 
 			when others => -- $E080 to $E7FF
            cpu_data_in <= (others => '0');
-			  uart_cs     <= '0';
-			  timer_cs    <= '0';
-			  trap_cs     <= '0';
-			  pia_cs      <= '0';
-			  keyboard_cs <= '0';
-			  vdu_cs      <= '0';
 		   end case;
 
 		--
@@ -786,73 +820,37 @@ begin
       when "1101" | "1100" | "1011" | "1010" |
 		     "1001" | "1000" =>
 		  cpu_data_in <= (others => '0');
-		  rom_cs      <= '0';
-		  ram_cs      <= '0';
-		  uart_cs     <= '0';
-		  timer_cs    <= '0';
-		  trap_cs     <= '0';
-		  pia_cs      <= '0';
-		  keyboard_cs <= '0';
-		  vdu_cs      <= '0';
+
 		--
 		-- Everything else is RAM
 		--
 		when others =>
 		  cpu_data_in <= ram_data_out;
-		  rom_cs      <= '0';
 		  ram_cs      <= cpu_vma;
-		  uart_cs     <= '0';
-		  timer_cs    <= '0';
-		  trap_cs     <= '0';
-		  pia_cs      <= '0';
-		  keyboard_cs <= '0';
-		  vdu_cs      <= '0';
 		end case;
 end process;
 
 --
--- Interrupts and other bus control signals
+-- Assign CPU clock, reset, interrupt, halt & hold signals
+-- as well as LED signals
 --
-interrupts : process( Reset_n, 
-                      pia_irq_a, pia_irq_b, uart_irq, trap_irq, timer_irq, keyboard_irq
+assign_signals : process( vga_clk, BTN_SOUTH, 
+                      pia_irq_a, pia_irq_b, uart_irq, trap_irq, timer_irq, kbd_irq
 							 )
 begin
- 	 cpu_reset <= not Reset_n; -- CPU reset is active high
-    cpu_irq   <= uart_irq or keyboard_irq;
-	 cpu_nmi   <= pia_irq_a or trap_irq;
-	 cpu_firq  <= pia_irq_b or timer_irq;
-	 cpu_halt  <= '0';
-    cpu_hold  <= '0';
+    cpu_clk  <= vga_clk;
+ 	 cpu_rst  <= BTN_SOUTH; -- CPU reset is active high
+    cpu_irq  <= uart_irq or kbd_irq;
+	 cpu_nmi  <= pia_irq_a or trap_irq;
+	 cpu_firq <= pia_irq_b or timer_irq;
+	 cpu_halt <= '0';
+    cpu_hold <= '0';
+
+    -- LED outputs
+    LED(7 downto 1) <= (others=>'1');
+
 end process;
 
---
---
-my_led_flasher: process( SysClk, Reset_n, CountL )
-begin
-    if Reset_n = '0' then
-		   CountL <= "000000000000000000000000";
-    elsif(SysClk'event and SysClk = '0') then
-		   CountL <= CountL + 1;
-    end if;
-	 LED(7 downto 0) <= CountL(23 downto 16);
-end process;
-
---
--- Clock divider
---
-my_clock_divider: process( SysClk )
-begin
-	if SysClk'event and SysClk='0' then
-		clock_div <= clock_div + "01";
-	end if;
-end process;
-
-DCD_n <= '0';
-CTS_n <= '0';
-Reset_n <= not BTN_SOUTH; -- CPU reset is active high
-SysClk <= CLK_50MHZ;
-rxbit <= RS232_DCE_RXD;
-RS232_DCE_TXD <= txbit;
 
 end my_computer; --===================== End of architecture =======================--
 

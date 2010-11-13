@@ -1,42 +1,65 @@
---===========================================================================----
+--===========================================================================
 --
---  S Y N T H E Z I A B L E    Clock_dll for System09 - SOC.
+--  clock_div.vhd - Clock divider for System09
 --
---===========================================================================----
+--===========================================================================
 --
--- This core adheres to the GNU public license
--- No responsibility is taken for this design.
--- Use at own risk.  
+-- File name      : clock_div.vhd
 --
--- File name       : Clock_dll.vhd
+-- Entity name    : clock_div
 --
--- Purpose         : Generates Clocks for System09
---                   For BurchED B3-Spartan2+ and B5-X300
---                   Assumes a 12.5 MHz system clock input
---                   Generates a x1 (12.5 MHz) CPU clock 
---                   Generates a x2 (25.0 MHz) VGA clock 
---                   Generates a x4 (50.0 MHz) MEM clock 
+-- Purpose        : Generates Clocks for System09
+--                  For BurchED B3-Spartan2+ and B5-X300
+--                  Divides the input clock which is normally 50MHz
+--                  Generates a 1/1 (50.0 MHz) SYS clock 
+--                  Generates a 1/2 (25.0 MHz) VGA clock 
+--                  Generates a 1/4 (12.5 MHz) CPU clock 
 --
--- Dependencies    : ieee.Std_Logic_1164
---                   ieee.std_logic_unsigned
---                   ieee.std_logic_arith
---                   ieee.numeric_std
+-- Dependencies   : ieee.Std_Logic_1164
+--                  ieee.std_logic_unsigned
+--                  ieee.std_logic_arith
+--                  ieee.numeric_std
 --
+-- Uses           : IBUFG
+--                  BUFG
 --
--- Revision History :
+-- Author         : John E. Kent      
+--                  dilbert57@opencores.org      
 --
---   Rev         : 0.1
---   Date        : 7th September 2008
---   Description : Initial version.                 
--- 
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================
+--
+--                              Revision History:
+--
+--===========================================================================
+--
+-- Rev: Date:       Author:    Description:
+--
+-- 0.1  2008-09-07  John Kent  Initial version
+-- 0.2  2010-09-14  John Kent  Updated header
+--
 --
 library ieee;
    use ieee.std_logic_1164.all;
    use IEEE.STD_LOGIC_ARITH.ALL;
    use IEEE.STD_LOGIC_UNSIGNED.ALL;
    use ieee.numeric_std.all;
-library unisim;
-	use unisim.vcomponents.all;
+--library unisim;
+--	use unisim.vcomponents.all;
 
 entity clock_div is
   port(
@@ -49,15 +72,7 @@ end entity;
 
 architecture RTL of clock_div is
 
-signal div_clk     : std_logic;
 signal div_count   : std_logic_vector(1 downto 0);
-
-component IBUFG
-  port (
-		i: in  std_logic;
-		o: out std_logic
-  );
-end component;
 
 component BUFG 
   port (
@@ -66,19 +81,18 @@ component BUFG
   );
 end component;
 
-
 --
 -- Start instantiation
 --
 begin
 
 --
--- 50.0MHz  system clock
+-- 50 MHz SYS clock output
 --
-sys_clk_buffer : IBUFG 
+sys_clk_buffer : BUFG 
   port map(
     i => clk_in,
-	 o => div_clk
+	 o => sys_clk
   );
 
 --
@@ -102,12 +116,11 @@ cpu_clk_buffer : BUFG
 --
 -- Clock divider
 --
-clock_div : process( div_clk )
+clock_div : process( clk_in )
 begin
-  if rising_edge( div_clk) then
+  if rising_edge( clk_in ) then
     div_count <= div_count + "01";
   end if;
-  sys_clk <= div_clk;
 end process;
 
 end architecture;

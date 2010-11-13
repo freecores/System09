@@ -12,7 +12,6 @@
 --                   ieee.std_logic_unsigned
 --                   ieee.std_logic_arith
 --                   ieee.numeric_std
---                   unisim.vcomponents
 --
 --  Author         : Original Verilog version by John Clayton
 --                   Converted to VHDL by John E. Kent
@@ -145,7 +144,7 @@
 --            they correspond to 60usec for a 49.152MHz clock.
 --
 -- Author: John Kent
---	2001-02-10 Converted to VHDL
+--2001-02-10 Converted to VHDL
 -- 2004-09-11 Added ctrl key 
 --            Changed undefined key codes to x"ff"
 --            Reversed clock polarity
@@ -154,7 +153,7 @@
 -- 2007-02-06 Added Generic Clock parameter
 -- 2010-05-31 Revised header, added GPL
 -- 2010-06-17 Change some signal names for consistancy
---
+-- 2010-10-24 Rearranged code to prevent shift key outputting characters
 --
 --
 ---------------------------------------------------------------------------------------
@@ -164,8 +163,8 @@ library ieee;
    use ieee.std_logic_arith.all;
    use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
-library unisim;
-   use unisim.vcomponents.all;
+--library unisim;
+--   use unisim.vcomponents.all;
 
 entity ps2_keyboard is
   generic (
@@ -203,7 +202,10 @@ constant RELEASE_CODE : integer := 16#F0#;
 constant LEFT_SHIFT   : integer := 16#12#;
 constant RIGHT_SHIFT  : integer := 16#59#;
 constant CTRL_CODE    : integer := 16#14#;
+constant LEFT_ALT     : integer := 16#11#;
 constant CAPS_CODE    : integer := 16#58#;
+constant SCROLL_LOCK  : integer := 16#7E#;
+constant NUM_LOCK     : integer := 16#77#;
 
 
 -- constants
@@ -228,9 +230,9 @@ constant CAPS_CODE    : integer := 16#58#;
 --constant TIMER_5USEC_BITS_PP   : integer := 7;    -- Number of bits needed for timer
 
 -- Values for  generic Clock up to 50 MHz
-constant TIMER_60USEC_VALUE_PP : integer := CLK_FREQ_MHZ * 60;  -- Number of sys_clks for 60usec.
+constant TIMER_60USEC_VALUE_PP : integer := CLK_FREQ_MHZ * 60;  -- Number of clock cycles for 60usec.
 constant TIMER_60USEC_BITS_PP  : integer := 12;                 -- Number of bits needed for timer
-constant TIMER_5USEC_VALUE_PP  : integer := CLK_FREQ_MHZ * 5;   -- Number of sys_clks for debounce
+constant TIMER_5USEC_VALUE_PP  : integer := CLK_FREQ_MHZ * 5;   -- Number of clock cycles for debounce
 constant TIMER_5USEC_BITS_PP   : integer := 8;                  -- Number of bits needed for timer
 
 constant TRAP_SHIFT_KEYS_PP    : integer := 1;   -- Default: No shift key trap.
@@ -374,333 +376,357 @@ end process;
 
 m1_state_logic : process( m1_state, q,
                           tx_shifting_done, tx_write, 
-								  ps2_clk_s, ps2_data_s,
-								  timer_60usec_done, timer_5usec_done )
+						  ps2_clk_s, ps2_data_s,
+						  timer_60usec_done, timer_5usec_done )
 begin
   -- Output signals default to this value, unless changed in a state condition.
-  ps2_clk_hi_z             <= '1';
-  ps2_data_hi_z            <= '1';
-  tx_error                 <= '0';
-  enable_timer_60usec      <= '0';
-  enable_timer_5usec       <= '0';
+	ps2_clk_hi_z             <= '1';
+	ps2_data_hi_z            <= '1';
+	tx_error                 <= '0';
+	enable_timer_60usec      <= '0';
+	enable_timer_5usec       <= '0';
 
-  case (m1_state) is
-  when m1_rx_clk_h =>
-        enable_timer_60usec <= '1';
-        if (tx_write = '1') then
-		      m1_next_state <= m1_tx_reset_timer;
-        elsif (ps2_clk_s = '0') then
-		      m1_next_state <= m1_rx_falling_edge_marker;
-        else 
-		      m1_next_state <= m1_rx_clk_h;
+	case (m1_state) is
+	--
+	-- receive clock transitions
+	--
+	when m1_rx_clk_h =>
+		enable_timer_60usec <= '1';
+		if (tx_write = '1') then
+			m1_next_state <= m1_tx_reset_timer;
+		elsif (ps2_clk_s = '0') then
+			m1_next_state <= m1_rx_falling_edge_marker;
+		else 
+			m1_next_state <= m1_rx_clk_h;
         end if;
       
-  when m1_rx_falling_edge_marker =>
-        enable_timer_60usec <= '0';
-        m1_next_state <= m1_rx_clk_l;
+	when m1_rx_falling_edge_marker =>
+		enable_timer_60usec <= '0';
+		m1_next_state <= m1_rx_clk_l;
 
-  when m1_rx_clk_l =>
-        enable_timer_60usec <= '1';
-        if (tx_write = '1') then
-		     m1_next_state <= m1_tx_reset_timer;
-        elsif (ps2_clk_s = '1') then
-		     m1_next_state <= m1_rx_rising_edge_marker;
-        else 
-		     m1_next_state <= m1_rx_clk_l;
-        end if;
+	when m1_rx_clk_l =>
+		enable_timer_60usec <= '1';
+		if (tx_write = '1') then
+			m1_next_state <= m1_tx_reset_timer;
+		elsif (ps2_clk_s = '1') then
+			m1_next_state <= m1_rx_rising_edge_marker;
+		else 
+			m1_next_state <= m1_rx_clk_l;
+		end if;
 
-  when m1_rx_rising_edge_marker =>
-        enable_timer_60usec <= '0';
-        m1_next_state <= m1_rx_clk_h;
+	when m1_rx_rising_edge_marker =>
+		enable_timer_60usec <= '0';
+		m1_next_state <= m1_rx_clk_h;
 
-  when m1_tx_reset_timer =>
-        enable_timer_60usec <= '0';
-        m1_next_state <= m1_tx_force_clk_l;
+	--
+	-- write to keyboard (Tx)
+	--
+	when m1_tx_reset_timer =>
+		enable_timer_60usec <= '0';
+		m1_next_state <= m1_tx_force_clk_l;
 
-  when m1_tx_force_clk_l =>
-        enable_timer_60usec <= '1';
-        ps2_clk_hi_z <= '0';  -- Force the ps2_clk line low.
-        if (timer_60usec_done = '1') then
-		     m1_next_state <= m1_tx_first_wait_clk_h;
-        else 
-		     m1_next_state <= m1_tx_force_clk_l;
-        end	if;
+	when m1_tx_force_clk_l =>
+		enable_timer_60usec <= '1';
+		ps2_clk_hi_z <= '0';  -- Force the ps2_clk line low.
+		if (timer_60usec_done = '1') then
+			m1_next_state <= m1_tx_first_wait_clk_h;
+		else 
+			m1_next_state <= m1_tx_force_clk_l;
+		end if;
 
-  when m1_tx_first_wait_clk_h =>
-        enable_timer_5usec <= '1';
-        ps2_data_hi_z <= '0';        -- Start bit.
-        if (ps2_clk_s = '0') and (timer_5usec_done = '1') then
-          m1_next_state <= m1_tx_clk_l;
-        else
-          m1_next_state <= m1_tx_first_wait_clk_h;
-        end	if;
+	when m1_tx_first_wait_clk_h =>
+		enable_timer_5usec <= '1';
+		ps2_data_hi_z <= '0';        -- Start bit.
+		if (ps2_clk_s = '0') and (timer_5usec_done = '1') then
+			m1_next_state <= m1_tx_clk_l;
+		else
+			m1_next_state <= m1_tx_first_wait_clk_h;
+		end if;
       
     -- This state must be included because the device might possibly
     -- delay for up to 10 milliseconds before beginning its clock pulses.
     -- During that waiting time, we cannot drive the data (q[0]) because it
     -- is possibly 1, which would cause the keyboard to abort its receive
     -- and the expected clocks would then never be generated.
-  when m1_tx_first_wait_clk_l =>
-        ps2_data_hi_z <= '0';
-        if (ps2_clk_s = '0') then
-		     m1_next_state <= m1_tx_clk_l;
-        else 
-		     m1_next_state <= m1_tx_first_wait_clk_l;
-        end	if;
+	when m1_tx_first_wait_clk_l =>
+		ps2_data_hi_z <= '0';
+		if (ps2_clk_s = '0') then
+			m1_next_state <= m1_tx_clk_l;
+		else 
+			m1_next_state <= m1_tx_first_wait_clk_l;
+		end if;
 
-  when m1_tx_wait_clk_h =>
-        enable_timer_5usec <= '1';
-        ps2_data_hi_z <= q(0);
-        if (ps2_clk_s = '1') and (timer_5usec_done = '1') then
-          m1_next_state <= m1_tx_rising_edge_marker;
-        else
-          m1_next_state <= m1_tx_wait_clk_h;
-        end	if;
+	when m1_tx_wait_clk_h =>
+		enable_timer_5usec <= '1';
+		ps2_data_hi_z <= q(0);
+		if (ps2_clk_s = '1') and (timer_5usec_done = '1') then
+			m1_next_state <= m1_tx_rising_edge_marker;
+		else
+			m1_next_state <= m1_tx_wait_clk_h;
+		end if;
 
-  when m1_tx_rising_edge_marker =>
-        ps2_data_hi_z <= q(0);
-        m1_next_state <= m1_tx_clk_h;
+	when m1_tx_rising_edge_marker =>
+		ps2_data_hi_z <= q(0);
+		m1_next_state <= m1_tx_clk_h;
 
-  when m1_tx_clk_h =>
-        ps2_data_hi_z <= q(0);
-        if (tx_shifting_done = '1') then
-		     m1_next_state <= m1_tx_wait_keyboard_ack;
-        elsif (ps2_clk_s = '0') then
-		     m1_next_state <= m1_tx_clk_l;
-        else
-		     m1_next_state <= m1_tx_clk_h;
-        end	if;
+	when m1_tx_clk_h =>
+		ps2_data_hi_z <= q(0);
+		if (tx_shifting_done = '1') then
+			m1_next_state <= m1_tx_wait_keyboard_ack;
+		elsif (ps2_clk_s = '0') then
+			m1_next_state <= m1_tx_clk_l;
+		else
+			m1_next_state <= m1_tx_clk_h;
+		end if;
 
-  when m1_tx_clk_l =>
-        ps2_data_hi_z <= q(0);
-        if (ps2_clk_s = '1') then
-		     m1_next_state <= m1_tx_wait_clk_h;
-        else
-		     m1_next_state <= m1_tx_clk_l;
-        end	if;
+	when m1_tx_clk_l =>
+		ps2_data_hi_z <= q(0);
+		if (ps2_clk_s = '1') then
+			m1_next_state <= m1_tx_wait_clk_h;
+		else
+			m1_next_state <= m1_tx_clk_l;
+		end if;
 
-  when m1_tx_wait_keyboard_ack =>
-        if (ps2_clk_s = '0') and (ps2_data_s = '1') then
-           m1_next_state <= m1_tx_error;
-        elsif (ps2_clk_s = '0') and (ps2_data_s = '0') then
-           m1_next_state <= m1_tx_done_recovery;
-        else 
-		     m1_next_state <= m1_tx_wait_keyboard_ack;
-        end	if;
+	when m1_tx_wait_keyboard_ack =>
+		if (ps2_clk_s = '0') and (ps2_data_s = '1') then
+			m1_next_state <= m1_tx_error;
+		elsif (ps2_clk_s = '0') and (ps2_data_s = '0') then
+			m1_next_state <= m1_tx_done_recovery;
+		else 
+			m1_next_state <= m1_tx_wait_keyboard_ack;
+		end if;
 
-  when m1_tx_done_recovery =>
-        if (ps2_clk_s = '1') and (ps2_data_s = '1') then
-		     m1_next_state <= m1_rx_clk_h;
-        else 
-		     m1_next_state <= m1_tx_done_recovery;
-        end	if;
+	when m1_tx_done_recovery =>
+		if (ps2_clk_s = '1') and (ps2_data_s = '1') then
+			m1_next_state <= m1_rx_clk_h;
+		else 
+			m1_next_state <= m1_tx_done_recovery;
+		end if;
 
-  when m1_tx_error =>
-        tx_error <= '1';
-        if (ps2_clk_s = '1') and (ps2_data_s ='1') then
-		     m1_next_state <= m1_rx_clk_h;
-        else 
-		     m1_next_state <= m1_tx_error;
-        end	if;
+	when m1_tx_error =>
+		tx_error <= '1';
+		if (ps2_clk_s = '1') and (ps2_data_s ='1') then
+			m1_next_state <= m1_rx_clk_h;
+		else 
+			m1_next_state <= m1_tx_error;
+		end if;
 
-  when others =>
-	     m1_next_state <= m1_rx_clk_h;
-  end case;
+	when others =>
+		m1_next_state <= m1_rx_clk_h;
+	end case;
 end process;
 
+--
 -- This is the bit counter
+--
 bit_counter: process(clk, reset, m1_state, bit_count )
 begin
-  if clk'event and clk = '0' then
-    if ( reset = '1' ) or
-       ( rx_shifting_done = '1' ) or
-       (m1_state = m1_tx_wait_keyboard_ack) then       -- After tx is done.
-       bit_count <= "0000";  -- normal reset
-    elsif (timer_60usec_done = '1' ) and
-          (m1_state = m1_rx_clk_h)	and
-          (ps2_clk_s = '1') then
-       bit_count <= "0000";  -- rx watchdog timer reset
-    elsif (m1_state = m1_rx_falling_edge_marker) or  -- increment for rx
-          (m1_state = m1_tx_rising_edge_marker) then  -- increment for tx
-       bit_count <= bit_count + 1;
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if ( reset = '1' ) or ( rx_shifting_done = '1' ) or
+			(m1_state = m1_tx_wait_keyboard_ack) then       -- After tx is done.
+			bit_count <= "0000";  -- normal reset
+		elsif (timer_60usec_done = '1' ) and
+			( m1_state = m1_rx_clk_h )	and
+			( ps2_clk_s = '1' ) then
+			bit_count <= "0000";  -- rx watchdog timer reset
+		elsif ( m1_state = m1_rx_falling_edge_marker ) or  -- increment for rx
+			(m1_state = m1_tx_rising_edge_marker) then  -- increment for tx
+			bit_count <= bit_count + 1;
+		end if;
+	end if;
+
+	if (bit_count = TOTAL_BITS) then
+		rx_shifting_done <= '1';
+	else
+		rx_shifting_done <= '0';
+	end if;
+
+	if (bit_count = (TOTAL_BITS-1)) then
+		tx_shifting_done <= '1';
+	else
+		tx_shifting_done <= '0';
+	end if;
 end process;
 
-assign: process( bit_count, tx_write, tx_data_empty_o, m1_state )
+assign: process( bit_count, tx_write, m1_state, tx_data_empty_o, m1_state )
 begin
-  if (bit_count = TOTAL_BITS) then
-     rx_shifting_done <= '1';
-  else
-     rx_shifting_done <= '0';
-  end if;
-
-  if (bit_count = (TOTAL_BITS-1)) then
-     tx_shifting_done <= '1';
-  else
-     tx_shifting_done <= '0';
-  end if;
-
--- This is the signal which enables loading of the shift register.
--- It also indicates "ack" to the device writing to the transmitter.
-  if ((tx_write = '1') and (m1_state = m1_rx_clk_h)) or
-     ((tx_write = '1') and (m1_state = m1_rx_clk_l)) then
-     tx_data_empty_o <= '1';
-  else 
-     tx_data_empty_o <= '0';
-  end if;
-  tx_data_empty <= tx_data_empty_o;
+	--
+	-- This is the signal which enables loading of the shift register.
+	-- It also indicates "ack" to the device writing to the transmitter.
+	--
+	if	((tx_write = '1') and (m1_state = m1_rx_clk_h)) or
+		((tx_write = '1') and (m1_state = m1_rx_clk_l)) then
+		tx_data_empty_o <= '1';
+	else 
+		tx_data_empty_o <= '0';
+	end if;
+	tx_data_empty <= tx_data_empty_o;
 end process;
-
--- This is the ODD parity bit for the transmitted word.
--- assign tx_parity_bit = ~^tx_data;
---
-tx_parity_bit <= not( tx_data(7) xor tx_data(6) xor tx_data(5) xor tx_data(4) xor
-                      tx_data(3) xor tx_data(2) xor tx_data(1) xor tx_data(0) );
 
 -- This is the shift register
 q_shift : process(clk, tx_data_empty_o, tx_parity_bit, tx_data,
                   m1_state, q, ps2_data_s, rx_shifting_done )
 begin
-  if clk'event and clk='0' then
-    if (reset = '1') then
-	    q <= "00000000000";
-    elsif (tx_data_empty_o = '1') then
-	    q <= "1" & tx_parity_bit & tx_data & "0";
-    elsif ( (m1_state = m1_rx_falling_edge_marker)	or
-            (m1_state = m1_tx_rising_edge_marker) ) then
-       q <= ps2_data_s & q((TOTAL_BITS-1) downto 1);
-    end if;
-  end if;
+	--
+	-- This is the ODD parity bit for the transmitted word.
+	-- assign tx_parity_bit = ~^tx_data;
+	--
+	tx_parity_bit <= not( tx_data(7) xor tx_data(6) xor tx_data(5) xor tx_data(4) xor
+						tx_data(3) xor tx_data(2) xor tx_data(1) xor tx_data(0) );
+ 
+	if clk'event and clk='0' then
+		if (reset = '1') then
+			q <= (others=>'0');
+		elsif (tx_data_empty_o = '1') then
+			q <= "1" & tx_parity_bit & tx_data & "0";
+		elsif ( (m1_state = m1_rx_falling_edge_marker)	or
+			(m1_state = m1_tx_rising_edge_marker) ) then
+			q <= ps2_data_s & q((TOTAL_BITS-1) downto 1);
+		end if;
+	end if;
 
--- Create the signals which indicate special scan codes received.
--- These are the "unlatched versions."
-  if (q(8 downto 1) = EXTEND_CODE) and (rx_shifting_done = '1') then
-    extended <= '1';
-  else
-    extended <= '0';
-  end if;
-  if (q(8 downto 1) = RELEASE_CODE) and (rx_shifting_done = '1') then
-    released <= '1';
-  else
-    released <= '0';
-  end if;
 end process;
 
+--
 -- This is the 60usec timer counter
+--
 timer60usec: process(clk, enable_timer_60usec, timer_60usec_count)
 begin
-  if clk'event and clk = '0' then
-    if (enable_timer_60usec = '0') then
-	    timer_60usec_count <= (others => '0');
-    elsif (timer_60usec_done = '0') then
-	    timer_60usec_count <= timer_60usec_count + 1;
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (enable_timer_60usec = '0') then
+			timer_60usec_count <= (others => '0');
+		elsif (timer_60usec_done = '0') then
+			timer_60usec_count <= timer_60usec_count + 1;
+		end if;
+	end if;
 
-  if (timer_60usec_count = (TIMER_60USEC_VALUE_PP - 1)) then
-	 timer_60usec_done <= '1';
-  else
-    timer_60usec_done <= '0';
-  end if;
+	if (timer_60usec_count = (TIMER_60USEC_VALUE_PP - 1)) then
+		timer_60usec_done <= '1';
+	else
+		timer_60usec_done <= '0';
+	end if;
 end process;
 
+--
 -- This is the 5usec timer counter
+--
 timer5usec : process(clk, enable_timer_5usec, timer_5usec_count )
 begin
-  if clk'event and clk = '0' then
-    if (enable_timer_5usec = '0') then
-	   timer_5usec_count <= (others => '0');
-    elsif (timer_5usec_done = '0') then
-	   timer_5usec_count <= timer_5usec_count + 1;
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (enable_timer_5usec = '0') then
+			timer_5usec_count <= (others => '0');
+		elsif (timer_5usec_done = '0') then
+			timer_5usec_count <= timer_5usec_count + 1;
+		end if;
+	end if;
 
-  if( timer_5usec_count = (TIMER_5USEC_VALUE_PP - 1)) then
-	 timer_5usec_done <= '1';
-  else
-	 timer_5usec_done <= '0';
-  end if;
+	if( timer_5usec_count = (TIMER_5USEC_VALUE_PP - 1)) then
+		timer_5usec_done <= '1';
+	else
+		timer_5usec_done <= '0';
+	end if;
 end process;
 
+--
+-- Create the signals which indicate special scan codes received.
+-- These are the "unlatched versions."
+--
+extend_release_decode : process( q, rx_shifting_done, extended, released )
+begin
+	if (q(8 downto 1) = EXTEND_CODE) and (rx_shifting_done = '1') then
+		extended <= '1';
+	else
+		extended <= '0';
+	end if;
 
+	if (q(8 downto 1) = RELEASE_CODE) and (rx_shifting_done = '1') then
+		released <= '1';
+	else
+		released <= '0';
+	end if;
+
+	if (rx_shifting_done = '1') and (extended = '0') and (released = '0') then
+		rx_output_event <= '1';
+	else
+		rx_output_event <= '0';
+	end if;
+
+end process;
+
+--
 -- Store the special scan code status bits
 -- Not the final output, but an intermediate storage place,
 -- until the entire set of output data can be assembled.
+--
 special_scan : process(clk, reset, rx_output_event, rx_shifting_done, extended, released )
 begin
-  if clk'event and clk='0' then
-    if (reset = '1') or (rx_output_event = '1')	then
-      hold_extended <= '0';
-      hold_released <= '0';
-    else
-      if (rx_shifting_done = '1') and (extended = '1') then
-	     hold_extended <= '1';
-      end if;
-      if (rx_shifting_done = '1') and (released = '1') then
-	     hold_released <= '1';
-      end if;
-    end	if;
-  end if;
+	if clk'event and clk='0' then
+		if (reset = '1') or (rx_output_event = '1')	then
+			hold_extended <= '0';
+			hold_released <= '0';
+		else
+			if (rx_shifting_done = '1') and (extended = '1') then
+				hold_extended <= '1';
+			end if;
+			if (rx_shifting_done = '1') and (released = '1') then
+				hold_released <= '1';
+			end if;
+		end	if;
+	end if;
+
 end process;
 
+--
+-- convert scan code to ascii code
+--
+scan_to_ascii : process( shift_key_on, caps_key_on, q )
+begin
+	shift_key_plus_code <= shift_key_on & caps_key_on & q(7 downto 1);
+end process;
 
+--
 -- These bits contain the status of the two shift keys
+--
 left_shift_proc : process(clk, reset, q, rx_shifting_done, hold_released )
 begin
-  if clk'event and clk = '0' then
-    if (reset = '1') then
-	   left_shift_key <= '0';
-    elsif (q(8 downto 1) = LEFT_SHIFT) and 
-	       (rx_shifting_done = '1') and 
-			 (hold_released = '0') then
-      left_shift_key <= '1';
-    elsif (q(8 downto 1) = LEFT_SHIFT) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '1') then
-      left_shift_key <= '0';
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (reset = '1') then
+			left_shift_key <= '0';
+		elsif (q(8 downto 1) = LEFT_SHIFT) and (rx_shifting_done = '1') then
+			left_shift_key <= not hold_released;
+		end if;
+	end if;
 end process;
 
 right_shift_proc : process(clk, reset, q, rx_shifting_done, hold_released )
 begin
-  if clk'event and clk = '0' then
-    if (reset = '1') then
-	   right_shift_key <= '0';
-    elsif (q(8 downto 1) = RIGHT_SHIFT) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '0') then
-      right_shift_key <= '1';
-    elsif (q(8 downto 1) = RIGHT_SHIFT) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '1') then
-      right_shift_key <= '0';
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (reset = '1') then
+			right_shift_key <= '0';
+		elsif (q(8 downto 1) = RIGHT_SHIFT) and (rx_shifting_done = '1') then
+			right_shift_key <= not hold_released;
+		end if;
+	end if;
 end process;
 
-shift_key_on <= left_shift_key or right_shift_key;
-rx_shift_on <= shift_key_on;
+shift_proc : process( left_shift_key, right_shift_key, shift_key_on, caps_key_on, q )
+begin
+	shift_key_on <= left_shift_key or right_shift_key;
+	rx_shift_on  <= shift_key_on;
+end process;
 
 --
 -- Control keys
 --
 ctrl_proc : process(clk, reset, q, rx_shifting_done, hold_released )
 begin
-  if clk'event and clk = '0' then
-    if (reset = '1') then
-	   ctrl_key_on <= '0';
-    elsif (q(8 downto 1) = CTRL_CODE) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '0') then
-      ctrl_key_on <= '1';
-    elsif (q(8 downto 1) = CTRL_CODE) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '1') then
-      ctrl_key_on <= '0';
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (reset = '1') then
+			ctrl_key_on <= '0';
+		elsif (q(8 downto 1) = CTRL_CODE) and (rx_shifting_done = '1') then
+			ctrl_key_on <= not hold_released;
+		end if;
+	end if;
 end process;
 
 --
@@ -708,85 +734,79 @@ end process;
 --
 caps_proc : process(clk, reset, q, rx_shifting_done, hold_released, caps_key_on )
 begin
-  if clk'event and clk = '0' then
-    if (reset = '1') then
-	   caps_key_on <= '0';
-    elsif (q(8 downto 1) = CAPS_CODE) and
-	       (rx_shifting_done = '1') and
-			 (hold_released = '0') then
-      caps_key_on <= not caps_key_on;
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (reset = '1') then
+			caps_key_on <= '0';
+		elsif (q(8 downto 1) = CAPS_CODE) and (rx_shifting_done = '1') then
+			if (hold_released = '0') then
+				caps_key_on <= not caps_key_on;
+			end if;
+		end if;
+	end if;
 end process;
 
+--
 -- Output the special scan code flags, the scan code and the ascii
-special_scan_proc : process(clk, reset,
-									 hold_extended, hold_released, 
-									 q, ascii, ctrl_key_on )
+--
+special_scan_proc : process(clk, reset, rx_output_strobe,
+							hold_extended, hold_released, 
+							ascii, ctrl_key_on )
 begin
-  if clk'event and clk = '0' then
-    if (reset = '1')	then
-      rx_extended <= '0';
-      rx_released <= '0';
---      rx_scan_code <= "00000000";
-      rx_data <= "00000000";
-    elsif (rx_output_strobe = '1') then
-      rx_extended <= hold_extended;
-      rx_released <= hold_released;
---      rx_scan_code <= q(8 downto 1);
-    elsif ctrl_key_on = '1' then
-	   rx_data <= ascii and x"1f";
-    else
-      rx_data <= ascii;
-    end if;
-  end if;
+	if clk'event and clk = '0' then
+		if (reset = '1')	then
+			rx_extended <= '0';
+			rx_released <= '0';
+			rx_data <= (others=>'0');
+		elsif (rx_output_strobe = '1') then
+			rx_extended <= hold_extended;
+			rx_released <= hold_released;
+			if ctrl_key_on = '1' then
+				rx_data <= ascii and x"1f";
+			else
+				rx_data <= ascii;
+			end if;
+		end if;
+	end if;
 end process;
 
+--
 -- Store the final rx output data only when all extend and release codes
 -- are received and the next (actual key) scan code is also ready.
 -- (the presence of rx_extended or rx_released refers to the
 -- the current latest scan code received, not the previously latched flags.)
-
+--
 rx_output_proc : process( clk, reset, 
                           rx_shifting_done, rx_output_strobe,
-                          extended, released, 
-								  q, ascii, rx_read )
+                          extended, released,
+                          hold_extended, hold_released, 
+						  q, ascii, rx_read )
 begin
-  if (rx_shifting_done = '1') and (extended = '0') and (released = '0') then
-    rx_output_event <= '1';
-  else
-    rx_output_event <= '0';
-  end if;
-
-  if clk'event and clk = '0' then
-    if reset = '1' then
-	   rx_output_strobe <= '0';
-    elsif (rx_shifting_done = '1') and
-          (rx_output_strobe = '0') and 
-	       (extended = '0') and
-			 (released = '0') and
-			 (hold_released = '0' ) and
-          (ascii /= x"00" ) then
---	  ((TRAP_SHIFT_KEYS_PP = 0) or
---	    ( (q(8 downto 1) /= RIGHT_SHIFT) and 
---		   (q(8 downto 1) /= LEFT_SHIFT) and
---			(q(8 downto 1) /= CTRL_CODE) ) )then
-      rx_output_strobe <= '1';
-    elsif rx_read = '1' then
-      rx_output_strobe <= '0';
-    end if;
-  end if;
-  rx_data_ready <= rx_output_strobe;      
+	if clk'event and clk = '0' then
+		if reset = '1' then
+			rx_output_strobe <= '0';
+		elsif (rx_shifting_done = '1') and (rx_output_strobe = '0') and 
+			(extended = '0') and (released = '0') and
+			(hold_released = '0' ) and
+			(ascii /= "00000000" ) then
+--		((TRAP_SHIFT_KEYS_PP = 0) or
+--		( (q(8 downto 1) /= RIGHT_SHIFT) and 
+--		  (q(8 downto 1) /= LEFT_SHIFT) and
+--		  (q(8 downto 1) /= CTRL_CODE) ) )then
+			rx_output_strobe <= '1';
+		elsif rx_read = '1' then
+			rx_output_strobe <= '0';
+		end if;
+	end if;
+	rx_data_ready <= rx_output_strobe;      
 end process;
 
-
--- This part translates the scan code into an ASCII value...
+--
+-- This part translates the scan code into an ASCII value...   
 -- Only the ASCII codes which I considered important have been included.
--- if you want more, just add the appropriate case statement lines...
+-- if you want more, just add the appropriate case statement lines...   
 -- (You will need to know the keyboard scan codes you wish to assign.)
--- The entries are listed in ascending order of ASCII value.
-shift_key_plus_code <= shift_key_on & caps_key_on & q(7 downto 1);
-
+-- The entries are listed in ascending order of ASCII value.   
+--
 --shift_map : process( shift_key_plus_code )
 --begin
 --  case shift_key_plus_code is
@@ -896,8 +916,9 @@ shift_key_plus_code <= shift_key_on & caps_key_on & q(7 downto 1);
 --  when x"10e" => ascii <= x"7e";  -- ~
 --  when x"071" => ascii <= x"7f";  -- (Delete OR DEL on numeric keypad)
 --  when x"171" => ascii <= x"7f";  -- (Delete OR DEL on numeric keypad)
---  when others => ascii <= x"ff";  -- 0xff used for unlisted characters.
+--  when others => ascii <= x"00";  -- 0xff used for unlisted characters.
 --  end case;
 --end process;
+
 
 end rtl;

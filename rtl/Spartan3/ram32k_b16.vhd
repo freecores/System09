@@ -1,20 +1,59 @@
 -- $Id: ram32k_b16.vhd,v 1.2 2008/03/14 15:52:43 dilbert57 Exp $
---===================================================================
+--===========================================================================--
+--                                                                           --
+--  ram32k_b16.vhd - 32KByte Block RAM Component for Spartan 3/3E            --
+--                                                                           --
+--===========================================================================--
 --
--- 32K Block RAM
+--  File name      : ram32k_b16.vhd
 --
---===================================================================
+--  Entity name    : ram_32k
 --
--- Date: 24th April 2006
--- Author: John Kent
+--  Purpose        : Implements 32K of Synchronous Static RAM 
+--                   using 16 x Spartan 3/3E RAMB16_S9 block rams
+--                   Used in the Digilent Spartan 3E500 System09 design
+--                  
+--  Dependencies   : ieee.Std_Logic_1164
+--                   ieee.std_logic_arith
+--                   unisim.vcomponents
 --
--- Revision History:
--- 24 April 2006 John Kent
--- Initial release
+--  Uses           : RAMB16_S9
 --
--- 29th June 2005 John Kent
--- Added CS term to CE decodes.
+--  Author         : John E. Kent
 --
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--
+--  Copyright (C) 2005 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Author      Date          Changes
+--
+-- 0.1     John Kent   2006-04-24    Initial release
+-- 0.2     John Kent   2005-06-29    Added CS term to CE decodes. (date ???)
+-- 0.3     John Kent   2010-09-14    Renamed "rdata" to "data_out"
+--                                   Renamed "wdata" to "data_in"
+--                                   Added header description
 --
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -24,38 +63,38 @@ library unisim;
 
 entity ram_32k is
     Port (
-       clk   : in  std_logic;
-		 rst   : in  std_logic;
-		 cs    : in  std_logic;
-		 rw    : in  std_logic;
-       addr  : in  std_logic_vector (14 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+		 rst      : in  std_logic;
+		 cs       : in  std_logic;
+       addr     : in  std_logic_vector (14 downto 0);
+		 rw       : in  std_logic;
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end ram_32k;
 
 architecture rtl of ram_32k is
 
 
-signal we    : std_logic;
-signal dp    : std_logic_vector(15 downto 0);
-signal ce    : std_logic_vector(15 downto 0);
-signal rdata_0 : std_logic_vector(7 downto 0);
-signal rdata_1 : std_logic_vector(7 downto 0);
-signal rdata_2 : std_logic_vector(7 downto 0);
-signal rdata_3 : std_logic_vector(7 downto 0);
-signal rdata_4 : std_logic_vector(7 downto 0);
-signal rdata_5 : std_logic_vector(7 downto 0);
-signal rdata_6 : std_logic_vector(7 downto 0);
-signal rdata_7 : std_logic_vector(7 downto 0);
-signal rdata_8 : std_logic_vector(7 downto 0);
-signal rdata_9 : std_logic_vector(7 downto 0);
-signal rdata_a : std_logic_vector(7 downto 0);
-signal rdata_b : std_logic_vector(7 downto 0);
-signal rdata_c : std_logic_vector(7 downto 0);
-signal rdata_d : std_logic_vector(7 downto 0);
-signal rdata_e : std_logic_vector(7 downto 0);
-signal rdata_f : std_logic_vector(7 downto 0);
+signal we         : std_logic;
+signal dp         : std_logic_vector(15 downto 0);
+signal ce         : std_logic_vector(15 downto 0);
+signal data_out_0 : std_logic_vector(7 downto 0);
+signal data_out_1 : std_logic_vector(7 downto 0);
+signal data_out_2 : std_logic_vector(7 downto 0);
+signal data_out_3 : std_logic_vector(7 downto 0);
+signal data_out_4 : std_logic_vector(7 downto 0);
+signal data_out_5 : std_logic_vector(7 downto 0);
+signal data_out_6 : std_logic_vector(7 downto 0);
+signal data_out_7 : std_logic_vector(7 downto 0);
+signal data_out_8 : std_logic_vector(7 downto 0);
+signal data_out_9 : std_logic_vector(7 downto 0);
+signal data_out_a : std_logic_vector(7 downto 0);
+signal data_out_b : std_logic_vector(7 downto 0);
+signal data_out_c : std_logic_vector(7 downto 0);
+signal data_out_d : std_logic_vector(7 downto 0);
+signal data_out_e : std_logic_vector(7 downto 0);
+signal data_out_f : std_logic_vector(7 downto 0);
 
 begin
 
@@ -128,11 +167,11 @@ begin
     )
 
     port map (
-	  do   => rdata_0,
+	  do   => data_out_0,
 	  dop(0) => dp(0),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(0),
 	  en   => ce(0),
 	  ssr  => rst,
@@ -208,11 +247,11 @@ begin
     )
 
     port map (
-	  do   => rdata_1,
+	  do   => data_out_1,
 	  dop(0) => dp(1),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(1),
 	  en   => ce(1),
 	  ssr  => rst,
@@ -288,11 +327,11 @@ begin
     )
 
     port map (
-	  do   => rdata_2,
+	  do   => data_out_2,
 	  dop(0) => dp(2),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(2),
 	  en   => ce(2),
 	  ssr  => rst,
@@ -368,11 +407,11 @@ begin
     )
 
     port map (
-	  do   => rdata_3,
+	  do   => data_out_3,
 	  dop(0) => dp(3),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(3),
 	  en   => ce(3),
 	  ssr  => rst,
@@ -448,11 +487,11 @@ begin
     )
 
     port map (
-	  do   => rdata_4,
+	  do   => data_out_4,
 	  dop(0) => dp(4),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(4),
 	  en   => ce(4),
 	  ssr  => rst,
@@ -528,11 +567,11 @@ begin
     )
 
     port map (
-	  do   => rdata_5,
+	  do   => data_out_5,
 	  dop(0) => dp(5),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(5),
 	  en   => ce(5),
 	  ssr  => rst,
@@ -608,11 +647,11 @@ begin
     )
 
     port map (
-	  do   => rdata_6,
+	  do   => data_out_6,
 	  dop(0) => dp(6),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(6),
 	  en   => ce(6),
 	  ssr  => rst,
@@ -688,11 +727,11 @@ begin
     )
 
     port map (
-	  do   => rdata_7,
+	  do   => data_out_7,
 	  dop(0) => dp(7),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(7),
 	  en   => ce(7),
 	  ssr  => rst,
@@ -768,11 +807,11 @@ begin
     )
 
     port map (
-	  do   => rdata_8,
+	  do   => data_out_8,
 	  dop(0) => dp(8),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(8),
 	  en   => ce(8),
 	  ssr  => rst,
@@ -848,11 +887,11 @@ begin
     )
 
     port map (
-	  do   => rdata_9,
+	  do   => data_out_9,
 	  dop(0) => dp(9),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(9),
 	  en   => ce(9),
 	  ssr  => rst,
@@ -928,11 +967,11 @@ begin
     )
 
     port map (
-	  do   => rdata_a,
+	  do   => data_out_a,
 	  dop(0) => dp(10),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(10),
 	  en   => ce(10),
 	  ssr  => rst,
@@ -1008,11 +1047,11 @@ begin
     )
 
     port map (
-	  do   => rdata_b,
+	  do   => data_out_b,
 	  dop(0) => dp(11),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(11),
 	  en   => ce(11),
 	  ssr  => rst,
@@ -1088,11 +1127,11 @@ begin
     )
 
     port map (
-	  do   => rdata_c,
+	  do   => data_out_c,
 	  dop(0) => dp(12),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(12),
 	  en   => ce(12),
 	  ssr  => rst,
@@ -1168,11 +1207,11 @@ begin
     )
 
     port map (
-	  do   => rdata_d,
+	  do   => data_out_d,
 	  dop(0) => dp(13),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(13),
 	  en   => ce(13),
 	  ssr  => rst,
@@ -1248,11 +1287,11 @@ begin
     )
 
     port map (
-	  do   => rdata_e,
+	  do   => data_out_e,
 	  dop(0) => dp(14),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(14),
 	  en   => ce(14),
 	  ssr  => rst,
@@ -1328,11 +1367,11 @@ begin
     )
 
     port map (
-	  do   => rdata_f,
+	  do   => data_out_f,
 	  dop(0) => dp(15),
 	  addr => addr(10 downto 0),
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp(15),
 	  en   => ce(15),
 	  ssr  => rst,
@@ -1340,46 +1379,46 @@ begin
 	);
 
 my_ram_32k : process ( cs, rw, addr,
-                       rdata_0, rdata_1, rdata_2, rdata_3,
-                       rdata_4, rdata_5, rdata_6, rdata_7,
-                       rdata_8, rdata_9, rdata_a, rdata_b,
-                       rdata_c, rdata_d, rdata_e, rdata_f )
+                       data_out_0, data_out_1, data_out_2, data_out_3,
+                       data_out_4, data_out_5, data_out_6, data_out_7,
+                       data_out_8, data_out_9, data_out_a, data_out_b,
+                       data_out_c, data_out_d, data_out_e, data_out_f )
 begin
 	 we <= not rw;
 	 
 	 case addr(14 downto 11) is
 	 when "0000" =>
-	     rdata <= rdata_0;
+	     data_out <= data_out_0;
 	 when "0001" =>
-	     rdata <= rdata_1;
+	     data_out <= data_out_1;
 	 when "0010" =>
-	     rdata <= rdata_2;
+	     data_out <= data_out_2;
 	 when "0011" =>
-	     rdata <= rdata_3;
+	     data_out <= data_out_3;
 	 when "0100" =>
-	     rdata <= rdata_4;
+	     data_out <= data_out_4;
 	 when "0101" =>
-	     rdata <= rdata_5;
+	     data_out <= data_out_5;
 	 when "0110" =>
-	     rdata <= rdata_6;
+	     data_out <= data_out_6;
 	 when "0111" =>
-	     rdata <= rdata_7;
+	     data_out <= data_out_7;
 	 when "1000" =>
-	     rdata <= rdata_8;
+	     data_out <= data_out_8;
 	 when "1001" =>
-	     rdata <= rdata_9;
+	     data_out <= data_out_9;
 	 when "1010" =>
-	     rdata <= rdata_a;
+	     data_out <= data_out_a;
 	 when "1011" =>
-	     rdata <= rdata_b;
+	     data_out <= data_out_b;
 	 when "1100" =>
-	     rdata <= rdata_c;
+	     data_out <= data_out_c;
 	 when "1101" =>
-	     rdata <= rdata_d;
+	     data_out <= data_out_d;
 	 when "1110" =>
-	     rdata <= rdata_e;
+	     data_out <= data_out_e;
 	 when "1111" =>
-	     rdata <= rdata_f;
+	     data_out <= data_out_f;
 	 when others =>
 	     null;
     end case;

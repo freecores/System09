@@ -1,45 +1,158 @@
--- ---------------------------------------------------
--- Video Display terminal
--- ---------------------------------------------------
--- John Kent
--- 3th September 2004
--- Assumes a pixel clock input of 25 MHz
+--===========================================================================--
+--                                                                           --
+--  vdu8_new.vhd - Synthesizable Colour Video Display Unit for System09      --
+--                                                                           --
+--===========================================================================--
 --
--- Display Format is:
--- 80 characters across by 25 characters down.
--- 8 horizontal pixels / character
--- 16 vertical scan lines / character (2 scan lines/row)
+--  File name      : vdu8_new.vhd
 --
--- Modified by Bert Cuzeau for compliance and code cleanliness
--- The effort is not over.
--- There are still signal initialized, which is BAD.\
+--  Purpose        : Implements a text based Colour Video Display Unit for System09
+--                   Supports 2KByte Text buffer and 2KByte Attribute memory
+--                   Displays 80 characters across by 25 character rows
+--                   Characters are 8 pixels across x 16 lines down.
+--                   Character attribute bita for foreground and backgrond colour
+--                   1 bit for each Blue Green and Red signal
+--                   Supports 2 x 8 chunky graphics character mode.
+--                   Uses Generic arguments for setting the video synchronization timing.
+--                   (I'm not sure what is "new" about this version.)
+--                  
+--  Dependencies   : ieee.Std_Logic_1164
+--                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
+--                   ieee.numeric_std
+--                   unisim.vcomponents
 --
--- 7th Februaury 2007 - John Kent
--- Added generics for VGA Timing
+--  Uses           : ram_2k (ram2k_b16.vhd)             2KByte Character & Attribute buffer
+--                   char_rom (char_rom2k_b16.vhd)      2KByte Character Generator ROM 
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--  Description    : Display Timing:
+--                       800 pixels / line
+--                       446 lines / frame
+--                       None interlaced
+--                       25MHz pixel clock implies 
+--                       31.25 KHz line rate
+--                       70.067 Hz frame rate   
+--                       Timing settable by generics.
+--
+--                   Display Size:
+--                       80 characters across
+--                       25 characters down.
+--
+--                   Character Size:
+--                        8 horizontal pixels across
+--                       16 vertical scan lines down (2 scan lines/row)
+--
+--                   Registers:
+--                   Base + 0 ASCII character register
+--                            Writing to this register writes an 8 bit byte 
+--                            into the text buffer at the specified cursor position
+--                            Text Mode: ASCII Character (0 to 127)
+--                            Chunky Graphics Mode: B0 B1 (0 to 255)
+--                                                  B2 B3
+--                                                  B4 B5
+--                                                  B6 B7
+--                   Base + 1 Attibute bit (0 to 255)
+--                            Writing to the register writes an 8 bit byte 
+--                            into the attribute buffer at the specified cursor position
+--                            B7 - 0 => Text Mode / 1 => Chunky Graphics Mode
+--                            B6 - 1 => Character Background Blue
+--                            B5 - 1 => Character Background Green
+--                            B4 - 1 => Character Background Red
+--                            B3 - 1 => Character Background & Foreground Alternates
+--                            B2 - 1 => Character Foreground Blue
+--                            B1 - 1 => Character Foreground Green
+--                            B0 - 1 => Character Foreground Red
+--                   Base + 2 Cursor Horizontal Position (0 to 79)
+--                   Base + 3 Cusror Vertical Position (0 to 24)
+--                   Base + 4 Vertical Scroll Offset (0 to 24)
+--                            Scrolls the display up by the specified number of character rows
+--
+--
+--  Video Timing :
+--
+--  Horizontal 800 Pixels/ 25MHz Pixel Clock = 32usec Line period = 31.25 KHz Line Frequency
+--  /--------------------------\_____________/---------------\______________/
+--      640 Pixels Display       16 Pixel FP    96 Pixel HS     48 Pixel BP
+--    
+--      VGA_CLK_FREQ           : integer := 25000000; -- HZ
+--	     VGA_HOR_FRONT_PORCH    : integer := 16; -- PIXELS 0.64us (0.94us)
+--	     VGA_HOR_SYNC           : integer := 96; -- PIXELS 3.84us (3.77us)
+--	     VGA_HOR_BACK_PORCH     : integer := 48; -- PIXELS 1.92us (1.89us)
+--	     VGA_PIX_PER_CHAR       : integer := 8;  -- PIXELS 0.32us
+--	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS 25.6us
+--
+--  Vertical 446 Lines * 32 usec Line rate = 14.272ms Frame Period = 70.07Hz Frame frequency  
+--  /---------------------------\____________/---------------\______________/
+--      400 Line Display          10 Line FP     2 Line VS      34 Line BP
+--
+--	     VGA_VER_FRONT_PORCH    : integer := 10; -- LINES 0.320ms
+--	     VGA_VER_SYNC           : integer := 2;  -- LINES 0.064ms
+--	     VGA_VER_BACK_PORCH     : integer := 34; -- LINES 1.088ms
+--	     VGA_LIN_PER_CHAR       : integer := 16; -- LINES 0.512ms
+--	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS 12.8ms
+--
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Author      Date        Changes
+--
+-- 0.1     John Kent   2004-09-03  Initial release
+--
+-- 0.2     Bert Cuzeau 2007-01-16  Modified by for compliance and code cleanliness
+--                                 The effort is not over.
+--                                 There are still signal initialized, which is BAD.
+--
+-- 0.3     John Kent   2007-02-07  Added generics for VGA Timing
+--
+-- 0.4     John Kent   2010-06-16  Added GPL notice. Updated description
+--                                 I'm not sure what is "new" about this version
 --
 
 Library IEEE;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
 library unisim;
    use unisim.vcomponents.all;
 
 Entity vdu8 is
   generic(
-        VDU_CLOCK_FREQUENCY    : integer := 25000000; -- HZ
-        VGA_CLOCK_FREQUENCY    : integer := 25000000; -- HZ
-	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS
-	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS
-	     VGA_PIXELS_PER_CHAR    : integer := 8;  -- PIXELS
-	     VGA_LINES_PER_CHAR     : integer := 16; -- LINES
-	     VGA_HOR_BACK_PORCH     : integer := 40; -- PIXELS
-	     VGA_HOR_SYNC           : integer := 96; -- PIXELS
-	     VGA_HOR_FRONT_PORCH    : integer := 24; -- PIXELS
-	     VGA_VER_BACK_PORCH     : integer := 13; -- LINES
-	     VGA_VER_SYNC           : integer := 2;  -- LINES
-	     VGA_VER_FRONT_PORCH    : integer := 36  -- LINES
+        VGA_CLK_FREQ           : integer := 25000000; -- HZ
+	     VGA_HOR_CHARS          : integer := 80; -- CHARACTERS 25.6us
+	     VGA_HOR_CHAR_PIXELS    : integer := 8;  -- PIXELS 0.32us
+	     VGA_HOR_FRONT_PORCH    : integer := 16; -- PIXELS 0.64us
+	     VGA_HOR_SYNC           : integer := 96; -- PIXELS 3.84us
+	     VGA_HOR_BACK_PORCH     : integer := 48; -- PIXELS 1.92us
+	     VGA_VER_CHARS          : integer := 25; -- CHARACTERS 12.8ms
+	     VGA_VER_CHAR_LINES     : integer := 16; -- LINES 0.512ms
+	     VGA_VER_FRONT_PORCH    : integer := 10; -- LINES 0.320ms
+	     VGA_VER_SYNC           : integer := 2;  -- LINES 0.064ms
+	     VGA_VER_BACK_PORCH     : integer := 34  -- LINES 1.088ms
   );
   port(
     -- control register interface
@@ -68,28 +181,24 @@ Architecture RTL of vdu8 is
   -- Displayed Characters per row
   constant HOR_DISP_CHR : integer := VGA_HOR_CHARS;
   -- Last horizontal pixel displayed
-  constant HOR_DISP_END : integer := HOR_DISP_CHR * VGA_PIXELS_PER_CHAR;
+  constant HOR_DISP_END : integer := HOR_DISP_CHR * VGA_HOR_CHAR_PIXELS - 1;
   -- Start of horizontal synch pulse
-  constant HOR_SYNC_BEG : integer := HOR_DISP_END + VGA_HOR_BACK_PORCH;
+  constant HOR_SYNC_BEG : integer := HOR_DISP_END + VGA_HOR_FRONT_PORCH;
   -- End of Horizontal Synch pulse
   constant HOR_SYNC_END : integer := HOR_SYNC_BEG + VGA_HOR_SYNC;
   -- Last pixel in scan line
-  constant HOR_SCAN_END : integer := HOR_SYNC_END + VGA_HOR_FRONT_PORCH;
-  -- Total Characters across the screen
-  constant HOR_TOTAL_CHAR : integer := HOR_SCAN_END/VGA_PIXELS_PER_CHAR;
+  constant HOR_SCAN_END : integer := HOR_SYNC_END + VGA_HOR_BACK_PORCH;
 
   -- Displayed Characters per Column
   constant VER_DISP_CHR   : integer := VGA_VER_CHARS;
   -- last row displayed
-  constant VER_DISP_END   : integer := VER_DISP_CHR * VGA_LINES_PER_CHAR;
+  constant VER_DISP_END   : integer := VER_DISP_CHR * VGA_VER_CHAR_LINES - 1;
   -- start of vertical synch pulse
-  constant VER_SYNC_BEG   : integer := VER_DISP_END + VGA_VER_BACK_PORCH;
+  constant VER_SYNC_BEG   : integer := VER_DISP_END + VGA_VER_FRONT_PORCH;
   -- end of vertical synch pulse
   constant VER_SYNC_END   : integer := VER_SYNC_BEG + VGA_VER_SYNC;
   -- Last scan row in the frame
-  constant VER_SCAN_END   : integer := VER_SYNC_END + VGA_VER_FRONT_PORCH;
-  -- Total Characters down the screen
-  constant VER_TOTAL_CHAR : integer := VER_SCAN_END/VGA_LINES_PER_CHAR;
+  constant VER_SCAN_END   : integer := VER_SYNC_END + VGA_VER_BACK_PORCH;
 
   constant BLINK_PERIOD   : integer := 500; -- Blink Rate in msec
   constant BLINK_RATE     : integer := BLINK_PERIOD * (VGA_CLOCK_FREQUENCY/1000);

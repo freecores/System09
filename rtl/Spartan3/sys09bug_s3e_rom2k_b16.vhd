@@ -1,7 +1,55 @@
+--===========================================================================--
+--                                                                           --
+--  sys09bug_s3e_rom2k_b16.vhd - Sys09bug monitor ROM for the Spartan 3E500  -- 
+--                                                                           --
+--===========================================================================--
 --
--- SYS09BUG MONITOR ROM FOR SYSTEM09 SPARTAN3E
--- John Kent
--- 8th January 2008
+--  File name      : sys09bug_s3e_rom2k_b16.vhd
+--
+--  Entity name    : mon_rom
+--
+--  Purpose        : Implements 2K Monitor ROM for System09
+--                   using 1 x Spartan 3E RAMB16_S9 block ram
+--                   Used in the Digilent Spartan 3E500 System09 design
+--                  
+--  Dependencies   : ieee.Std_Logic_1164
+--                   ieee.std_logic_arith
+--                   unisim.vcomponents
+--
+--  Uses           : RAMB16_S9
+--
+--  Author         : John E. Kent
+--
+--  Email          : dilbert57@opencores.org      
+--
+--  Web            : http://opencores.org/project,system09
+--
+--
+--  Copyright (C) 2008 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Version Author      Date          Changes
+-- 0.1     John Kent   2008-01-08    Initial Version
+-- 0.2     John Kent   2010-09-14    Added Header
+--                                   renamed rdata & wdata to data_out & data_in
 --
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -11,13 +59,13 @@ library unisim;
 
 entity mon_rom is
     Port (
-       clk   : in  std_logic;
-       rst   : in  std_logic;
-       cs    : in  std_logic;
-       rw    : in  std_logic;
-       addr  : in  std_logic_vector (10 downto 0);
-       rdata : out std_logic_vector (7 downto 0);
-       wdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       rw       : in  std_logic;
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end mon_rom;
 
@@ -97,11 +145,11 @@ begin
     )
 
     port map (
-	  do   => rdata,
+	  do   => data_out,
 	  dop(0) => dp,
 	  addr => addr,
 	  clk  => clk,
-     di   => wdata,
+     di   => data_in,
 	  dip(0) => dp,
 	  en   => cs,
 	  ssr  => rst,

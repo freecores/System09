@@ -14,7 +14,6 @@
 --  Dependencies   : ieee.std_logic_1164
 --                   ieee.numeric_std
 --                   ieee.std_logic_unsigned
---                   unisim.vcomponents
 --
 --  Author         : John E. Kent
 --
@@ -53,8 +52,8 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
   use ieee.std_logic_unsigned.all;
-library unisim;
-  use unisim.vcomponents.all;
+--library unisim;
+--  use unisim.vcomponents.all;
 
 -----------------------------------------------------------------------
 --                    Entity for B3_SRAM                             --

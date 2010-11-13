@@ -1,39 +1,61 @@
---===========================================================================----
+--===========================================================================--
+--                                                                           --
+--  clock_dll.vhd - Synthesible System Clock Divider for Xilinx Spartan 3    --
+--                                                                           --
+--===========================================================================--
 --
---  S Y N T H E Z I A B L E    Clock_dll for System09 - SOC.
+--  File name      : clock_dll.vhd
 --
---===========================================================================----
---
--- This core adheres to the GNU public license
--- No responsibility is taken for this design.
--- Use at own risk.  
---
--- File name       : Clock_dll.vhd
---
--- Purpose         : Generates Clocks for System09
---                   For BurchED B3-Spartan2+ and B5-X300
+--  Purpose        : Implements a a system clock divider for System09. 
+--                   For Xilinx Spartan 3 and 3E FPGA boards
 --                   Assumes a 12.5 MHz system clock input
 --                   Generates a x1 (12.5 MHz) CPU clock 
 --                   Generates a x2 (25.0 MHz) VGA clock 
 --                   Generates a x4 (50.0 MHz) MEM clock 
---
--- Dependencies    : ieee.Std_Logic_1164
---                   ieee.std_logic_unsigned
+--                  
+--  Dependencies   : ieee.std_logic_1164
 --                   ieee.std_logic_arith
+--                   ieee.std_logic_unsigned
 --                   ieee.numeric_std
+--                   unisim.vcomponents
 --
+--  Author         : John E. Kent
 --
--- Revision History :
+--  Email          : dilbert57@opencores.org      
 --
---   Rev         : 0.1
---   Date        : 7th September 2008
---   Description : Initial version.                 
+--  Web            : http://opencores.org/project,system09
+--
+--  clock_dll.vhd is a system clock divider for system09. 
 -- 
+--  Copyright (C) 2003 - 2010 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                              Revision  History                            --
+--                                                                           --
+--===========================================================================--
+--
+-- Revision Name          Date             Description
+-- 0.1      John E. Kent  7th September 2008 Initial version
+-- 1.0      John E. Kent  30th May 2010      Added GPL Header
 --
 library ieee;
    use ieee.std_logic_1164.all;
-   use IEEE.STD_LOGIC_ARITH.ALL;
-   use IEEE.STD_LOGIC_UNSIGNED.ALL;
+   use ieee.std_logic_arith.all;
+   use ieee.std_logic_unsigned.all;
    use ieee.numeric_std.all;
 library unisim;
 	use unisim.vcomponents.all;
@@ -43,7 +65,7 @@ entity clock_dll is
     clk_in      : in  std_Logic;  -- System Clock input
     clk_cpu     : out std_logic;  -- CPU Clock Out       (x1)
 	 clk_vga     : out std_logic;  -- VGA Pixel Clock Out (x2)
-	 clk_mem     : out std_logic;   -- Memory Clock Out    (x4)
+	 clk_mem     : out std_logic;  -- Memory Clock Out    (x4)
 	 locked      : out std_logic   -- DLL in lock
   );
 end entity;
