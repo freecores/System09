@@ -9,5 +9,5 @@
  INCLUDE "f9-cli.txt"
  INCLUDE "f9-monio.txt"
  INCLUDE "f9-fms.txt"
- INCLUDE "f9-dkram.txt"
+ INCLUDE "f9-monex.txt"
  END COLDS
