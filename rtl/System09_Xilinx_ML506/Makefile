@@ -30,85 +30,61 @@
 MKFRAGS := ../../mkfiles
 export MKFRAGS
 
+BRAM_TYPE := b16
+export BRAM_TYPE
+
 #===================================================================
 # User-modifiable variables
 #
 # This name must match the name of the design in Xilinx ISE (case
 # sensitive). 
-DESIGN_NAME := my_system09
+DESIGN_NAME := system09
 #
 # Constraint file (unfortunately it cannot be extracted from ISE)
-UCF_FILE    := my_system09.ucf
+UCF_FILE    := ml506.ucf
 #
 # Technology family (unfortunately it cannot be extracted from ISE)
 FAMILY      := virtex5
 
 # List of ROM VHDL files
+.PHONY: roms
 roms:
+	@$(MAKE) -C ../../Tools/as09
+	@$(MAKE) -C ../../Tools/s19tovhd
 	@$(MAKE) -C ../../src/sys09bug sys09s3s.vhd
 	@$(MAKE) -C ../../src/Flex9 flex9ram.vhd
-
 
 #===================================================================
 # You should not need to edit anything below this line
 
 # XESS Tools
-XSLOAD     := C:/Progra~1/XSTOOLs/xsload.exe
+ifeq "$(findstring CYGWIN_NT,$(shell uname -s))" "CYGWIN_NT"
+XESSPATH := $(shell cygpath "$(XSTOOLS_BIN_DIR)")
+else
+XESSPATH := $(XSTOOLS_BIN_DIR)
+endif
+XSLOAD     := "$(XESSPATH)/xsload.exe"
 
 include ../../mkfiles/xilinx_rules.mk
 
 #===================================================================
 # TARGETS
 
-all: roms bit 
+.PHONY: all
+all: bit 
 
-roms: $(ROMFILES)
+.PHONE: tcl
+tcl: roms $(DESIGN_NAME).tcl
+	@$(ECHO) "Regenerating $(DESIGN_NAME).xst and $(DESIGN_NAME).prj from $(DESIGN_NAME).tcl"
+	$(XILINX_NORMAL)/bin/$(XILINX_PLAT)/xtclsh system09.tcl rebuild_project
 
-debug_vars:
-	@$(ECHO) "XST_FILE    = '$(XST_FILE)'"
-	@$(ECHO) "PRJ_FILE    = '$(PRJ_FILE)'"
-	@$(ECHO) "HDL_FILES   = '$(HDL_FILES)'"
-	@$(ECHO) "PART        = '$(PART)'"
-	@$(ECHO) "DEVICE      = '$(DEVICE)'"
-	@$(ECHO) "SPEED       = '$(SPEED)'"
-	@$(ECHO) "PACKAGE     = '$(PACKAGE)'"
-	@$(ECHO) "UCF_FILE    = '$(UCF_FILE)'"
-	@$(ECHO) "BSD_FILE    = '$(BSD_FILE)'"
-	@$(ECHO) "XSTHDPDIR    = '$(XSTHDPDIR)'"
-	@$(ECHO) "TMPDIR    = '$(TMPDIR)'"
-
+.PHONY: bit
 bit: roms $(DESIGN_NAME).bit
 
-prom: $(DESIGN_NAME).mcs
+.PHONY: impact
+impact: roms bit do_impact
 
-xsload: $(DESIGN_NAME).bit
-	@$(ECHO)
-	@$(ECHO) "======= Downloading bitstream to XSA-3S1000 using XSLOAD (parallel) ="
-	$(XSLOAD) -p 0 -b xsa-3s1000 -fpga $<
-
-usbxsload.bit: $(DESIGN_NAME).bit
-	@$(ECHO)
-	@$(ECHO) "======= Generating special bitstream with StartUpClk=JtagClk ========"
-	$(GREP) -v StartUpClk $(BITGEN_OPTIONS_FILE) >tmp.ut
-	$(ECHO) "-g StartUpClk:JtagClk" >>tmp.ut
-	$(BITGEN) $(BITGEN_FLAGS) -f tmp.ut $(DESIGN_NAME).ncd usbxsload.bit
-
-usbxsload: usbxsload.bit
-	@$(ECHO)
-	@$(ECHO) "======= Downloading bitstream to XSA-3S1000 using XSLOAD (USB) ======"
-	$(XSLOAD) -usb 0 -b xsa-3s1000 -fpga usbxsload.bit
-
-impact: $(DESIGN_NAME).bit
-	@$(ECHO)
-	@$(ECHO) "======= Downloading bitstream to XSA-3S1000 using Impact ============"
-	-@$(RM) $(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "setMode -bscan" >>$(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "setCable -p auto" >>$(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "addDevice -p 1 -file $(BSD_FILE)" >>$(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "assignFile -p 1 -file $<" >>$(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "program -p 1" >>$(DESIGN_NAME)_impact.cmd
-	@$(ECHO) "quit" >>$(DESIGN_NAME)_impact.cmd
-	$(IMPACT) -batch $(DESIGN_NAME)_impact.cmd
+prom: roms $(DESIGN_NAME).mcs
 
 .PHONY: help
 help:
@@ -143,10 +119,27 @@ help:
 clean:
 	-$(MAKE) -C ../../src/sys09bug clean
 	-$(MAKE) -C ../../src/Flex9 clean
-	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp 
-	-$(RM) *.ncl *.ngm *.prm *_pad.txt *.twx *.log *.syr *.par *.exo *.xpi
-	-$(RM) *.cmd_log *.ngr *.bld *_summary.html *.nc1 *.pcf *.bgn
+	-$(RM) *.ncd *.ngc *.ngd *.twr *.bit *.mcs *.stx *.ucf.untf *.mrp *.ptwx *_map.map
+	-$(RM) *.ncl *.ngm *.prm *_pad.txt *.twx *.log *.syr *.par *.exo *.xpi *.xrpt *.xml
+	-$(RM) *.cmd_log *.ngr *.bld *_summary.html *.nc1 *.pcf *.bgn tmp.ut
 	-$(RM) *.pad *.placed_ncd_tracker *.routed_ncd_tracker *_pad.csv *.drc
-	-$(RM) *.pad_txt $(DESIGN_NAME)_impact.cmd *.unroutes
-	-$(RMDIR) _ngo _xmsgs
+	-$(RM) *.pad_txt $(DESIGN_NAME)_impact.cmd *.unroutes $(DESIGN_NAME)_vhdl.prj
+	-$(RMDIR) _ngo _xmsgs xst xlnx_auto_0_xdb xst_tmp_dirs
 
+.PHONY: cleanall
+cleanall: clean
+	-$(MAKE) -C ../../Tools/as09 clean
+	-$(MAKE) -C ../../Tools/s19tovhd clean
+
+debug_vars:
+	@$(ECHO) "XST_FILE    = '$(XST_FILE)'"
+	@$(ECHO) "PRJ_FILE    = '$(PRJ_FILE)'"
+	@$(ECHO) "HDL_FILES   = '$(HDL_FILES)'"
+	@$(ECHO) "PART        = '$(PART)'"
+	@$(ECHO) "DEVICE      = '$(DEVICE)'"
+	@$(ECHO) "SPEED       = '$(SPEED)'"
+	@$(ECHO) "PACKAGE     = '$(PACKAGE)'"
+	@$(ECHO) "UCF_FILE    = '$(UCF_FILE)'"
+	@$(ECHO) "BSD_FILE    = '$(BSD_FILE)'"
+	@$(ECHO) "XSTHDPDIR    = '$(XSTHDPDIR)'"
+	@$(ECHO) "TMPDIR    = '$(TMPDIR)'"
