@@ -1,9 +1,8 @@
---===========================================================================----
---
---  T E S T B E N C H    tesetbench3 - CPU09 Testbench.
---
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+--===========================================================================--
+--                                                                           --
+--             TESTBENCH    testbench3 - CPU09 Testbench.                    --
+--                                                                           --
+--===========================================================================--
 --
 -- File name      : Testbench3.vhd
 --
@@ -19,21 +18,34 @@
 --                   
 -- Author         : John E. Kent
 --                  dilbert57@opencores.org      
+-- 
+--  Copyright (C) 2003 - 2010 John Kent
 --
---===========================================================================----
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
 --
--- Revision History:
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
 --===========================================================================--
 --
--- Version 0.1 - 12 Apr 2003 - John Kent 
--- First version
+-- Rev  Date       Author     Changes
+-- 0.1  2003-04-12 John Kent  First version
+-- 1.0  2003-09-06 John Kent  Initial release to Opencores.org
+-- 1.1  2004-02-26 John kent  removed test_alu and test_cc signals from CPU component.
+-- 1.2  2011-10-09 John Kent  renamed address to addr on CPU component, updated header
 --
--- Version 1.0 - 6 Sep 2003 - John Kent
--- Initial release to Open Cores
---
--- Version 1.1 - 26 Feb 2004 - John kent
--- removed test_alu and test_cc signals from
--- CPU component.
 --===========================================================================--
 
 library ieee;
@@ -122,7 +134,7 @@ component cpu09
     rst:	     in	std_logic;
     rw:	     out	std_logic;		-- Asynchronous memory interface
     vma:	     out	std_logic;
-    address:  out	std_logic_vector(15 downto 0);
+    addr:     out	std_logic_vector(15 downto 0);
     data_in:  in	std_logic_vector(7 downto 0);
 	 data_out: out std_logic_vector(7 downto 0);
 	 halt:     in  std_logic;
@@ -140,7 +152,7 @@ cpu : cpu09  port map (
     rst	     => cpu_reset,
     rw	     => cpu_rw,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
+    addr      => cpu_addr(15 downto 0),
     data_in   => cpu_data_in,
 	 data_out  => cpu_data_out,
 	 halt      => '0',

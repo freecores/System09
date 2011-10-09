@@ -1,28 +1,67 @@
 --===========================================================================--
+--                                                                           --
+--             TESTBENCH    testbench4 - CPU09 Testbench.                    --
+--                                                                           --
+--===========================================================================--
 --
--- MC6809 Microprocessor Test Bench 4
--- Test Software - SBUG ROM
+-- File name      : Testbench4.vhd
 --
+-- Purpose        : cpu09 Microprocessor Test Bench 4
+--                  Contains SBUG ROM
 --
--- John Kent 12st April 2003
+-- Dependencies   : ieee.Std_Logic_1164
+--                  ieee.std_logic_unsigned
+--                  ieee.std_logic_arith
+--                  ieee.numeric_std
 --
--- Version 1.1 - 25th Jan 2004 - John Kent
--- removed "test_alu" and "test_cc"
+-- Uses           : cpu09    (..\VHDL\cpu09.vhd)              CPU core
+--                  ram_2k   (..\Spartan3\ram2k_b16.vhd)      2KB block RAM
+--                  mon_rom  (..\Spartan3\sbug_rom2k_b16.vhd) 2KB SBUG block ROM
+--                   
+-- Author         : John E. Kent
+--                  dilbert57@opencores.org      
+-- 
+--  Copyright (C) 2003 - 2011 John Kent
 --
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
 --
--------------------------------------------------------------------------------
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
+--===========================================================================--
+--
+-- Rev  Date       Author     Changes
+-- 0.1  2003-04-12 John Kent  First version
+-- 1.0  2003-09-06 John Kent  Initial release to Opencores.org
+-- 1.1  2004-02-25 John kent  removed test_alu and test_cc signals from CPU component.
+-- 1.2  2011-10-09 John Kent  renamed address to addr on CPU component, updated header
+--
+--===========================================================================--
+
 library ieee;
    use ieee.std_logic_1164.all;
    use IEEE.STD_LOGIC_ARITH.ALL;
    use ieee.numeric_std.all;
 
-entity my_testbench is
-end my_testbench;
+entity my_testbench4 is
+end my_testbench4;
 
 -------------------------------------------------------------------------------
 -- Architecture for memio Controller Unit
 -------------------------------------------------------------------------------
-architecture behavior of my_testbench is
+architecture behavior of my_testbench4 is
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
@@ -50,7 +89,7 @@ component cpu09
     rst:	     in	std_logic;
     rw:	     out	std_logic;		-- Asynchronous memory interface
     vma:	     out	std_logic;
-    address:  out	std_logic_vector(15 downto 0);
+    addr:     out	std_logic_vector(15 downto 0);
     data_in:  in	std_logic_vector(7 downto 0);
 	 data_out: out std_logic_vector(7 downto 0);
 	 halt:     in  std_logic;
@@ -62,22 +101,27 @@ component cpu09
 end component;
 
 
-component sbug_rom
+component mon_rom
     Port (
-       MEMclk   : in  std_logic;
-       MEMaddr  : in  std_logic_vector (10 downto 0);
-       MEMrdata : out std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+		 rst      : in  std_logic;
+		 cs       : in  std_logic;
+		 rw       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
-component block_ram
+component ram_2k
     Port (
-       MEMclk   : in  std_logic;
-       MEMcs    : in  std_logic;
-		 MEMrw    : in  std_logic;
-       MEMaddr  : in  std_logic_vector (10 downto 0);
-       MEMrdata : out std_logic_vector (7 downto 0);
-       MEMwdata : in  std_logic_vector (7 downto 0)
+       clk      : in  std_logic;
+       rst      : in  std_logic;
+       cs       : in  std_logic;
+       addr     : in  std_logic_vector (10 downto 0);
+       rw       : in  std_logic;
+       data_in  : in  std_logic_vector (7 downto 0);
+       data_out : out std_logic_vector (7 downto 0)
     );
 end component;
 
@@ -87,7 +131,7 @@ my_cpu : cpu09  port map (
     rst	     => cpu_reset,
     rw	     => cpu_rw,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
+    addr      => cpu_addr(15 downto 0),
     data_in   => cpu_data_in,
 	 data_out  => cpu_data_out,
 	 halt      => cpu_halt,
@@ -98,19 +142,25 @@ my_cpu : cpu09  port map (
   );
 
 
-my_ram : block_ram port map (
-       MEMclk   => SysClk,
-		 MEMcs    => ram_cs,
-		 MEMrw    => cpu_rw,
-       MEMaddr  => cpu_addr(10 downto 0),
-       MEMrdata => ram_data_out,
-       MEMwdata => cpu_data_out
+my_rom : mon_rom port map (
+       clk      => SysClk,
+       rst      => cpu_reset,
+		 cs       => ram_cs,
+		 rw       => cpu_rw,
+       addr     => cpu_addr(10 downto 0),
+       data_in  => cpu_data_out,
+       data_out => rom_data_out
     );
 
-my_rom : sbug_rom port map (
-       MEMclk   => SysClk,
-       MEMaddr  => cpu_addr(10 downto 0),
-       MEMrdata => rom_data_out
+
+my_ram : ram_2k port map (
+       clk      => SysClk,
+       rst      => cpu_reset,
+		 cs       => ram_cs,
+		 rw       => cpu_rw,
+       addr     => cpu_addr(10 downto 0),
+       data_in  => cpu_data_out,
+       data_out => ram_data_out
     );
 
   -- *** Test Bench - User Defined Section ***

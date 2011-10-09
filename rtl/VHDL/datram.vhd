@@ -36,20 +36,20 @@
 --  Reg    Val           Addr    Addr
 --	 fff0 - 0f - page 0 - $0xxx = $00xxx (RAM)
 --	 fff1 - 0e - page 1 - $1xxx = $01xxx (RAM) 
---	 fff2 - 0d - page 0 - $2xxx = $02xxx (RAM)
---	 fff3 - 0c - page 0 - $3xxx = $03xxx (RAM)
---	 fff4 - 0b - page 0 - $4xxx = $04xxx (RAM)
---	 fff5 - 0a - page 0 - $5xxx = $05xxx (RAM)
---	 fff6 - 09 - page 0 - $6xxx = $06xxx (RAM)
---	 fff7 - 08 - page 0 - $7xxx = $07xxx (RAM)
---	 fff8 - 07 - page 0 - $8xxx = $08xxx (RAM)
---	 fff9 - 06 - page 0 - $9xxx = $09xxx (RAM)
---	 fffa - 05 - page 0 - $axxx = $0axxx (RAM)
---	 fffb - 04 - page 0 - $bxxx = $0bxxx (RAM)
---	 fffc - 03 - page 0 - $cxxx = $0cxxx (RAM)
---	 fffd - 02 - page 0 - $dxxx = $0dxxx (RAM)
---	 fffe - f1 - page 0 - $exxx = $fexxx (I/O)
---	 ffff - f0 - page 0 - $fxxx = $ffxxx (ROM/DMFA2)
+--	 fff2 - 0d - page 2 - $2xxx = $02xxx (RAM)
+--	 fff3 - 0c - page 3 - $3xxx = $03xxx (RAM)
+--	 fff4 - 0b - page 4 - $4xxx = $04xxx (RAM)
+--	 fff5 - 0a - page 5 - $5xxx = $05xxx (RAM)
+--	 fff6 - 09 - page 6 - $6xxx = $06xxx (RAM)
+--	 fff7 - 08 - page 7 - $7xxx = $07xxx (RAM)
+--	 fff8 - 07 - page 8 - $8xxx = $08xxx (RAM)
+--	 fff9 - 06 - page 9 - $9xxx = $09xxx (RAM)
+--	 fffa - 05 - page A - $axxx = $0axxx (RAM)
+--	 fffb - 04 - page B - $bxxx = $0bxxx (RAM)
+--	 fffc - 03 - page C - $cxxx = $0cxxx (RAM)
+--	 fffd - 02 - page D - $dxxx = $0dxxx (RAM)
+--	 fffe - f1 - page E - $exxx = $fexxx (I/O)
+--	 ffff - f0 - page F - $fxxx = $ffxxx (ROM/DMFA2)
 --
 --  Copyright (C) 2003 - 2010 John Kent
 --
@@ -83,6 +83,8 @@
 --
 -- 0.4     2010-06-17  John Kent  Update header and added GPL
 --
+-- 0.5     2010-12-10  John Kent  Correction of pages in header documentation
+-- 
 
 library ieee;
   use ieee.std_logic_1164.all;

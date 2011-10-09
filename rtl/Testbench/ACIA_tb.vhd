@@ -1,10 +1,51 @@
 --===========================================================================--
+--                                                                           --
+--                        VHDL 6850 ACIA TestBench                           --
+--                                                                           --
+--===========================================================================--
 --
--- ACIA 6850 Test Bench
 --
+-- File name      : ACIA_tb.vhd
 --
--- John Kent 6th February 2007
+-- Entity name    : ACIA6850_testbench
 --
+-- Purpose        : VHDL testbench for acia6850
+--
+-- Dependencies   : ieee.std_logic_1164
+--                  ieee.std_logic_unsigned
+--                  ieee.std_logic_arith
+--                  ieee.numeric_std
+--
+-- Author         : John E. Kent
+--
+-- Email          : dilbert57@opencores.org      
+--
+-- Web            : http://opencores.org/project,system09
+--
+--  Copyright (C) 2007 - 2011 John Kent
+--
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
+--===========================================================================--
+--
+-- Rev  Date        Author     Notes 
+-- 0.1  2007-02-06  John Kent  Initial Version
+-- 0.2  2011-10-09  John Kent  Renamed acia_6850 to acia6850
 --
 -------------------------------------------------------------------------------
 library ieee;
@@ -13,13 +54,13 @@ library ieee;
    use IEEE.STD_LOGIC_UNSIGNED.ALL;
    use ieee.numeric_std.all;
 
-entity ACIA_6850_testbench is
-end ACIA_6850_testbench;
+entity ACIA6850_testbench is
+end ACIA6850_testbench;
 
 -------------------------------------------------------------------------------
 -- Architecture for ACIA 6850 Unit
 -------------------------------------------------------------------------------
-architecture behavior of ACIA_6850_testbench is
+architecture behavior of ACIA6850_testbench is
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
@@ -45,29 +86,29 @@ architecture behavior of ACIA_6850_testbench is
 -- ACIA 6850 UART
 --
 -----------------------------------------------------------------
-component ACIA_6850
+component ACIA6850
   port (
      --
 	  -- CPU signals
 	  --
-     clk      : in  Std_Logic;  -- System Clock
-     rst      : in  Std_Logic;  -- Reset input (active high)
-     cs       : in  Std_Logic;  -- miniUART Chip Select
-     rw       : in  Std_Logic;  -- Read / Not Write
-     irq      : out Std_Logic;  -- Interrupt
-     Addr     : in  Std_Logic;  -- Register Select
-     DataIn   : in  Std_Logic_Vector(7 downto 0); -- Data Bus In 
-     DataOut  : out Std_Logic_Vector(7 downto 0); -- Data Bus Out
+     clk      : in  std_logic;  -- System Clock
+     rst      : in  std_logic;  -- Reset input (active high)
+     cs       : in  std_logic;  -- miniUART Chip Select
+     rw       : in  std_logic;  -- Read / Not Write
+     addr     : in  std_logic;  -- Register Select
+     data_in  : in  std_logic_vector(7 downto 0); -- Data Bus In 
+     data_out : out std_logic_vector(7 downto 0); -- Data Bus Out
+     irq      : out std_logic;  -- Interrupt
      --
 	  -- Uart Signals
 	  --
-     RxC      : in  Std_Logic;  -- Receive Baud Clock
-     TxC      : in  Std_Logic;  -- Transmit Baud Clock
-     RxD      : in  Std_Logic;  -- Receive Data
-     TxD      : out Std_Logic;  -- Transmit Data
-	  DCD_n    : in  Std_Logic;  -- Data Carrier Detect
-     CTS_n    : in  Std_Logic;  -- Clear To Send
-     RTS_n    : out Std_Logic );  -- Request To send
+     RxC      : in  std_logic;  -- Receive Baud Clock
+     TxC      : in  std_logic;  -- Transmit Baud Clock
+     RxD      : in  std_logic;  -- Receive Data
+     TxD      : out std_logic;  -- Transmit Data
+	  DCD_n    : in  std_logic;  -- Data Carrier Detect
+     CTS_n    : in  std_logic;  -- Clear To Send
+     RTS_n    : out std_logic );  -- Request To send
 end component; --================== End of entity ==============================--
 
 begin
@@ -76,15 +117,15 @@ begin
   -- Instantiation of internal components
   -----------------------------------------------------------------------------
 
-my_acia  : ACIA_6850 port map (
+my_acia  : ACIA6850 port map (
     clk       => SysClk,
 	 rst       => uart_reset,
     cs        => uart_cs,
 	 rw        => uart_rw,
-    Irq       => uart_irq,
-    Addr      => uart_addr,
-	 Datain    => uart_data_in,
-	 DataOut   => uart_data_out,
+    addr      => uart_addr,
+	 data_in   => uart_data_in,
+	 data_out  => uart_data_out,
+    irq       => uart_irq,
 	 RxC       => rxclk,
 	 TxC       => txclk,
 	 RxD       => rxbit,

@@ -1,9 +1,8 @@
---===========================================================================----
---
---  T E S T B E N C H    tesetbench1 - CPU09 Testbench.
---
---  www.OpenCores.Org - September 2003
---  This core adheres to the GNU public license  
+--===========================================================================--
+--                                                                           --
+--             TESTBENCH    testbench1 - CPU09 Testbench.                    --
+--                                                                           --
+--===========================================================================--
 --
 -- File name      : Testbench1.vhd
 --
@@ -20,20 +19,33 @@
 --                   
 -- Author         : John E. Kent
 --                  dilbert57@opencores.org      
+-- 
+--  Copyright (C) 2003 - 2010 John Kent
 --
---===========================================================================----
+--  This program is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation, either version 3 of the License, or
+--  (at your option) any later version.
 --
--- Revision History:
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--===========================================================================--
+--                                                                           --
+--                                Revision History                           --
+--                                                                           --
 --===========================================================================--
 --
--- Version 0.1 - 12st April 2003 - John Kent 
--- First version
---
--- Version 1.0- 6 Sep 2003 - John Kent
--- Initial release to Open Cores
---
--- Version 1.1 - 25th Jan 2004 - John Kent
--- removed "test_alu" and "test_cc"
+-- Rev  Date       Author     Changes
+-- 0.1  2003-04-12 John Kent  First version
+-- 1.0  2003-09-06 John Kent  Initial release to Opencores.org
+-- 1.1  2004-01-25 John Kent  removed "test_alu" and "test_cc" from CPU component
+-- 1.2  2011-10-09 John Kent  updated for acia6850
 --
 --===========================================================================--
 
@@ -42,18 +54,18 @@ library ieee;
    use IEEE.STD_LOGIC_ARITH.ALL;
    use IEEE.STD_LOGIC_UNSIGNED.ALL;
    use ieee.numeric_std.all;
--- library work;
+--library work;
 --   use work.UART_Def.all;
 --   use work.typedefines.all;
 --   use work.memory.all;
 
-entity my_testbench is
-end my_testbench;
+entity my_testbench1 is
+end my_testbench1;
 
 -------------------------------------------------------------------------------
 -- Architecture for memio Controller Unit
 -------------------------------------------------------------------------------
-architecture behavior of my_testbench is
+architecture behavior of my_testbench1 is
   -----------------------------------------------------------------------------
   -- Signals
   -----------------------------------------------------------------------------
@@ -110,9 +122,9 @@ component cpu09
   port (    
 	 clk:	     in	std_logic;
     rst:	     in	std_logic;
-    rw:	     out	std_logic;		-- Asynchronous memory interface
     vma:	     out	std_logic;
-    address:  out	std_logic_vector(15 downto 0);
+    rw:	      out	std_logic;		-- Asynchronous memory interface
+    addr:     out	std_logic_vector(15 downto 0);
     data_in:  in	std_logic_vector(7 downto 0);
 	 data_out: out std_logic_vector(7 downto 0);
 	 halt:     in  std_logic;
@@ -126,11 +138,11 @@ end component cpu09;
 
 begin
 cpu : cpu09  port map (    
-	 clk	     => SysClk,
-    rst	     => cpu_reset,
-    rw	     => cpu_rw,
+	 clk	      => SysClk,
+    rst	      => cpu_reset,
     vma       => cpu_vma,
-    address   => cpu_addr(15 downto 0),
+    rw	       => cpu_rw,
+    addr      => cpu_addr(15 downto 0),
     data_in   => cpu_data_in,
 	 data_out  => cpu_data_out,
 	 halt      => '0',

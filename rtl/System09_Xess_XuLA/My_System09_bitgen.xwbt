@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=C:\VHDL\System09_sandbox_JK\rtl\System09_Xess_XuLA\My_System09.ncd
+OUTFILE=C:\VHDL\System09_sandbox_JK\rtl\System09_Xess_XuLA\My_System09.bit
+FAMILY=Spartan3A and Spartan3AN
+PART=xc3s200a-5vq100
+WORKINGDIR=C:\VHDL\System09_sandbox_JK\rtl\System09_Xess_XuLA
+LICENSE=WebPack
+USER_INFO=0_0_153
