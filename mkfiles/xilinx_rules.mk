@@ -82,13 +82,22 @@ INTSTYLE :=
 XST_FLAGS        ?= $(INTSTYLE)           # most synthesis flags are specified in the .xst file
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo  # ngdbuild flags
 NGDBUILD_FLAGS += $(if $(UCF_FILE),-uc,) $(UCF_FILE)
-# pre-11.1 flags
-ifeq "$(XILINX_MAJOR_VER)" "11"
-# ISE 11.1 flags
-MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -c 100 -tx off
-else
-MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
+
+# Brute force determination of need for -k 4 option
+ifeq "$(XILINX_MAJOR_VER)" "7"
+K4_OPT := -k 4
 endif
+ifeq "$(XILINX_MAJOR_VER)" "8"
+K4_OPT := -k 4
+endif
+ifeq "$(XILINX_MAJOR_VER)" "9"
+K4_OPT := -k 4
+endif
+ifeq "$(XILINX_MAJOR_VER)" "10"
+K4_OPT := -k 4
+endif
+
+MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b $(K4_OPT) -c 100 -tx off
 PAR_FLAGS        ?= $(INTSTYLE) -w -ol std -t 1
 TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
